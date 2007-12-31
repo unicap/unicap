@@ -283,7 +283,7 @@ unicap_status_t unicap_describe_property( unicap_property_t *property, char *buf
 		 "range: min: %g\n"\
 		 "       max: %g\n"\
 		 "stepping: %g\n"\
-		 "property data size: %d\n",
+		 "property data size: %ld\n",
 		 property->identifier,
 		 property->category,
 		 property->unit,
@@ -291,7 +291,7 @@ unicap_status_t unicap_describe_property( unicap_property_t *property, char *buf
 		 property->range.min,
 		 property->range.max,
 		 property->stepping,
-		 property->property_data_size );
+		 (long int)property->property_data_size );
 	
 	strncpy( buffer, tmp_buffer, *buffer_size );
 	

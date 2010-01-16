@@ -1,0 +1,172 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>ucil_theora</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.75.1">
+<link rel="home" href="index.html" title="UCIL Reference Manual">
+<link rel="up" href="ch01.html" title="UCIL">
+<link rel="prev" href="libucil-colorspace.html" title="colorspace">
+<meta name="generator" content="GTK-Doc V1.11 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+<link rel="chapter" href="ch01.html" title="UCIL">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="libucil-colorspace.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">UCIL Reference Manual</th>
+<td> </td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#libucil-ucil-theora.synopsis" class="shortcut">Top</a>
+                 | 
+                <a href="#libucil-ucil-theora.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry" title="ucil_theora">
+<a name="libucil-ucil-theora"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="libucil-ucil-theora.top_of_page"></a>ucil_theora</span></h2>
+<p>ucil_theora</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv" title="Synopsis">
+<a name="libucil-ucil-theora.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+struct              <a class="link" href="libucil-ucil-theora.html#ucil-theora-video-file-object" title="struct ucil_theora_video_file_object">ucil_theora_video_file_object</a>;
+typedef             <a class="link" href="libucil-ucil-theora.html#ucil-theora-video-file-object-t" title="ucil_theora_video_file_object_t">ucil_theora_video_file_object_t</a>;
+<a class="link" href="libucil-ucil-theora.html#ucil-theora-video-file-object-t" title="ucil_theora_video_file_object_t">ucil_theora_video_file_object_t</a> * <a class="link" href="libucil-ucil-theora.html#ucil-theora-create-video-file" title="ucil_theora_create_video_file ()">ucil_theora_create_video_file</a>
+                                                        (const char *path,
+                                                         <a
+href="../libunicap/libunicap-unicap.html#unicap-format-t"
+>unicap_format_t</a> *format,
+                                                         const char *codec,
+                                                         va_list ap);
+</pre>
+</div>
+<div class="refsect1" title="Description">
+<a name="libucil-ucil-theora.description"></a><h2>Description</h2>
+<p>
+</p>
+</div>
+<div class="refsect1" title="Details">
+<a name="libucil-ucil-theora.details"></a><h2>Details</h2>
+<div class="refsect2" title="struct ucil_theora_video_file_object">
+<a name="ucil-theora-video-file-object"></a><h3>struct ucil_theora_video_file_object</h3>
+<pre class="programlisting">struct ucil_theora_video_file_object {
+   ogg_stream_state os;
+   theora_info ti;
+   theora_state th;
+   FILE *f;
+
+   int blocking_mode;
+
+   int downsize;
+
+   unicap_format_t format;
+      
+   int fill_frames;
+   unsigned long long frame_interval;
+   struct timeval last_frame_time;
+   struct timeval recording_start_time;
+   int frame_count;
+   ogg_packet op;
+
+   pthread_t encoder_thread;
+   int quit_thread;
+   GQueue *full_queue;
+   GQueue *empty_queue;
+   unicap_data_buffer_t *last_frame;
+
+   unicap_new_frame_callback_t encode_frame_cb;
+   void *encode_frame_cb_data;
+
+   vorbis_info      vi;
+   vorbis_dsp_state vd;
+   ogg_stream_state vo;
+   vorbis_block     vb;
+      
+      
+   int          audio;
+   void        *audio_data;
+   char         audio_card[64];
+   unsigned int audio_rate;
+   int          vorbis_bitrate;
+   unsigned int total_samples;
+   int          async_audio_encoding;
+   FILE        *audiof;
+
+   int nocopy;
+
+   sem_t sema;      
+   sem_t lock;
+   
+   int requires_resizing_frames;
+};
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2" title="ucil_theora_video_file_object_t">
+<a name="ucil-theora-video-file-object-t"></a><h3>ucil_theora_video_file_object_t</h3>
+<pre class="programlisting">typedef struct _ucil_theora_video_file_object ucil_theora_video_file_object_t;
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2" title="ucil_theora_create_video_file ()">
+<a name="ucil-theora-create-video-file"></a><h3>ucil_theora_create_video_file ()</h3>
+<pre class="programlisting"><a class="link" href="libucil-ucil-theora.html#ucil-theora-video-file-object-t" title="ucil_theora_video_file_object_t">ucil_theora_video_file_object_t</a> * ucil_theora_create_video_file
+                                                        (const char *path,
+                                                         <a
+href="../libunicap/libunicap-unicap.html#unicap-format-t"
+>unicap_format_t</a> *format,
+                                                         const char *codec,
+                                                         va_list ap);</pre>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>path</code></em> :</span></p></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>format</code></em> :</span></p></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>codec</code></em> :</span></p></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>ap</code></em> :</span></p></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.11</div>
+</body>
+</html>

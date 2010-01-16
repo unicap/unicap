@@ -1,0 +1,14 @@
+#ifndef __UCIL_VERSION_H__
+#define __UCIL_VERSION_H__
+
+#define UCIL_MAJOR_VERSION @ucil_major_version@
+#define UCIL_MINOR_VERSION @ucil_minor_version@
+#define UCIL_MICRO_VERSION @ucil_micro_version@
+
+extern const unsigned int ucil_major_version;
+extern const unsigned int ucil_minor_version;
+extern const unsigned int ucil_micro_version;
+
+
+#endif//__UCIL_VERSION_H__
+

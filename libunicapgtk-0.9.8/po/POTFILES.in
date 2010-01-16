@@ -1,0 +1,10 @@
+# List of source files which contain translatable strings.
+libucil/ucil_theora.c
+libunicapgtk/unicapgtk_device_property.c
+libunicapgtk/unicapgtk_property_dialog.c
+cpi/v4l2cpi/v4l2.c
+cpi/v4l2cpi/v4l2_i18n_strings.h
+cpi/v4l2cpi/tiseuvccam.c
+cpi/v4l2cpi/tisuvccam.c
+cpi/dcam/dcam_property_table.h
+

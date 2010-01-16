@@ -1,0 +1,1868 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>unicap</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.75.1">
+<link rel="home" href="index.html" title="Unicap Reference Manual">
+<link rel="up" href="ch01.html" title="unicap">
+<link rel="prev" href="ch01.html" title="unicap">
+<meta name="generator" content="GTK-Doc V1.11 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+<link rel="chapter" href="ch01.html" title="unicap">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="ch01.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">Unicap Reference Manual</th>
+<td> </td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#libunicap-unicap.synopsis" class="shortcut">Top</a>
+                 | 
+                <a href="#libunicap-unicap.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry" title="unicap">
+<a name="libunicap-unicap"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="libunicap-unicap.top_of_page"></a>unicap</span></h2>
+<p>unicap</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv" title="Synopsis">
+<a name="libunicap-unicap.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+enum                <a class="link" href="libunicap-unicap.html#unicap-buffer-type-t" title="enum unicap_buffer_type_t">unicap_buffer_type_t</a>;
+                    <a class="link" href="libunicap-unicap.html#unicap-device-t" title="unicap_device_t">unicap_device_t</a>;
+                    <a class="link" href="libunicap-unicap.html#unicap-rect-t" title="unicap_rect_t">unicap_rect_t</a>;
+                    <a class="link" href="libunicap-unicap.html#unicap-format-t" title="unicap_format_t">unicap_format_t</a>;
+                    <a class="link" href="libunicap-unicap.html#unicap-data-buffer-t" title="unicap_data_buffer_t">unicap_data_buffer_t</a>;
+enum                <a class="link" href="libunicap-unicap.html#unicap-property-flags-t" title="enum unicap_property_flags_t">unicap_property_flags_t</a>;
+                    <a class="link" href="libunicap-unicap.html#unicap-property-range-t" title="unicap_property_range_t">unicap_property_range_t</a>;
+                    <a class="link" href="libunicap-unicap.html#unicap-property-value-list-t" title="unicap_property_value_list_t">unicap_property_value_list_t</a>;
+                    <a class="link" href="libunicap-unicap.html#unicap-property-menu-t" title="unicap_property_menu_t">unicap_property_menu_t</a>;
+enum                <a class="link" href="libunicap-unicap.html#unicap-property-type-enum-t" title="enum unicap_property_type_enum_t">unicap_property_type_enum_t</a>;
+                    <a class="link" href="libunicap-unicap.html#unicap-property-t" title="unicap_property_t">unicap_property_t</a>;
+enum                <a class="link" href="libunicap-unicap.html#unicap-event-t" title="enum unicap_event_t">unicap_event_t</a>;
+#define             <a class="link" href="libunicap-unicap.html#UNICAP-FLAGS-MANUAL--CAPS" title="UNICAP_FLAGS_MANUAL">UNICAP_FLAGS_MANUAL</a>
+#define             <a class="link" href="libunicap-unicap.html#UNICAP-FLAGS-AUTO--CAPS" title="UNICAP_FLAGS_AUTO">UNICAP_FLAGS_AUTO</a>
+#define             <a class="link" href="libunicap-unicap.html#UNICAP-FLAGS-ONE-PUSH--CAPS" title="UNICAP_FLAGS_ONE_PUSH">UNICAP_FLAGS_ONE_PUSH</a>
+#define             <a class="link" href="libunicap-unicap.html#UNICAP-FLAGS-READ-OUT--CAPS" title="UNICAP_FLAGS_READ_OUT">UNICAP_FLAGS_READ_OUT</a>
+#define             <a class="link" href="libunicap-unicap.html#UNICAP-FLAGS-ON-OFF--CAPS" title="UNICAP_FLAGS_ON_OFF">UNICAP_FLAGS_ON_OFF</a>
+#define             <a class="link" href="libunicap-unicap.html#UNICAP-FLAGS-READ-ONLY--CAPS" title="UNICAP_FLAGS_READ_ONLY">UNICAP_FLAGS_READ_ONLY</a>
+#define             <a class="link" href="libunicap-unicap.html#UNICAP-FLAGS-FORMAT-CHANGE--CAPS" title="UNICAP_FLAGS_FORMAT_CHANGE">UNICAP_FLAGS_FORMAT_CHANGE</a>
+void                (<a class="link" href="libunicap-unicap.html#unicap-callback-t" title="unicap_callback_t ()">*unicap_callback_t</a>)                (<a class="link" href="libunicap-unicap.html#unicap-event-t" title="enum unicap_event_t">unicap_event_t</a> event,
+                                                         ...);
+void                (<a class="link" href="libunicap-unicap.html#unicap-new-frame-callback-t" title="unicap_new_frame_callback_t ()">*unicap_new_frame_callback_t</a>)      (<a class="link" href="libunicap-unicap.html#unicap-event-t" title="enum unicap_event_t">unicap_event_t</a> event,
+                                                         unicap_handle_t handle,
+                                                         <a class="link" href="libunicap-unicap.html#unicap-data-buffer-t" title="unicap_data_buffer_t">unicap_data_buffer_t</a> *buffer,
+                                                         void *user_ptr);
+void                (<a class="link" href="libunicap-unicap.html#unicap-drop-frame-callback-t" title="unicap_drop_frame_callback_t ()">*unicap_drop_frame_callback_t</a>)     (<a class="link" href="libunicap-unicap.html#unicap-event-t" title="enum unicap_event_t">unicap_event_t</a> event,
+                                                         unicap_handle_t handle,
+                                                         void *user_ptr);
+void                (<a class="link" href="libunicap-unicap.html#unicap-new-device-callback-t" title="unicap_new_device_callback_t ()">*unicap_new_device_callback_t</a>)     (<a class="link" href="libunicap-unicap.html#unicap-event-t" title="enum unicap_event_t">unicap_event_t</a> event,
+                                                         <a class="link" href="libunicap-unicap.html#unicap-device-t" title="unicap_device_t">unicap_device_t</a> *device,
+                                                         void *user_ptr);
+unicap_status_t     <a class="link" href="libunicap-unicap.html#unicap-check-version" title="unicap_check_version ()">unicap_check_version</a>                (unsigned int major,
+                                                         unsigned int minor,
+                                                         unsigned int micro);
+unicap_status_t     <a class="link" href="libunicap-unicap.html#unicap-reenumerate-devices" title="unicap_reenumerate_devices ()">unicap_reenumerate_devices</a>          (int *count);
+unicap_status_t     <a class="link" href="libunicap-unicap.html#unicap-enumerate-devices" title="unicap_enumerate_devices ()">unicap_enumerate_devices</a>            (<a class="link" href="libunicap-unicap.html#unicap-device-t" title="unicap_device_t">unicap_device_t</a> *specifier,
+                                                         <a class="link" href="libunicap-unicap.html#unicap-device-t" title="unicap_device_t">unicap_device_t</a> *device,
+                                                         int index);
+unicap_status_t     <a class="link" href="libunicap-unicap.html#unicap-open" title="unicap_open ()">unicap_open</a>                         (unicap_handle_t *handle,
+                                                         <a class="link" href="libunicap-unicap.html#unicap-device-t" title="unicap_device_t">unicap_device_t</a> *device);
+unicap_status_t     <a class="link" href="libunicap-unicap.html#unicap-register-callback" title="unicap_register_callback ()">unicap_register_callback</a>            (unicap_handle_t handle,
+                                                         <a class="link" href="libunicap-unicap.html#unicap-event-t" title="enum unicap_event_t">unicap_event_t</a> event,
+                                                         <a class="link" href="libunicap-unicap.html#unicap-callback-t" title="unicap_callback_t ()">unicap_callback_t</a> callback,
+                                                         void *user_ptr);
+unicap_status_t     <a class="link" href="libunicap-unicap.html#unicap-close" title="unicap_close ()">unicap_close</a>                        (unicap_handle_t handle);
+unicap_status_t     <a class="link" href="libunicap-unicap.html#unicap-get-device" title="unicap_get_device ()">unicap_get_device</a>                   (unicap_handle_t handle,
+                                                         <a class="link" href="libunicap-unicap.html#unicap-device-t" title="unicap_device_t">unicap_device_t</a> *device);
+unicap_handle_t     <a class="link" href="libunicap-unicap.html#unicap-clone-handle" title="unicap_clone_handle ()">unicap_clone_handle</a>                 (unicap_handle_t handle);
+unicap_status_t     <a class="link" href="libunicap-unicap.html#unicap-reenumerate-formats" title="unicap_reenumerate_formats ()">unicap_reenumerate_formats</a>          (unicap_handle_t handle,
+                                                         int *count);
+unicap_status_t     <a class="link" href="libunicap-unicap.html#unicap-enumerate-formats" title="unicap_enumerate_formats ()">unicap_enumerate_formats</a>            (unicap_handle_t handle,
+                                                         <a class="link" href="libunicap-unicap.html#unicap-format-t" title="unicap_format_t">unicap_format_t</a> *specifier,
+                                                         <a class="link" href="libunicap-unicap.html#unicap-format-t" title="unicap_format_t">unicap_format_t</a> *format,
+                                                         int index);
+unicap_status_t     <a class="link" href="libunicap-unicap.html#unicap-set-format" title="unicap_set_format ()">unicap_set_format</a>                   (unicap_handle_t handle,
+                                                         <a class="link" href="libunicap-unicap.html#unicap-format-t" title="unicap_format_t">unicap_format_t</a> *format);
+unicap_status_t     <a class="link" href="libunicap-unicap.html#unicap-get-format" title="unicap_get_format ()">unicap_get_format</a>                   (unicap_handle_t handle,
+                                                         <a class="link" href="libunicap-unicap.html#unicap-format-t" title="unicap_format_t">unicap_format_t</a> *format);
+unicap_status_t     <a class="link" href="libunicap-unicap.html#unicap-reenumerate-properties" title="unicap_reenumerate_properties ()">unicap_reenumerate_properties</a>       (unicap_handle_t handle,
+                                                         int *count);
+unicap_status_t     <a class="link" href="libunicap-unicap.html#unicap-enumerate-properties" title="unicap_enumerate_properties ()">unicap_enumerate_properties</a>         (unicap_handle_t handle,
+                                                         <a class="link" href="libunicap-unicap.html#unicap-property-t" title="unicap_property_t">unicap_property_t</a> *specifier,
+                                                         <a class="link" href="libunicap-unicap.html#unicap-property-t" title="unicap_property_t">unicap_property_t</a> *property,
+                                                         int index);
+unicap_status_t     <a class="link" href="libunicap-unicap.html#unicap-set-property" title="unicap_set_property ()">unicap_set_property</a>                 (unicap_handle_t handle,
+                                                         <a class="link" href="libunicap-unicap.html#unicap-property-t" title="unicap_property_t">unicap_property_t</a> *property);
+unicap_status_t     <a class="link" href="libunicap-unicap.html#unicap-set-property-value" title="unicap_set_property_value ()">unicap_set_property_value</a>           (unicap_handle_t handle,
+                                                         char *identifier,
+                                                         double value);
+unicap_status_t     <a class="link" href="libunicap-unicap.html#unicap-set-property-manual" title="unicap_set_property_manual ()">unicap_set_property_manual</a>          (unicap_handle_t handle,
+                                                         char *identifier);
+unicap_status_t     <a class="link" href="libunicap-unicap.html#unicap-set-property-auto" title="unicap_set_property_auto ()">unicap_set_property_auto</a>            (unicap_handle_t handle,
+                                                         char *identifier);
+unicap_status_t     <a class="link" href="libunicap-unicap.html#unicap-set-property-one-push" title="unicap_set_property_one_push ()">unicap_set_property_one_push</a>        (unicap_handle_t handle,
+                                                         char *identifier);
+unicap_status_t     <a class="link" href="libunicap-unicap.html#unicap-get-property" title="unicap_get_property ()">unicap_get_property</a>                 (unicap_handle_t handle,
+                                                         <a class="link" href="libunicap-unicap.html#unicap-property-t" title="unicap_property_t">unicap_property_t</a> *property);
+unicap_status_t     <a class="link" href="libunicap-unicap.html#unicap-get-property-value" title="unicap_get_property_value ()">unicap_get_property_value</a>           (unicap_handle_t handle,
+                                                         const char *identifier,
+                                                         double *value);
+unicap_status_t     <a class="link" href="libunicap-unicap.html#unicap-get-property-menu" title="unicap_get_property_menu ()">unicap_get_property_menu</a>            (unicap_handle_t handle,
+                                                         const char *identifier,
+                                                         char **value);
+unicap_status_t     <a class="link" href="libunicap-unicap.html#unicap-get-property-auto" title="unicap_get_property_auto ()">unicap_get_property_auto</a>            (unicap_handle_t handle,
+                                                         const char *identifier,
+                                                         int *enabled);
+unicap_status_t     <a class="link" href="libunicap-unicap.html#unicap-start-capture" title="unicap_start_capture ()">unicap_start_capture</a>                (unicap_handle_t handle);
+unicap_status_t     <a class="link" href="libunicap-unicap.html#unicap-stop-capture" title="unicap_stop_capture ()">unicap_stop_capture</a>                 (unicap_handle_t handle);
+unicap_status_t     <a class="link" href="libunicap-unicap.html#unicap-queue-buffer" title="unicap_queue_buffer ()">unicap_queue_buffer</a>                 (unicap_handle_t handle,
+                                                         <a class="link" href="libunicap-unicap.html#unicap-data-buffer-t" title="unicap_data_buffer_t">unicap_data_buffer_t</a> *data_buffer);
+unicap_status_t     <a class="link" href="libunicap-unicap.html#unicap-dequeue-buffer" title="unicap_dequeue_buffer ()">unicap_dequeue_buffer</a>               (unicap_handle_t handle,
+                                                         <a class="link" href="libunicap-unicap.html#unicap-data-buffer-t" title="unicap_data_buffer_t">unicap_data_buffer_t</a> **data_buffer);
+unicap_status_t     <a class="link" href="libunicap-unicap.html#unicap-wait-buffer" title="unicap_wait_buffer ()">unicap_wait_buffer</a>                  (unicap_handle_t handle,
+                                                         <a class="link" href="libunicap-unicap.html#unicap-data-buffer-t" title="unicap_data_buffer_t">unicap_data_buffer_t</a> **data_buffer);
+unicap_status_t     <a class="link" href="libunicap-unicap.html#unicap-poll-buffer" title="unicap_poll_buffer ()">unicap_poll_buffer</a>                  (unicap_handle_t handle,
+                                                         int *count);
+</pre>
+</div>
+<div class="refsect1" title="Description">
+<a name="libunicap-unicap.description"></a><h2>Description</h2>
+<p>
+</p>
+</div>
+<div class="refsect1" title="Details">
+<a name="libunicap-unicap.details"></a><h2>Details</h2>
+<div class="refsect2" title="enum unicap_buffer_type_t">
+<a name="unicap-buffer-type-t"></a><h3>enum unicap_buffer_type_t</h3>
+<pre class="programlisting">typedef enum
+{
+	UNICAP_BUFFER_TYPE_USER = 0, 
+	UNICAP_BUFFER_TYPE_SYSTEM,
+} unicap_buffer_type_t;
+</pre>
+<p>
+</p>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><a name="UNICAP-BUFFER-TYPE-USER--CAPS"></a><span class="term"><code class="literal">UNICAP_BUFFER_TYPE_USER</code></span></p></td>
+<td> buffer is provided by the application
+</td>
+</tr>
+<tr>
+<td><p><a name="UNICAP-BUFFER-TYPE-SYSTEM--CAPS"></a><span class="term"><code class="literal">UNICAP_BUFFER_TYPE_SYSTEM</code></span></p></td>
+<td> buffer is provided by the driver or library
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="unicap_device_t">
+<a name="unicap-device-t"></a><h3>unicap_device_t</h3>
+<pre class="programlisting">typedef struct {
+	char identifier[128];
+	char model_name[128];
+	char vendor_name[128];
+		
+	unsigned long long model_id;
+	unsigned int vendor_id;
+	
+	char cpi_layer[1024];
+	char device[1024];
+		
+	unsigned int flags;
+} unicap_device_t;
+</pre>
+<p>
+A struct defining a device</p>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term">char <em class="structfield"><code>identifier</code></em>[128];</span></p></td>
+<td> unique textual ID of a device 
+</td>
+</tr>
+<tr>
+<td><p><span class="term">char <em class="structfield"><code>model_name</code></em>[128];</span></p></td>
+<td> model name of the device
+</td>
+</tr>
+<tr>
+<td><p><span class="term">char <em class="structfield"><code>vendor_name</code></em>[128];</span></p></td>
+<td> name of the device vendor
+</td>
+</tr>
+<tr>
+<td><p><span class="term">unsigned int <em class="structfield"><code>vendor_id</code></em>;</span></p></td>
+<td> numerical ID of the vendor ( eg. USB Vendor ID )
+</td>
+</tr>
+<tr>
+<td><p><span class="term">char <em class="structfield"><code>cpi_layer</code></em>[1024];</span></p></td>
+<td> name of the plugin used to communicate with the device
+</td>
+</tr>
+<tr>
+<td><p><span class="term">char <em class="structfield"><code>device</code></em>[1024];</span></p></td>
+<td> name of the device file, if any
+</td>
+</tr>
+<tr>
+<td><p><span class="term">unsigned int <em class="structfield"><code>flags</code></em>;</span></p></td>
+<td> flags
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="unicap_rect_t">
+<a name="unicap-rect-t"></a><h3>unicap_rect_t</h3>
+<pre class="programlisting">typedef struct {
+	int x;
+	int y;	
+	int width;
+	int height;
+} unicap_rect_t;
+</pre>
+<p>
+A struct defining a rectangle</p>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term">int <em class="structfield"><code>x</code></em>;</span></p></td>
+<td> horizontal position
+</td>
+</tr>
+<tr>
+<td><p><span class="term">int <em class="structfield"><code>y</code></em>;</span></p></td>
+<td> vertical position
+</td>
+</tr>
+<tr>
+<td><p><span class="term">int <em class="structfield"><code>width</code></em>;</span></p></td>
+<td> width of the rectangle
+</td>
+</tr>
+<tr>
+<td><p><span class="term">int <em class="structfield"><code>height</code></em>;</span></p></td>
+<td> height of the rectangle
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="unicap_format_t">
+<a name="unicap-format-t"></a><h3>unicap_format_t</h3>
+<pre class="programlisting">typedef struct {
+      char identifier[128];
+      
+      unicap_rect_t size;
+      
+      unicap_rect_t min_size;
+      unicap_rect_t max_size;
+      
+      int h_stepping;
+      int v_stepping;
+      unicap_rect_t *sizes;
+      int size_count;
+      
+      int bpp;
+      unsigned int fourcc;
+      unicap_format_flags_t flags;
+
+      unsigned int buffer_types;
+      int system_buffer_count;
+
+      size_t buffer_size;
+
+      unicap_buffer_type_t buffer_type;
+} unicap_format_t;
+</pre>
+<p>
+</p>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term">char <em class="structfield"><code>identifier</code></em>[128];</span></p></td>
+<td> unique textual identifier of this format
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><a class="link" href="libunicap-unicap.html#unicap-rect-t" title="unicap_rect_t">unicap_rect_t</a> <em class="structfield"><code>size</code></em>;</span></p></td>
+<td> size of the format
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><a class="link" href="libunicap-unicap.html#unicap-rect-t" title="unicap_rect_t">unicap_rect_t</a> <em class="structfield"><code>min_size</code></em>;</span></p></td>
+<td> minimum size
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><a class="link" href="libunicap-unicap.html#unicap-rect-t" title="unicap_rect_t">unicap_rect_t</a> <em class="structfield"><code>max_size</code></em>;</span></p></td>
+<td> maximum size
+</td>
+</tr>
+<tr>
+<td><p><span class="term">int <em class="structfield"><code>h_stepping</code></em>;</span></p></td>
+<td> horizontal stepping
+</td>
+</tr>
+<tr>
+<td><p><span class="term">int <em class="structfield"><code>v_stepping</code></em>;</span></p></td>
+<td> vertical stepping
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><a class="link" href="libunicap-unicap.html#unicap-rect-t" title="unicap_rect_t">unicap_rect_t</a> *<em class="structfield"><code>sizes</code></em>;</span></p></td>
+<td> array of allowed sizes. Might be NULL
+</td>
+</tr>
+<tr>
+<td><p><span class="term">int <em class="structfield"><code>size_count</code></em>;</span></p></td>
+<td> number of element in the sizes array
+</td>
+</tr>
+<tr>
+<td><p><span class="term">int <em class="structfield"><code>bpp</code></em>;</span></p></td>
+<td> bits per pixel
+</td>
+</tr>
+<tr>
+<td><p><span class="term">unsigned int <em class="structfield"><code>fourcc</code></em>;</span></p></td>
+<td> FOURCC describing the colour format
+</td>
+</tr>
+<tr>
+<td><p><span class="term">unicap_format_flags_t <em class="structfield"><code>flags</code></em>;</span></p></td>
+<td> 
+</td>
+</tr>
+<tr>
+<td><p><span class="term">unsigned int <em class="structfield"><code>buffer_types</code></em>;</span></p></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><p><span class="term">int <em class="structfield"><code>system_buffer_count</code></em>;</span></p></td>
+<td> 
+</td>
+</tr>
+<tr>
+<td><p><span class="term">size_t <em class="structfield"><code>buffer_size</code></em>;</span></p></td>
+<td> amount of memory required by one data buffer of this
+format
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><a class="link" href="libunicap-unicap.html#unicap-buffer-type-t" title="enum unicap_buffer_type_t">unicap_buffer_type_t</a> <em class="structfield"><code>buffer_type</code></em>;</span></p></td>
+<td> 
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="unicap_data_buffer_t">
+<a name="unicap-data-buffer-t"></a><h3>unicap_data_buffer_t</h3>
+<pre class="programlisting">typedef struct {
+      unicap_format_t format;
+      
+      int frame_number;
+      struct timeval fill_time;
+      struct timeval duration;
+      struct timeval capture_start_time;
+      
+      unsigned char *data;
+      size_t buffer_size;	
+
+      unicap_buffer_type_t type;
+
+      unicap_buffer_flags_t flags;
+      unsigned int reserved[7];		
+} unicap_data_buffer_t;
+</pre>
+<p>
+</p>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><a class="link" href="libunicap-unicap.html#unicap-format-t" title="unicap_format_t">unicap_format_t</a> <em class="structfield"><code>format</code></em>;</span></p></td>
+<td> a <a class="link" href="libunicap-unicap.html#unicap-format-t" title="unicap_format_t"><span class="type">unicap_format_t</span></a> describing the layout of the data
+buffer
+</td>
+</tr>
+<tr>
+<td><p><span class="term">int <em class="structfield"><code>frame_number</code></em>;</span></p></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><p><span class="term">struct timeval <em class="structfield"><code>fill_time</code></em>;</span></p></td>
+<td> the time when capturing completed on this buffer
+</td>
+</tr>
+<tr>
+<td><p><span class="term">struct timeval <em class="structfield"><code>duration</code></em>;</span></p></td>
+<td> frame duration of this buffer ( might not be present on
+all devices )
+</td>
+</tr>
+<tr>
+<td><p><span class="term">struct timeval <em class="structfield"><code>capture_start_time</code></em>;</span></p></td>
+<td> the time when the capturing started on this
+buffer ( might not be supported on all devices )
+</td>
+</tr>
+<tr>
+<td><p><span class="term">unsigned char *<em class="structfield"><code>data</code></em>;</span></p></td>
+<td> the image data
+</td>
+</tr>
+<tr>
+<td><p><span class="term">size_t <em class="structfield"><code>buffer_size</code></em>;</span></p></td>
+<td> size of the memory buffer pointed to by data
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><a class="link" href="libunicap-unicap.html#unicap-buffer-type-t" title="enum unicap_buffer_type_t">unicap_buffer_type_t</a> <em class="structfield"><code>type</code></em>;</span></p></td>
+<td> 
+</td>
+</tr>
+<tr>
+<td><p><span class="term">unicap_buffer_flags_t <em class="structfield"><code>flags</code></em>;</span></p></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><p><span class="term">unsigned int <em class="structfield"><code>reserved</code></em>[7];</span></p></td>
+<td>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="enum unicap_property_flags_t">
+<a name="unicap-property-flags-t"></a><h3>enum unicap_property_flags_t</h3>
+<pre class="programlisting">typedef enum
+{
+   UNICAP_FLAGS_MANUAL              = 1ULL, 
+   UNICAP_FLAGS_AUTO                = (1ULL&lt;&lt;1ULL),
+   UNICAP_FLAGS_ONE_PUSH            = (1ULL&lt;&lt;2ULL),
+   UNICAP_FLAGS_READ_OUT            = (1ULL&lt;&lt;3ULL),
+   UNICAP_FLAGS_ON_OFF              = (1ULL&lt;&lt;4ULL),
+   UNICAP_FLAGS_READ_ONLY           = (1ULL&lt;&lt;5ULL),
+   UNICAP_FLAGS_FORMAT_CHANGE       = (1ULL&lt;&lt;6ULL),
+   UNICAP_FLAGS_WRITE_ONLY          = (1ULL&lt;&lt;7ULL),
+
+   UNICAP_FLAGS_CHECK_STEPPING      = (1ULL&lt;&lt;32ULL),
+   
+   UNICAP_FLAGS_DUMMY_VALUE         = (0xffffffffffffffffULL)
+} unicap_property_flags_t;
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2" title="unicap_property_range_t">
+<a name="unicap-property-range-t"></a><h3>unicap_property_range_t</h3>
+<pre class="programlisting">typedef struct {
+	double min;
+	double max;
+} unicap_property_range_t;
+</pre>
+<p>
+</p>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term">double <em class="structfield"><code>min</code></em>;</span></p></td>
+<td> minimum value
+</td>
+</tr>
+<tr>
+<td><p><span class="term">double <em class="structfield"><code>max</code></em>;</span></p></td>
+<td> maximum value
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="unicap_property_value_list_t">
+<a name="unicap-property-value-list-t"></a><h3>unicap_property_value_list_t</h3>
+<pre class="programlisting">typedef struct {
+	double *values;
+	int value_count;	
+} unicap_property_value_list_t;
+</pre>
+<p>
+</p>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term">double *<em class="structfield"><code>values</code></em>;</span></p></td>
+<td> array of values
+</td>
+</tr>
+<tr>
+<td><p><span class="term">int <em class="structfield"><code>value_count</code></em>;</span></p></td>
+<td> number of elements in values array
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="unicap_property_menu_t">
+<a name="unicap-property-menu-t"></a><h3>unicap_property_menu_t</h3>
+<pre class="programlisting">typedef struct {
+	char **menu_items;
+	int menu_item_count;
+} unicap_property_menu_t;
+</pre>
+<p>
+</p>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term">char **<em class="structfield"><code>menu_items</code></em>;</span></p></td>
+<td> an array of menu items
+</td>
+</tr>
+<tr>
+<td><p><span class="term">int <em class="structfield"><code>menu_item_count</code></em>;</span></p></td>
+<td> number of elements in the menu_items array
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="enum unicap_property_type_enum_t">
+<a name="unicap-property-type-enum-t"></a><h3>enum unicap_property_type_enum_t</h3>
+<pre class="programlisting">typedef enum 
+{
+	UNICAP_PROPERTY_TYPE_RANGE = 0,
+	UNICAP_PROPERTY_TYPE_VALUE_LIST,
+	UNICAP_PROPERTY_TYPE_MENU,
+	UNICAP_PROPERTY_TYPE_DATA,
+	UNICAP_PROPERTY_TYPE_FLAGS, 
+
+	UNICAP_PROPERTY_TYPE_UNKNOWN
+} unicap_property_type_enum_t;
+</pre>
+<p>
+</p>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><a name="UNICAP-PROPERTY-TYPE-RANGE--CAPS"></a><span class="term"><code class="literal">UNICAP_PROPERTY_TYPE_RANGE</code></span></p></td>
+<td> a property with a value in a given
+range
+</td>
+</tr>
+<tr>
+<td><p><a name="UNICAP-PROPERTY-TYPE-VALUE-LIST--CAPS"></a><span class="term"><code class="literal">UNICAP_PROPERTY_TYPE_VALUE_LIST</code></span></p></td>
+<td> a property with a value out of a
+list of values
+</td>
+</tr>
+<tr>
+<td><p><a name="UNICAP-PROPERTY-TYPE-MENU--CAPS"></a><span class="term"><code class="literal">UNICAP_PROPERTY_TYPE_MENU</code></span></p></td>
+<td> 
+</td>
+</tr>
+<tr>
+<td><p><a name="UNICAP-PROPERTY-TYPE-DATA--CAPS"></a><span class="term"><code class="literal">UNICAP_PROPERTY_TYPE_DATA</code></span></p></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><p><a name="UNICAP-PROPERTY-TYPE-FLAGS--CAPS"></a><span class="term"><code class="literal">UNICAP_PROPERTY_TYPE_FLAGS</code></span></p></td>
+<td> a property where only the flags are valid
+</td>
+</tr>
+<tr>
+<td><p><a name="UNICAP-PROPERTY-TYPE-UNKNOWN--CAPS"></a><span class="term"><code class="literal">UNICAP_PROPERTY_TYPE_UNKNOWN</code></span></p></td>
+<td>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="unicap_property_t">
+<a name="unicap-property-t"></a><h3>unicap_property_t</h3>
+<pre class="programlisting">typedef struct {
+      char identifier[128];
+      char category[128];
+      char unit[128];
+      
+      char **relations;
+      int relations_count;	
+      
+      union
+	    double value;
+	    char menu_item[128]; 
+      
+      
+      union	
+	    unicap_property_range_t range;
+	    unicap_property_value_list_t value_list;
+	    unicap_property_menu_t menu; 
+	    
+      
+      double stepping;
+      
+      unicap_property_type_enum_t type;	
+      unicap_property_flags_t flags;
+      unicap_property_flags_t flags_mask;
+      
+      void *property_data; 
+      size_t property_data_size;	
+} unicap_property_t;
+</pre>
+<p>
+</p>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term">char <em class="structfield"><code>identifier</code></em>[128];</span></p></td>
+<td>   unique textual identifier of this properties
+</td>
+</tr>
+<tr>
+<td><p><span class="term">char <em class="structfield"><code>category</code></em>[128];</span></p></td>
+<td>     a category for this property, for example: 'Lens Control' for zoom and focus properties
+</td>
+</tr>
+<tr>
+<td><p><span class="term">char <em class="structfield"><code>unit</code></em>[128];</span></p></td>
+<td>         optional unit, for example: 's' for Exposure
+denoting the Exposure time in seconds
+</td>
+</tr>
+<tr>
+<td><p><span class="term">char **<em class="structfield"><code>relations</code></em>;</span></p></td>
+<td>    properties that might their state or value when
+changing this property
+</td>
+</tr>
+<tr>
+<td><p><span class="term">int <em class="structfield"><code>relations_count</code></em>;</span></p></td>
+<td> size of the relations array
+</td>
+</tr>
+<tr>
+<td><p><span class="term">char <em class="structfield"><code>menu_item</code></em>[128];</span></p></td>
+<td>       for UNICAP_PROPERTY_TYPE_MENU properties: selected menu entry
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><a class="link" href="libunicap-unicap.html#unicap-property-value-list-t" title="unicap_property_value_list_t">unicap_property_value_list_t</a> <em class="structfield"><code>value_list</code></em>;</span></p></td>
+<td>      for UNICAP_PROPERTY_TYPE_VALUE_LIST properties: list
+of valid values
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><a class="link" href="libunicap-unicap.html#unicap-property-menu-t" title="unicap_property_menu_t">unicap_property_menu_t</a> <em class="structfield"><code>menu</code></em>;</span></p></td>
+<td>            for UNICAP_PROPERTY_TYPE_MENU properties: menu
+</td>
+</tr>
+<tr>
+<td><p><span class="term">double <em class="structfield"><code>stepping</code></em>;</span></p></td>
+<td>        for UNICAP_PROPERTY_TYPE_RANGE properties: stepping 
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><a class="link" href="libunicap-unicap.html#unicap-property-type-enum-t" title="enum unicap_property_type_enum_t">unicap_property_type_enum_t</a> <em class="structfield"><code>type</code></em>;</span></p></td>
+<td> the type of the property
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><a class="link" href="libunicap-unicap.html#unicap-property-flags-t" title="enum unicap_property_flags_t">unicap_property_flags_t</a> <em class="structfield"><code>flags</code></em>;</span></p></td>
+<td> when enumerated, this field contains the default flags for the property; for get/set operations, this 
+field contains the actual flags
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><a class="link" href="libunicap-unicap.html#unicap-property-flags-t" title="enum unicap_property_flags_t">unicap_property_flags_t</a> <em class="structfield"><code>flags_mask</code></em>;</span></p></td>
+<td> when enumerated, this field contains the allowed flags for the property; for get/set operations, this field acts as a mask
+</td>
+</tr>
+<tr>
+<td><p><span class="term">void *<em class="structfield"><code>property_data</code></em>;</span></p></td>
+<td> a pointer to an opaque data structure
+</td>
+</tr>
+<tr>
+<td><p><span class="term">size_t <em class="structfield"><code>property_data_size</code></em>;</span></p></td>
+<td> size of the data structure pointed at by property_data
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="enum unicap_event_t">
+<a name="unicap-event-t"></a><h3>enum unicap_event_t</h3>
+<pre class="programlisting">typedef enum 
+{
+	UNICAP_EVENT_FIRST = 0,
+	UNICAP_EVENT_DEVICE_REMOVED = 0, 
+	UNICAP_EVENT_NEW_DEVICE,
+	UNICAP_EVENT_NEW_FRAME, 
+	UNICAP_EVENT_DROP_FRAME, 
+	UNICAP_EVENT_LAST
+} unicap_event_t;
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2" title="UNICAP_FLAGS_MANUAL">
+<a name="UNICAP-FLAGS-MANUAL--CAPS"></a><h3>UNICAP_FLAGS_MANUAL</h3>
+<pre class="programlisting">#define UNICAP_FLAGS_MANUAL         (1ULL)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2" title="UNICAP_FLAGS_AUTO">
+<a name="UNICAP-FLAGS-AUTO--CAPS"></a><h3>UNICAP_FLAGS_AUTO</h3>
+<pre class="programlisting">#define UNICAP_FLAGS_AUTO           (1ULL&lt;&lt;1ULL)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2" title="UNICAP_FLAGS_ONE_PUSH">
+<a name="UNICAP-FLAGS-ONE-PUSH--CAPS"></a><h3>UNICAP_FLAGS_ONE_PUSH</h3>
+<pre class="programlisting">#define UNICAP_FLAGS_ONE_PUSH       (1ULL&lt;&lt;2ULL)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2" title="UNICAP_FLAGS_READ_OUT">
+<a name="UNICAP-FLAGS-READ-OUT--CAPS"></a><h3>UNICAP_FLAGS_READ_OUT</h3>
+<pre class="programlisting">#define UNICAP_FLAGS_READ_OUT       (1ULL&lt;&lt;3ULL)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2" title="UNICAP_FLAGS_ON_OFF">
+<a name="UNICAP-FLAGS-ON-OFF--CAPS"></a><h3>UNICAP_FLAGS_ON_OFF</h3>
+<pre class="programlisting">#define UNICAP_FLAGS_ON_OFF         (1ULL&lt;&lt;4ULL)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2" title="UNICAP_FLAGS_READ_ONLY">
+<a name="UNICAP-FLAGS-READ-ONLY--CAPS"></a><h3>UNICAP_FLAGS_READ_ONLY</h3>
+<pre class="programlisting">#define UNICAP_FLAGS_READ_ONLY      (1ULL&lt;&lt;5ULL)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2" title="UNICAP_FLAGS_FORMAT_CHANGE">
+<a name="UNICAP-FLAGS-FORMAT-CHANGE--CAPS"></a><h3>UNICAP_FLAGS_FORMAT_CHANGE</h3>
+<pre class="programlisting">#define UNICAP_FLAGS_FORMAT_CHANGE  (1ULL&lt;&lt;6ULL)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2" title="unicap_callback_t ()">
+<a name="unicap-callback-t"></a><h3>unicap_callback_t ()</h3>
+<pre class="programlisting">void                (*unicap_callback_t)                (<a class="link" href="libunicap-unicap.html#unicap-event-t" title="enum unicap_event_t">unicap_event_t</a> event,
+                                                         ...);</pre>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>event</code></em> :</span></p></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>...</code></em> :</span></p></td>
+<td>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="unicap_new_frame_callback_t ()">
+<a name="unicap-new-frame-callback-t"></a><h3>unicap_new_frame_callback_t ()</h3>
+<pre class="programlisting">void                (*unicap_new_frame_callback_t)      (<a class="link" href="libunicap-unicap.html#unicap-event-t" title="enum unicap_event_t">unicap_event_t</a> event,
+                                                         unicap_handle_t handle,
+                                                         <a class="link" href="libunicap-unicap.html#unicap-data-buffer-t" title="unicap_data_buffer_t">unicap_data_buffer_t</a> *buffer,
+                                                         void *user_ptr);</pre>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>event</code></em> :</span></p></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>handle</code></em> :</span></p></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>buffer</code></em> :</span></p></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>user_ptr</code></em> :</span></p></td>
+<td>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="unicap_drop_frame_callback_t ()">
+<a name="unicap-drop-frame-callback-t"></a><h3>unicap_drop_frame_callback_t ()</h3>
+<pre class="programlisting">void                (*unicap_drop_frame_callback_t)     (<a class="link" href="libunicap-unicap.html#unicap-event-t" title="enum unicap_event_t">unicap_event_t</a> event,
+                                                         unicap_handle_t handle,
+                                                         void *user_ptr);</pre>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>event</code></em> :</span></p></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>handle</code></em> :</span></p></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>user_ptr</code></em> :</span></p></td>
+<td>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="unicap_new_device_callback_t ()">
+<a name="unicap-new-device-callback-t"></a><h3>unicap_new_device_callback_t ()</h3>
+<pre class="programlisting">void                (*unicap_new_device_callback_t)     (<a class="link" href="libunicap-unicap.html#unicap-event-t" title="enum unicap_event_t">unicap_event_t</a> event,
+                                                         <a class="link" href="libunicap-unicap.html#unicap-device-t" title="unicap_device_t">unicap_device_t</a> *device,
+                                                         void *user_ptr);</pre>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>event</code></em> :</span></p></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>device</code></em> :</span></p></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>user_ptr</code></em> :</span></p></td>
+<td>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="unicap_check_version ()">
+<a name="unicap-check-version"></a><h3>unicap_check_version ()</h3>
+<pre class="programlisting">unicap_status_t     unicap_check_version                (unsigned int major,
+                                                         unsigned int minor,
+                                                         unsigned int micro);</pre>
+<p>
+Checks that the unicap library version is compatible with given
+version</p>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>major</code></em> :</span></p></td>
+<td> major version to check against
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>minor</code></em> :</span></p></td>
+<td> minor version to check against
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>micro</code></em> :</span></p></td>
+<td> micro version to check against
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td> TRUE if compatible
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="unicap_reenumerate_devices ()">
+<a name="unicap-reenumerate-devices"></a><h3>unicap_reenumerate_devices ()</h3>
+<pre class="programlisting">unicap_status_t     unicap_reenumerate_devices          (int *count);</pre>
+<p>
+Rebuild internal list of devices.</p>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>count</code></em> :</span></p></td>
+<td> if not NULL, receives number of devices found
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td> status
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="unicap_enumerate_devices ()">
+<a name="unicap-enumerate-devices"></a><h3>unicap_enumerate_devices ()</h3>
+<pre class="programlisting">unicap_status_t     unicap_enumerate_devices            (<a class="link" href="libunicap-unicap.html#unicap-device-t" title="unicap_device_t">unicap_device_t</a> *specifier,
+                                                         <a class="link" href="libunicap-unicap.html#unicap-device-t" title="unicap_device_t">unicap_device_t</a> *device,
+                                                         int index);</pre>
+<p>
+Enumerates currently connected video capture devices</p>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>specifier</code></em> :</span></p></td>
+<td> specifies which devices should be returned, or NULL
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>device</code></em> :</span></p></td>
+<td> receives the device
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>index</code></em> :</span></p></td>
+<td> number of the device to be enumerated
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td> status
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="unicap_open ()">
+<a name="unicap-open"></a><h3>unicap_open ()</h3>
+<pre class="programlisting">unicap_status_t     unicap_open                         (unicap_handle_t *handle,
+                                                         <a class="link" href="libunicap-unicap.html#unicap-device-t" title="unicap_device_t">unicap_device_t</a> *device);</pre>
+<p>
+Acquire a handle to a device.</p>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>handle</code></em> :</span></p></td>
+<td> receives the new handle
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>device</code></em> :</span></p></td>
+<td> device to open, as returned by <a class="link" href="libunicap-unicap.html#unicap-enumerate-devices" title="unicap_enumerate_devices ()"><span class="type">unicap_enumerate_devices</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td> status
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="unicap_register_callback ()">
+<a name="unicap-register-callback"></a><h3>unicap_register_callback ()</h3>
+<pre class="programlisting">unicap_status_t     unicap_register_callback            (unicap_handle_t handle,
+                                                         <a class="link" href="libunicap-unicap.html#unicap-event-t" title="enum unicap_event_t">unicap_event_t</a> event,
+                                                         <a class="link" href="libunicap-unicap.html#unicap-callback-t" title="unicap_callback_t ()">unicap_callback_t</a> callback,
+                                                         void *user_ptr);</pre>
+<p>
+</p>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>handle</code></em> :</span></p></td>
+<td> a handle
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>event</code></em> :</span></p></td>
+<td> event to register a callback for
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>callback</code></em> :</span></p></td>
+<td> the callback function to call when the event occurs
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>user_ptr</code></em> :</span></p></td>
+<td> user provided data that gets passed to the callback function
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="unicap_close ()">
+<a name="unicap-close"></a><h3>unicap_close ()</h3>
+<pre class="programlisting">unicap_status_t     unicap_close                        (unicap_handle_t handle);</pre>
+<p>
+Clsoing a handle decrements the reference count on the device. If
+the reference count is 0, all resources associated with the device
+get freed.</p>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>handle</code></em> :</span></p></td>
+<td> a handle
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td> status
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="unicap_get_device ()">
+<a name="unicap-get-device"></a><h3>unicap_get_device ()</h3>
+<pre class="programlisting">unicap_status_t     unicap_get_device                   (unicap_handle_t handle,
+                                                         <a class="link" href="libunicap-unicap.html#unicap-device-t" title="unicap_device_t">unicap_device_t</a> *device);</pre>
+<p>
+Gets the device controled by handle</p>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>handle</code></em> :</span></p></td>
+<td> a handle
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>device</code></em> :</span></p></td>
+<td> a pointer to the location where the device should be stored
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td> status
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="unicap_clone_handle ()">
+<a name="unicap-clone-handle"></a><h3>unicap_clone_handle ()</h3>
+<pre class="programlisting">unicap_handle_t     unicap_clone_handle                 (unicap_handle_t handle);</pre>
+<p>
+Copies the handle, increment the reference count</p>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>handle</code></em> :</span></p></td>
+<td> the handle to clone
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td> new handle
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="unicap_reenumerate_formats ()">
+<a name="unicap-reenumerate-formats"></a><h3>unicap_reenumerate_formats ()</h3>
+<pre class="programlisting">unicap_status_t     unicap_reenumerate_formats          (unicap_handle_t handle,
+                                                         int *count);</pre>
+<p>
+Re-create the list of formats supported by the device. Invalidates all data returned by prior calls 
+to <code class="function">unicap_emumerate_formats()</code> and <a class="link" href="libunicap-unicap.html#unicap-get-format" title="unicap_get_format ()"><code class="function">unicap_get_format()</code></a>.</p>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>handle</code></em> :</span></p></td>
+<td> A handle
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>count</code></em> :</span></p></td>
+<td> Receives the number of formats currently supported by the device. Might be NULL
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td> status
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="unicap_enumerate_formats ()">
+<a name="unicap-enumerate-formats"></a><h3>unicap_enumerate_formats ()</h3>
+<pre class="programlisting">unicap_status_t     unicap_enumerate_formats            (unicap_handle_t handle,
+                                                         <a class="link" href="libunicap-unicap.html#unicap-format-t" title="unicap_format_t">unicap_format_t</a> *specifier,
+                                                         <a class="link" href="libunicap-unicap.html#unicap-format-t" title="unicap_format_t">unicap_format_t</a> *format,
+                                                         int index);</pre>
+<p>
+Enumerate formats known to the device</p>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>handle</code></em> :</span></p></td>
+<td> A handle
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>specifier</code></em> :</span></p></td>
+<td> limits the enumerated formats to the ones matching the fields in specifier. Fields set to -1 in the specifier are ignored
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>format</code></em> :</span></p></td>
+<td> A pointer to allocated storage where the enumerated format shoudl be stored
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>index</code></em> :</span></p></td>
+<td> index of the format in the enumeration
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td> STATUS_NO_MORE_FORMATS: end of the list of matching formats has been reached
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="unicap_set_format ()">
+<a name="unicap-set-format"></a><h3>unicap_set_format ()</h3>
+<pre class="programlisting">unicap_status_t     unicap_set_format                   (unicap_handle_t handle,
+                                                         <a class="link" href="libunicap-unicap.html#unicap-format-t" title="unicap_format_t">unicap_format_t</a> *format);</pre>
+<p>
+Set a format.</p>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>handle</code></em> :</span></p></td>
+<td> a handle
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>format</code></em> :</span></p></td>
+<td> the format to set
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td> STATUS_NO_MATCH: given format not valid for device
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="unicap_get_format ()">
+<a name="unicap-get-format"></a><h3>unicap_get_format ()</h3>
+<pre class="programlisting">unicap_status_t     unicap_get_format                   (unicap_handle_t handle,
+                                                         <a class="link" href="libunicap-unicap.html#unicap-format-t" title="unicap_format_t">unicap_format_t</a> *format);</pre>
+<p>
+Get the current format</p>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>handle</code></em> :</span></p></td>
+<td> a handle
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>format</code></em> :</span></p></td>
+<td> a pointer to the location where the returned format should be stored
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td> status
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="unicap_reenumerate_properties ()">
+<a name="unicap-reenumerate-properties"></a><h3>unicap_reenumerate_properties ()</h3>
+<pre class="programlisting">unicap_status_t     unicap_reenumerate_properties       (unicap_handle_t handle,
+                                                         int *count);</pre>
+<p>
+Re-create the list of properties supported by the device. This invalidates all data returned by prior calls to 
+<a class="link" href="libunicap-unicap.html#unicap-enumerate-properties" title="unicap_enumerate_properties ()"><code class="function">unicap_enumerate_properties()</code></a> and <a class="link" href="libunicap-unicap.html#unicap-get-property" title="unicap_get_property ()"><code class="function">unicap_get_property()</code></a></p>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>handle</code></em> :</span></p></td>
+<td> a handle
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>count</code></em> :</span></p></td>
+<td> receives number of properties supported by the device. Might be NULL
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td> status
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="unicap_enumerate_properties ()">
+<a name="unicap-enumerate-properties"></a><h3>unicap_enumerate_properties ()</h3>
+<pre class="programlisting">unicap_status_t     unicap_enumerate_properties         (unicap_handle_t handle,
+                                                         <a class="link" href="libunicap-unicap.html#unicap-property-t" title="unicap_property_t">unicap_property_t</a> *specifier,
+                                                         <a class="link" href="libunicap-unicap.html#unicap-property-t" title="unicap_property_t">unicap_property_t</a> *property,
+                                                         int index);</pre>
+<p>
+Enumerate properties matching "specifier"</p>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>handle</code></em> :</span></p></td>
+<td> a handle
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>specifier</code></em> :</span></p></td>
+<td> specifier
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>property</code></em> :</span></p></td>
+<td> a pointer to the location where the enumerated property should be stored
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>index</code></em> :</span></p></td>
+<td> index of the property
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td> status
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="unicap_set_property ()">
+<a name="unicap-set-property"></a><h3>unicap_set_property ()</h3>
+<pre class="programlisting">unicap_status_t     unicap_set_property                 (unicap_handle_t handle,
+                                                         <a class="link" href="libunicap-unicap.html#unicap-property-t" title="unicap_property_t">unicap_property_t</a> *property);</pre>
+<p>
+Set a device property</p>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>handle</code></em> :</span></p></td>
+<td> a handle
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>property</code></em> :</span></p></td>
+<td> the property to set
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td> status
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="unicap_set_property_value ()">
+<a name="unicap-set-property-value"></a><h3>unicap_set_property_value ()</h3>
+<pre class="programlisting">unicap_status_t     unicap_set_property_value           (unicap_handle_t handle,
+                                                         char *identifier,
+                                                         double value);</pre>
+<p>
+Set a RANGE or VALUE_LIST property</p>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>handle</code></em> :</span></p></td>
+<td> A handle
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>identifier</code></em> :</span></p></td>
+<td> identifier of the property to set
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>value</code></em> :</span></p></td>
+<td> new value
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td> status
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="unicap_set_property_manual ()">
+<a name="unicap-set-property-manual"></a><h3>unicap_set_property_manual ()</h3>
+<pre class="programlisting">unicap_status_t     unicap_set_property_manual          (unicap_handle_t handle,
+                                                         char *identifier);</pre>
+<p>
+Sets a property to manual mode, disabling the automatic mode</p>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>handle</code></em> :</span></p></td>
+<td> A handle
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>identifier</code></em> :</span></p></td>
+<td> identifier of the property to set
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td> status
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="unicap_set_property_auto ()">
+<a name="unicap-set-property-auto"></a><h3>unicap_set_property_auto ()</h3>
+<pre class="programlisting">unicap_status_t     unicap_set_property_auto            (unicap_handle_t handle,
+                                                         char *identifier);</pre>
+<p>
+Sets the property to automatic mode</p>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>handle</code></em> :</span></p></td>
+<td> A handle
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>identifier</code></em> :</span></p></td>
+<td> identifier of the property to set
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td> status
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="unicap_set_property_one_push ()">
+<a name="unicap-set-property-one-push"></a><h3>unicap_set_property_one_push ()</h3>
+<pre class="programlisting">unicap_status_t     unicap_set_property_one_push        (unicap_handle_t handle,
+                                                         char *identifier);</pre>
+<p>
+Enable one push mode on a property</p>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>handle</code></em> :</span></p></td>
+<td> a handle
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>identifier</code></em> :</span></p></td>
+<td> identifier of the property to set
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td> status
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="unicap_get_property ()">
+<a name="unicap-get-property"></a><h3>unicap_get_property ()</h3>
+<pre class="programlisting">unicap_status_t     unicap_get_property                 (unicap_handle_t handle,
+                                                         <a class="link" href="libunicap-unicap.html#unicap-property-t" title="unicap_property_t">unicap_property_t</a> *property);</pre>
+<p>
+Get a device property</p>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>handle</code></em> :</span></p></td>
+<td> a handle
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>property</code></em> :</span></p></td>
+<td> a pointer to the location where the returned property should be stored
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td> status
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="unicap_get_property_value ()">
+<a name="unicap-get-property-value"></a><h3>unicap_get_property_value ()</h3>
+<pre class="programlisting">unicap_status_t     unicap_get_property_value           (unicap_handle_t handle,
+                                                         const char *identifier,
+                                                         double *value);</pre>
+<p>
+Returns the value of a property</p>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>handle</code></em> :</span></p></td>
+<td> a handle
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>identifier</code></em> :</span></p></td>
+<td> identifier of the property to query
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>value</code></em> :</span></p></td>
+<td> a pointer to the location where the value should be stored
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td> status
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="unicap_get_property_menu ()">
+<a name="unicap-get-property-menu"></a><h3>unicap_get_property_menu ()</h3>
+<pre class="programlisting">unicap_status_t     unicap_get_property_menu            (unicap_handle_t handle,
+                                                         const char *identifier,
+                                                         char **value);</pre>
+<p>
+Returns the menu string of a property. Property must be of
+UNICAP_PROPERTY_TYPE_MENU type. The returned string is owned by the
+unicap library and might be overwritten by subsequent calls to unicap_get_property_menu.</p>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>handle</code></em> :</span></p></td>
+<td> A handle
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>identifier</code></em> :</span></p></td>
+<td> identifier of the property to query
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>value</code></em> :</span></p></td>
+<td> pointer to store the string location
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td> status
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="unicap_get_property_auto ()">
+<a name="unicap-get-property-auto"></a><h3>unicap_get_property_auto ()</h3>
+<pre class="programlisting">unicap_status_t     unicap_get_property_auto            (unicap_handle_t handle,
+                                                         const char *identifier,
+                                                         int *enabled);</pre>
+<p>
+Retrieve the current property auto mode</p>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>handle</code></em> :</span></p></td>
+<td> a handle
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>identifier</code></em> :</span></p></td>
+<td> identifier of the property to query
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>enabled</code></em> :</span></p></td>
+<td> location to store the enabled flag
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td> status
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="unicap_start_capture ()">
+<a name="unicap-start-capture"></a><h3>unicap_start_capture ()</h3>
+<pre class="programlisting">unicap_status_t     unicap_start_capture                (unicap_handle_t handle);</pre>
+<p>
+Start the capture device. After this call, unicap_wait_buffer calls are allowed</p>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>handle</code></em> :</span></p></td>
+<td> a handle
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td> status
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="unicap_stop_capture ()">
+<a name="unicap-stop-capture"></a><h3>unicap_stop_capture ()</h3>
+<pre class="programlisting">unicap_status_t     unicap_stop_capture                 (unicap_handle_t handle);</pre>
+<p>
+Stop the capture device</p>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>handle</code></em> :</span></p></td>
+<td> A handle
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td> status
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="unicap_queue_buffer ()">
+<a name="unicap-queue-buffer"></a><h3>unicap_queue_buffer ()</h3>
+<pre class="programlisting">unicap_status_t     unicap_queue_buffer                 (unicap_handle_t handle,
+                                                         <a class="link" href="libunicap-unicap.html#unicap-data-buffer-t" title="unicap_data_buffer_t">unicap_data_buffer_t</a> *data_buffer);</pre>
+<p>
+Queue a buffer to be filled by the capture device. The queued
+buffer must not be touched ( especially not be freed ) until it is
+in the ready queue or dequeued. Supplied buffer must be at least of
+the buffer size returned by get_format</p>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>handle</code></em> :</span></p></td>
+<td> A handle
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>data_buffer</code></em> :</span></p></td>
+<td> A pointer to the buffer to queue
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td> status
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="unicap_dequeue_buffer ()">
+<a name="unicap-dequeue-buffer"></a><h3>unicap_dequeue_buffer ()</h3>
+<pre class="programlisting">unicap_status_t     unicap_dequeue_buffer               (unicap_handle_t handle,
+                                                         <a class="link" href="libunicap-unicap.html#unicap-data-buffer-t" title="unicap_data_buffer_t">unicap_data_buffer_t</a> **data_buffer);</pre>
+<p>
+Removes the first buffer from the queue. Depending on the
+device:Can only be called if the capture device is stopped.</p>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>handle</code></em> :</span></p></td>
+<td> A handle
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>data_buffer</code></em> :</span></p></td>
+<td> receives the dequeued buffer or NULL if no buffer was queued
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td> status
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="unicap_wait_buffer ()">
+<a name="unicap-wait-buffer"></a><h3>unicap_wait_buffer ()</h3>
+<pre class="programlisting">unicap_status_t     unicap_wait_buffer                  (unicap_handle_t handle,
+                                                         <a class="link" href="libunicap-unicap.html#unicap-data-buffer-t" title="unicap_data_buffer_t">unicap_data_buffer_t</a> **data_buffer);</pre>
+<p>
+Removes a buffer from the ready queue. If no buffer is available, this function blocks until a buffer got filled.</p>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>handle</code></em> :</span></p></td>
+<td> A handle
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>data_buffer</code></em> :</span></p></td>
+<td> A pointer to the location where the returned buffer should be stored
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td> status
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="unicap_poll_buffer ()">
+<a name="unicap-poll-buffer"></a><h3>unicap_poll_buffer ()</h3>
+<pre class="programlisting">unicap_status_t     unicap_poll_buffer                  (unicap_handle_t handle,
+                                                         int *count);</pre>
+<p>
+Poll for buffers in the fill queue</p>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>handle</code></em> :</span></p></td>
+<td> A handle
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>count</code></em> :</span></p></td>
+<td> A pointer to the location where return value should be stored
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td> status
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.11</div>
+</body>
+</html>

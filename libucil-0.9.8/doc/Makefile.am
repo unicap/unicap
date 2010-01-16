@@ -1,0 +1,3 @@
+SUBDIRS=libucil
+
+MAINTAINERCLEANFILES = Makefile.in

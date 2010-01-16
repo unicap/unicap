@@ -1,0 +1,58 @@
+<!-- ##### SECTION Title ##### -->
+ucil_version
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### MACRO UCIL_MAJOR_VERSION ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO UCIL_MINOR_VERSION ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO UCIL_MICRO_VERSION ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### VARIABLE ucil_major_version ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### VARIABLE ucil_minor_version ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### VARIABLE ucil_micro_version ##### -->
+<para>
+
+</para>
+
+

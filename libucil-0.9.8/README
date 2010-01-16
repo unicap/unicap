@@ -1,0 +1,77 @@
+unicap is a library to access different kinds of ( video ) capture
+devices.
+
+It uses a .so loading mechanism for the device layers so new device
+drivers can easily be added.
+
+unicap provides a simple yet flexible and powerfull API. The capture
+application is able to access very different kinds of capture devices
+and set all of their properties ( such as brightness/contrasst... )
+without the exact knowledge of the device.
+
+Currently unicap provides support for IIDC cameras, video-4-linux,
+video-4-linux-2 and video-to-firewire converters.
+
+
+ /Arne Caspari <arne@unicap-imaging.org>
+
+------------------------------------------------
+
+REQUIREMENTS: 
+
+ * Gtk+ 2.0 or newer for libunicapgtk
+
+ * libraw1394 0.10.0 or newer for dcam or vid21394 plugins
+
+
+QUICKSTART: 
+
+ * Have a look at the examples subdirectory!
+  
+   Note: Currently the examples expect the device to deliver UYVY
+	 color format
+   
+ * There is currently no API documentation. The API is simple
+   though. Have a look at the
+
+ * run the sdl_display example at first to see if you can get a live
+   video with your video capture device
+
+
+EXAMPLES: 
+  
+ Note: unicap needs to be installed with 'make install' to be able to
+       compile these examples
+
+ * sdl_display: Display a live video image using the SDL library
+ 
+ * xv_display: Displays a live video image using the Xv extension of
+               the X server. This example comes in it's own .tar.gz
+               archive and has it's own configure script. Untar the
+               xv_display-x.y.z.tar.gz file in any directory after
+               installing unicap and run the usual 
+               './configure && make'
+
+ * device_info: Lists all devices and properties. Use this to get an
+                idea how properties ( ie. brightnes, contrast etc )
+                work.
+
+ * unicapgtk_*: These examples use the GTK+ widget.
+
+
+KNOWN LIMITATIONS:
+
+ * v4l and v4l2 support is rudimentary. Tuners are currently not
+   supported.
+
+ * Time stamping might be inaccurate, depending on the plugin used to
+   access the device
+
+ 
+QUESTIONS / FEEDBACK: 
+
+ Provide feedback about working / not working devices and patches
+
+ Please contact me at arne@unicap-imaging.org 
+
+

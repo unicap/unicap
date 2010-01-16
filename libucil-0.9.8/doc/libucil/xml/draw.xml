@@ -1,0 +1,238 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" 
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<refentry id="libucil-draw">
+<refmeta>
+<refentrytitle role="top_of_page" id="libucil-draw.top_of_page">draw</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>LIBUCIL Library</refmiscinfo>
+</refmeta>
+
+<refnamediv>
+<refname>draw</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="libucil-draw.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>
+<link linkend="void">void</link>                <link linkend="ucil-convert-color">ucil_convert_color</link>                  (<link linkend="ucil-color-t">ucil_color_t</link> *src,
+                                                         <link linkend="ucil-color-t">ucil_color_t</link> *dest);
+<link linkend="void">void</link>                <link linkend="ucil-draw-box">ucil_draw_box</link>                       (<link linkend="unicap-data-buffer-t">unicap_data_buffer_t</link> *data_buffer,
+                                                         <link linkend="ucil-color-t">ucil_color_t</link> *color,
+                                                         <link linkend="int">int</link> x1,
+                                                         <link linkend="int">int</link> y1,
+                                                         <link linkend="int">int</link> x2,
+                                                         <link linkend="int">int</link> y2);
+<link linkend="void">void</link>                <link linkend="ucil-draw-line">ucil_draw_line</link>                      (<link linkend="unicap-data-buffer-t">unicap_data_buffer_t</link> *data_buffer,
+                                                         <link linkend="ucil-color-t">ucil_color_t</link> *color,
+                                                         <link linkend="int">int</link> x1,
+                                                         <link linkend="int">int</link> y1,
+                                                         <link linkend="int">int</link> x2,
+                                                         <link linkend="int">int</link> y2);
+<link linkend="void">void</link>                <link linkend="ucil-draw-rect">ucil_draw_rect</link>                      (<link linkend="unicap-data-buffer-t">unicap_data_buffer_t</link> *data_buffer,
+                                                         <link linkend="ucil-color-t">ucil_color_t</link> *color,
+                                                         <link linkend="int">int</link> x1,
+                                                         <link linkend="int">int</link> y1,
+                                                         <link linkend="int">int</link> x2,
+                                                         <link linkend="int">int</link> y2);
+<link linkend="void">void</link>                <link linkend="ucil-fill">ucil_fill</link>                           (<link linkend="unicap-data-buffer-t">unicap_data_buffer_t</link> *data_buffer,
+                                                         <link linkend="ucil-color-t">ucil_color_t</link> *color);
+<link linkend="void">void</link>                <link linkend="ucil-set-pixel">ucil_set_pixel</link>                      (<link linkend="unicap-data-buffer-t">unicap_data_buffer_t</link> *data_buffer,
+                                                         <link linkend="ucil-color-t">ucil_color_t</link> *color,
+                                                         <link linkend="int">int</link> x,
+                                                         <link linkend="int">int</link> y);
+</synopsis>
+</refsynopsisdiv>
+
+
+
+
+
+
+
+
+
+<refsect1 id="libucil-draw.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+
+<refsect1 id="libucil-draw.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="ucil-convert-color" role="function">
+<title>ucil_convert_color ()</title>
+<indexterm zone="ucil-convert-color"><primary sortas="ucil_convert_color">ucil_convert_color</primary></indexterm><programlisting><link linkend="void">void</link>                ucil_convert_color                  (<link linkend="ucil-color-t">ucil_color_t</link> *src,
+                                                         <link linkend="ucil-color-t">ucil_color_t</link> *dest);</programlisting>
+<para>
+Convert colors between colorspaces. The
+<structfield>colorspace</structfield> field of
+<structname>dest</structname> needs to be set to the target
+colorspace, like in this example:
+</para>
+<para>
+<informalexample>
+ <programlisting>
+src.colorspace = UCIL_COLORSPACE_RGB24;
+src.rgb24.r = 0xff;
+src.rgb24.g = 0xff;
+src.rgb24.b = 0xff;
+dest.colorspace = UCIL_COLORSPACE_YUV;
+ucil_convert_color( &amp;dest, &amp;src );
+ </programlisting>
+</informalexample></para>
+<para>
+</para><variablelist role="params">
+<varlistentry><term><parameter>src</parameter>&#160;:</term>
+<listitem><simpara> source color
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>dest</parameter>&#160;:</term>
+<listitem><simpara> target color
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2 id="ucil-draw-box" role="function">
+<title>ucil_draw_box ()</title>
+<indexterm zone="ucil-draw-box"><primary sortas="ucil_draw_box">ucil_draw_box</primary></indexterm><programlisting><link linkend="void">void</link>                ucil_draw_box                       (<link linkend="unicap-data-buffer-t">unicap_data_buffer_t</link> *data_buffer,
+                                                         <link linkend="ucil-color-t">ucil_color_t</link> *color,
+                                                         <link linkend="int">int</link> x1,
+                                                         <link linkend="int">int</link> y1,
+                                                         <link linkend="int">int</link> x2,
+                                                         <link linkend="int">int</link> y2);</programlisting>
+<para>
+Draws a box</para>
+<para>
+</para><variablelist role="params">
+<varlistentry><term><parameter>data_buffer</parameter>&#160;:</term>
+<listitem><simpara> target buffer
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>color</parameter>&#160;:</term>
+<listitem><simpara> an <link linkend="ucil-color-t"><type>ucil_color_t</type></link>. The colorspace of the color has to match
+the colorspace of the data_buffer.
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>x1</parameter>&#160;:</term>
+<listitem><simpara> starting point of the box ( x position )
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>y1</parameter>&#160;:</term>
+<listitem><simpara> starting point of the box ( y position )
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>x2</parameter>&#160;:</term>
+<listitem><simpara> endpoint of the box ( x position )
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>y2</parameter>&#160;:</term>
+<listitem><simpara> endpoint of the box ( y position )
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2 id="ucil-draw-line" role="function">
+<title>ucil_draw_line ()</title>
+<indexterm zone="ucil-draw-line"><primary sortas="ucil_draw_line">ucil_draw_line</primary></indexterm><programlisting><link linkend="void">void</link>                ucil_draw_line                      (<link linkend="unicap-data-buffer-t">unicap_data_buffer_t</link> *data_buffer,
+                                                         <link linkend="ucil-color-t">ucil_color_t</link> *color,
+                                                         <link linkend="int">int</link> x1,
+                                                         <link linkend="int">int</link> y1,
+                                                         <link linkend="int">int</link> x2,
+                                                         <link linkend="int">int</link> y2);</programlisting>
+<para>
+Draws a line on the data buffer. The endpoints are clipped to the
+buffer dimensions</para>
+<para>
+</para><variablelist role="params">
+<varlistentry><term><parameter>data_buffer</parameter>&#160;:</term>
+<listitem><simpara> target buffer
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>color</parameter>&#160;:</term>
+<listitem><simpara> an <link linkend="ucil-color-t"><type>ucil_color_t</type></link>. The colorspace of the color has to match
+the colorspace of the data_buffer.
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>x1</parameter>&#160;:</term>
+<listitem><simpara> starting point of the line ( x position )
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>y1</parameter>&#160;:</term>
+<listitem><simpara> starting point of the line ( y position )
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>x2</parameter>&#160;:</term>
+<listitem><simpara> endpoint of the line ( x position )
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>y2</parameter>&#160;:</term>
+<listitem><simpara> endpoint of the line ( y position )
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2 id="ucil-draw-rect" role="function">
+<title>ucil_draw_rect ()</title>
+<indexterm zone="ucil-draw-rect"><primary sortas="ucil_draw_rect">ucil_draw_rect</primary></indexterm><programlisting><link linkend="void">void</link>                ucil_draw_rect                      (<link linkend="unicap-data-buffer-t">unicap_data_buffer_t</link> *data_buffer,
+                                                         <link linkend="ucil-color-t">ucil_color_t</link> *color,
+                                                         <link linkend="int">int</link> x1,
+                                                         <link linkend="int">int</link> y1,
+                                                         <link linkend="int">int</link> x2,
+                                                         <link linkend="int">int</link> y2);</programlisting>
+<para>
+Draws a rectangle filled with color.</para>
+<para>
+</para><variablelist role="params">
+<varlistentry><term><parameter>data_buffer</parameter>&#160;:</term>
+<listitem><simpara> target buffer
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>color</parameter>&#160;:</term>
+<listitem><simpara> an <link linkend="ucil-color-t"><type>ucil_color_t</type></link>. The colorspace of the color has to match
+the colorspace of the data_buffer.
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>x1</parameter>&#160;:</term>
+<listitem><simpara> starting point of the rectangle ( x position )
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>y1</parameter>&#160;:</term>
+<listitem><simpara> starting point of the rectangle ( y position )
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>x2</parameter>&#160;:</term>
+<listitem><simpara> endpoint of the rectangle ( x position )
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>y2</parameter>&#160;:</term>
+<listitem><simpara> endpoint of the rectangle ( y position )
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2 id="ucil-fill" role="function">
+<title>ucil_fill ()</title>
+<indexterm zone="ucil-fill"><primary sortas="ucil_fill">ucil_fill</primary></indexterm><programlisting><link linkend="void">void</link>                ucil_fill                           (<link linkend="unicap-data-buffer-t">unicap_data_buffer_t</link> *data_buffer,
+                                                         <link linkend="ucil-color-t">ucil_color_t</link> *color);</programlisting>
+<para>
+Fill the buffer with a color.</para>
+<para>
+</para><variablelist role="params">
+<varlistentry><term><parameter>data_buffer</parameter>&#160;:</term>
+<listitem><simpara> target buffer
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>color</parameter>&#160;:</term>
+<listitem><simpara> an <link linkend="ucil-color-t"><type>ucil_color_t</type></link>. The colorspace of the color has to match
+the colorspace of the data_buffer.
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2 id="ucil-set-pixel" role="function">
+<title>ucil_set_pixel ()</title>
+<indexterm zone="ucil-set-pixel"><primary sortas="ucil_set_pixel">ucil_set_pixel</primary></indexterm><programlisting><link linkend="void">void</link>                ucil_set_pixel                      (<link linkend="unicap-data-buffer-t">unicap_data_buffer_t</link> *data_buffer,
+                                                         <link linkend="ucil-color-t">ucil_color_t</link> *color,
+                                                         <link linkend="int">int</link> x,
+                                                         <link linkend="int">int</link> y);</programlisting>
+<para>
+Draws a pixel on the data buffer.</para>
+<para>
+</para><variablelist role="params">
+<varlistentry><term><parameter>data_buffer</parameter>&#160;:</term>
+<listitem><simpara> target buffer 
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>color</parameter>&#160;:</term>
+<listitem><simpara> an <link linkend="ucil-color-t"><type>ucil_color_t</type></link>. The colorspace of the color has to match
+the colorspace of the data_buffer.
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>x</parameter>&#160;:</term>
+<listitem><simpara> x position
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>y</parameter>&#160;:</term>
+<listitem><simpara> y position
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+
+</refsect1>
+
+
+
+
+</refentry>

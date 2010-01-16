@@ -1,0 +1,557 @@
+<!-- ##### SECTION Title ##### -->
+unicap
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### ENUM unicap_buffer_type_t ##### -->
+<para>
+
+</para>
+
+@UNICAP_BUFFER_TYPE_USER: 
+@UNICAP_BUFFER_TYPE_SYSTEM: 
+
+<!-- ##### STRUCT unicap_device_t ##### -->
+<para>
+
+</para>
+
+@identifier: 
+@model_name: 
+@vendor_name: 
+@vendor_id: 
+@cpi_layer: 
+@device: 
+@flags: 
+
+<!-- ##### STRUCT unicap_rect_t ##### -->
+<para>
+
+</para>
+
+@x: 
+@y: 
+@width: 
+@height: 
+
+<!-- ##### STRUCT unicap_format_t ##### -->
+<para>
+
+</para>
+
+@identifier: 
+@size: 
+@min_size: 
+@max_size: 
+@h_stepping: 
+@v_stepping: 
+@sizes: 
+@size_count: 
+@bpp: 
+@fourcc: 
+@flags: 
+@buffer_types: 
+@system_buffer_count: 
+@buffer_size: 
+@buffer_type: 
+
+<!-- ##### STRUCT unicap_data_buffer_t ##### -->
+<para>
+
+</para>
+
+@format: 
+@frame_number: 
+@fill_time: 
+@duration: 
+@capture_start_time: 
+@data: 
+@buffer_size: 
+@type: 
+@flags: 
+@reserved: 
+
+<!-- ##### ENUM unicap_property_flags_t ##### -->
+<para>
+
+</para>
+
+@UNICAP_FLAGS_MANUAL: 
+@UNICAP_FLAGS_AUTO: 
+@UNICAP_FLAGS_ONE_PUSH: 
+@UNICAP_FLAGS_READ_OUT: 
+@UNICAP_FLAGS_ON_OFF: 
+@UNICAP_FLAGS_READ_ONLY: 
+@UNICAP_FLAGS_FORMAT_CHANGE: 
+@UNICAP_FLAGS_WRITE_ONLY: 
+@UNICAP_FLAGS_CHECK_STEPPING: 
+@UNICAP_FLAGS_DUMMY_VALUE: 
+
+<!-- ##### STRUCT unicap_property_range_t ##### -->
+<para>
+
+</para>
+
+@min: 
+@max: 
+
+<!-- ##### STRUCT unicap_property_value_list_t ##### -->
+<para>
+
+</para>
+
+@values: 
+@value_count: 
+
+<!-- ##### STRUCT unicap_property_menu_t ##### -->
+<para>
+
+</para>
+
+@menu_items: 
+@menu_item_count: 
+
+<!-- ##### ENUM unicap_property_type_enum_t ##### -->
+<para>
+
+</para>
+
+@UNICAP_PROPERTY_TYPE_RANGE: 
+@UNICAP_PROPERTY_TYPE_VALUE_LIST: 
+@UNICAP_PROPERTY_TYPE_MENU: 
+@UNICAP_PROPERTY_TYPE_DATA: 
+@UNICAP_PROPERTY_TYPE_FLAGS: 
+@UNICAP_PROPERTY_TYPE_UNKNOWN: 
+
+<!-- ##### STRUCT unicap_property_t ##### -->
+<para>
+
+</para>
+
+@identifier: 
+@category: 
+@unit: 
+@relations: 
+@relations_count: 
+@menu_item: 
+@value_list: 
+@menu: 
+@stepping: 
+@type: 
+@flags: 
+@flags_mask: 
+@property_data: 
+@property_data_size: 
+
+<!-- ##### ENUM unicap_event_t ##### -->
+<para>
+
+</para>
+
+@UNICAP_EVENT_FIRST: 
+@UNICAP_EVENT_DEVICE_REMOVED: 
+@UNICAP_EVENT_NEW_DEVICE: 
+@UNICAP_EVENT_NEW_FRAME: 
+@UNICAP_EVENT_DROP_FRAME: 
+@UNICAP_EVENT_LAST: 
+
+<!-- ##### MACRO UNICAP_FLAGS_MANUAL ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO UNICAP_FLAGS_AUTO ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO UNICAP_FLAGS_ONE_PUSH ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO UNICAP_FLAGS_READ_OUT ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO UNICAP_FLAGS_ON_OFF ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO UNICAP_FLAGS_READ_ONLY ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO UNICAP_FLAGS_FORMAT_CHANGE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### USER_FUNCTION unicap_callback_t ##### -->
+<para>
+
+</para>
+
+@event: 
+@Varargs: 
+
+
+<!-- ##### USER_FUNCTION unicap_new_frame_callback_t ##### -->
+<para>
+
+</para>
+
+@event: 
+@handle: 
+@buffer: 
+@user_ptr: 
+
+
+<!-- ##### USER_FUNCTION unicap_drop_frame_callback_t ##### -->
+<para>
+
+</para>
+
+@event: 
+@handle: 
+@user_ptr: 
+
+
+<!-- ##### USER_FUNCTION unicap_new_device_callback_t ##### -->
+<para>
+
+</para>
+
+@event: 
+@device: 
+@user_ptr: 
+
+
+<!-- ##### FUNCTION unicap_check_version ##### -->
+<para>
+
+</para>
+
+@major: 
+@minor: 
+@micro: 
+@Returns: 
+
+
+<!-- ##### FUNCTION unicap_reenumerate_devices ##### -->
+<para>
+
+</para>
+
+@count: 
+@Returns: 
+
+
+<!-- ##### FUNCTION unicap_enumerate_devices ##### -->
+<para>
+
+</para>
+
+@specifier: 
+@device: 
+@index: 
+@Returns: 
+
+
+<!-- ##### FUNCTION unicap_open ##### -->
+<para>
+
+</para>
+
+@handle: 
+@device: 
+@Returns: 
+
+
+<!-- ##### FUNCTION unicap_register_callback ##### -->
+<para>
+
+</para>
+
+@handle: 
+@event: 
+@callback: 
+@user_ptr: 
+@Returns: 
+
+
+<!-- ##### FUNCTION unicap_close ##### -->
+<para>
+
+</para>
+
+@handle: 
+@Returns: 
+
+
+<!-- ##### FUNCTION unicap_get_device ##### -->
+<para>
+
+</para>
+
+@handle: 
+@device: 
+@Returns: 
+
+
+<!-- ##### FUNCTION unicap_clone_handle ##### -->
+<para>
+
+</para>
+
+@handle: 
+@Returns: 
+
+
+<!-- ##### FUNCTION unicap_reenumerate_formats ##### -->
+<para>
+
+</para>
+
+@handle: 
+@count: 
+@Returns: 
+
+
+<!-- ##### FUNCTION unicap_enumerate_formats ##### -->
+<para>
+
+</para>
+
+@handle: 
+@specifier: 
+@format: 
+@index: 
+@Returns: 
+
+
+<!-- ##### FUNCTION unicap_set_format ##### -->
+<para>
+
+</para>
+
+@handle: 
+@format: 
+@Returns: 
+
+
+<!-- ##### FUNCTION unicap_get_format ##### -->
+<para>
+
+</para>
+
+@handle: 
+@format: 
+@Returns: 
+
+
+<!-- ##### FUNCTION unicap_reenumerate_properties ##### -->
+<para>
+
+</para>
+
+@handle: 
+@count: 
+@Returns: 
+
+
+<!-- ##### FUNCTION unicap_enumerate_properties ##### -->
+<para>
+
+</para>
+
+@handle: 
+@specifier: 
+@property: 
+@index: 
+@Returns: 
+
+
+<!-- ##### FUNCTION unicap_set_property ##### -->
+<para>
+
+</para>
+
+@handle: 
+@property: 
+@Returns: 
+
+
+<!-- ##### FUNCTION unicap_set_property_value ##### -->
+<para>
+
+</para>
+
+@handle: 
+@identifier: 
+@value: 
+@Returns: 
+
+
+<!-- ##### FUNCTION unicap_set_property_manual ##### -->
+<para>
+
+</para>
+
+@handle: 
+@identifier: 
+@Returns: 
+
+
+<!-- ##### FUNCTION unicap_set_property_auto ##### -->
+<para>
+
+</para>
+
+@handle: 
+@identifier: 
+@Returns: 
+
+
+<!-- ##### FUNCTION unicap_set_property_one_push ##### -->
+<para>
+
+</para>
+
+@handle: 
+@identifier: 
+@Returns: 
+
+
+<!-- ##### FUNCTION unicap_get_property ##### -->
+<para>
+
+</para>
+
+@handle: 
+@property: 
+@Returns: 
+
+
+<!-- ##### FUNCTION unicap_get_property_value ##### -->
+<para>
+
+</para>
+
+@handle: 
+@identifier: 
+@value: 
+@Returns: 
+
+
+<!-- ##### FUNCTION unicap_get_property_menu ##### -->
+<para>
+
+</para>
+
+@handle: 
+@identifier: 
+@value: 
+@Returns: 
+
+
+<!-- ##### FUNCTION unicap_get_property_auto ##### -->
+<para>
+
+</para>
+
+@handle: 
+@identifier: 
+@enabled: 
+@Returns: 
+
+
+<!-- ##### FUNCTION unicap_start_capture ##### -->
+<para>
+
+</para>
+
+@handle: 
+@Returns: 
+
+
+<!-- ##### FUNCTION unicap_stop_capture ##### -->
+<para>
+
+</para>
+
+@handle: 
+@Returns: 
+
+
+<!-- ##### FUNCTION unicap_queue_buffer ##### -->
+<para>
+
+</para>
+
+@handle: 
+@data_buffer: 
+@Returns: 
+
+
+<!-- ##### FUNCTION unicap_dequeue_buffer ##### -->
+<para>
+
+</para>
+
+@handle: 
+@data_buffer: 
+@Returns: 
+
+
+<!-- ##### FUNCTION unicap_wait_buffer ##### -->
+<para>
+
+</para>
+
+@handle: 
+@data_buffer: 
+@Returns: 
+
+
+<!-- ##### FUNCTION unicap_poll_buffer ##### -->
+<para>
+
+</para>
+
+@handle: 
+@count: 
+@Returns: 
+
+

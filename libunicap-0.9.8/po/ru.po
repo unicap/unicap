@@ -1,0 +1,426 @@
+# translation of unicap.
+# Copyright (C) Arne Caspari
+# This file is distributed under the same license as the unicap package.
+# Arne Caspari <arne@unicap-imaging.org>, 2008.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: libunicap 0.2.23\n"
+"Report-Msgid-Bugs-To: arne@unicap-imaging.org\n"
+"POT-Creation-Date: 2008-07-21 17:12+0400\n"
+"PO-Revision-Date: 2008-07-21 17:22+0300\n"
+"Last-Translator: Yury Aliaev <mutabor@altlinux.org>\n"
+"Language-Team: Russian <ru@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../libucil/ucil_theora.c:150
+msgid "Failed to initialize audio stream"
+msgstr "Ошибка инициализации звукового потока"
+
+#: ../libucil/ucil_theora.c:160
+msgid "Failed to initialize audio encoder"
+msgstr "Ошибка инициализации кодировщика звука"
+
+#: ../libucil/ucil_theora.c:184
+#: ../libucil/ucil_theora.c:194
+#: ../libucil/ucil_theora.c:208
+#: ../libucil/ucil_theora.c:220
+#: ../libucil/ucil_theora.c:264
+#: ../libucil/ucil_theora.c:276
+#: ../libucil/ucil_theora.c:293
+msgid "Invalid video stream"
+msgstr "Неверный видеопоток "
+
+#: ../libucil/ucil_theora.c:238
+msgid "Could not create audio stream"
+msgstr "Невозможно создать звуковой поток"
+
+#: ../libunicapgtk/unicapgtk_device_property.c:664
+msgid "Auto"
+msgstr "Авто"
+
+#: ../libunicapgtk/unicapgtk_device_property.c:677
+msgid "One Push"
+msgstr "Одно нажатие"
+
+#: ../libunicapgtk/unicapgtk_device_property.c:854
+msgid "Enabled"
+msgstr "Используется"
+
+#: ../libunicapgtk/unicapgtk_property_dialog.c:521
+msgid "Update"
+msgstr "Обновить"
+
+#: ../libunicapgtk/unicapgtk_property_dialog.c:530
+msgid "Defaults"
+msgstr "Параметры по умолчанию"
+
+#: ../cpi/v4l2/v4l2.c:60
+#: ../cpi/v4l2/v4l2_i18n_strings.h:39
+msgid "video source"
+msgstr "источник видеосигнала"
+
+#: ../cpi/v4l2/v4l2.c:61
+msgid "video norm"
+msgstr ""
+
+#: ../cpi/v4l2/v4l2.c:62
+#: ../cpi/v4l2/v4l2_i18n_strings.h:22
+#: ../cpi/dcam/dcam_property_table.h:952
+msgid "frame rate"
+msgstr "частота кадров"
+
+#: ../cpi/v4l2/v4l2.c:199
+msgid "STK-1135 USB2 Camera Controller"
+msgstr "Контроллер камеры STK-1135 USB2"
+
+#: ../cpi/v4l2/v4l2.c:200
+msgid "DFx 41"
+msgstr "DFx 41"
+
+#: ../cpi/v4l2/v4l2.c:1167
+msgid "source"
+msgstr "источник"
+
+#: ../cpi/v4l2/v4l2.c:1305
+#: ../cpi/v4l2/v4l2.c:1412
+msgid "video"
+msgstr "видео"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:14
+msgid "anti-flicking"
+msgstr "устранение мерцания"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:15
+msgid "auto exposure/gain"
+msgstr "автоматическая экспозиция/усиление"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:16
+msgid "auto white balance"
+msgstr "автоматический баланс белого"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:17
+msgid "Brightness"
+msgstr "Яркость"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:18
+#: ../cpi/dcam/dcam_property_table.h:198
+msgid "brightness"
+msgstr "яркость"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:19
+msgid "Contrast"
+msgstr "Контрастность"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:20
+msgid "contrast"
+msgstr "контрастность"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:21
+msgid "Exposure, Auto"
+msgstr "Автоматическая экспозиция"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:23
+msgid "Gain"
+msgstr "Усиление"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:24
+#: ../cpi/dcam/dcam_property_table.h:631
+msgid "gain"
+msgstr "усиление"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:25
+msgid "Gamma"
+msgstr "Гамма"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:26
+#: ../cpi/dcam/dcam_property_table.h:576
+msgid "gamma"
+msgstr "гамма"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:27
+msgid "horizontal flip"
+msgstr "отражение по горизонтали"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:28
+msgid "Hue"
+msgstr "Оттенок"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:29
+#: ../cpi/dcam/dcam_property_table.h:522
+msgid "hue"
+msgstr "оттенок"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:30
+msgid "Power Line Frequency"
+msgstr "Частота шины питания"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:31
+msgid "resolution"
+msgstr "разрешение"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:32
+msgid "Saturation"
+msgstr "Насыщение"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:33
+#: ../cpi/dcam/dcam_property_table.h:549
+msgid "saturation"
+msgstr "насыщение"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:34
+msgid "Sharpness"
+msgstr "Резкость"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:35
+#: ../cpi/dcam/dcam_property_table.h:414
+msgid "sharpness"
+msgstr "резкость"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:36
+msgid "Shutter"
+msgstr "Затвор"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:37
+#: ../cpi/v4l2/tiseuvccam.c:150
+#: ../cpi/v4l2/tisuvccam.c:476
+#: ../cpi/dcam/dcam_property_table.h:603
+msgid "shutter"
+msgstr "затвор"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:38
+msgid "vertical flip"
+msgstr "Отражение по вертикали"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:40
+msgid "White Balance Temperature, Auto"
+msgstr "Автоматическая балансировка цветовой температуры"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:41
+msgid "White Balance Temperature"
+msgstr "Цветовая температура"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:43
+msgid "YUV 4:2:2 (YUYV)"
+msgstr "YUV 4:2:2 (YUYV)"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:44
+msgid "Uncompressed"
+msgstr "Несжатое"
+
+#: ../cpi/v4l2/tiseuvccam.c:132
+#: ../cpi/v4l2/tisuvccam.c:282
+msgid "trigger"
+msgstr "триггер"
+
+#: ../cpi/v4l2/tiseuvccam.c:133
+#: ../cpi/v4l2/tisuvccam.c:283
+msgid "device"
+msgstr "Устройство"
+
+#: ../cpi/v4l2/tiseuvccam.c:151
+#: ../cpi/v4l2/tisuvccam.c:143
+#: ../cpi/v4l2/tisuvccam.c:171
+#: ../cpi/v4l2/tisuvccam.c:227
+#: ../cpi/v4l2/tisuvccam.c:255
+#: ../cpi/v4l2/tisuvccam.c:312
+#: ../cpi/v4l2/tisuvccam.c:477
+#: ../cpi/dcam/dcam_property_table.h:47
+msgid "exposure"
+msgstr "экспозиция"
+
+#: ../cpi/v4l2/tisuvccam.c:142
+msgid "auto shutter"
+msgstr "автоматический затвор"
+
+#: ../cpi/v4l2/tisuvccam.c:170
+msgid "auto gain"
+msgstr "автоматическое усиление"
+
+#: ../cpi/v4l2/tisuvccam.c:198
+msgid "one push wb"
+msgstr "Авто баланс белого"
+
+#: ../cpi/v4l2/tisuvccam.c:199
+msgid "color"
+msgstr "цвет"
+
+#: ../cpi/v4l2/tisuvccam.c:226
+msgid "auto exposure reference"
+msgstr ""
+
+#: ../cpi/v4l2/tisuvccam.c:254
+msgid "auto shutter maximum"
+msgstr "макс. значение автовыдержки"
+
+#: ../cpi/v4l2/tisuvccam.c:256
+#: ../cpi/v4l2/tisuvccam.c:478
+msgid "s"
+msgstr "с"
+
+#: ../cpi/v4l2/tisuvccam.c:311
+msgid "auto exposure average frames"
+msgstr ""
+
+#: ../cpi/dcam/dcam_property_table.h:34
+msgid "Video"
+msgstr "Видео"
+
+#: ../cpi/dcam/dcam_property_table.h:35
+msgid "Exposure"
+msgstr "Экспозиция"
+
+#: ../cpi/dcam/dcam_property_table.h:36
+msgid "Lens Control"
+msgstr "Управление объективом"
+
+#: ../cpi/dcam/dcam_property_table.h:37
+msgid "Color"
+msgstr "Цвет"
+
+#: ../cpi/dcam/dcam_property_table.h:38
+msgid "Device"
+msgstr "Устройство"
+
+#: ../cpi/dcam/dcam_property_table.h:44
+msgid "constant low"
+msgstr "постоянный низкий уровень"
+
+#: ../cpi/dcam/dcam_property_table.h:45
+msgid "constant high"
+msgstr "постоянный высокий уровень"
+
+#: ../cpi/dcam/dcam_property_table.h:46
+msgid "fixed duration"
+msgstr "постоянная длительность"
+
+#: ../cpi/dcam/dcam_property_table.h:52
+msgid "active low"
+msgstr "активный уровень \"0\""
+
+#: ../cpi/dcam/dcam_property_table.h:53
+msgid "active high"
+msgstr "активный уровень \"1\""
+
+#: ../cpi/dcam/dcam_property_table.h:142
+msgid "free running"
+msgstr "свободная работа"
+
+#: ../cpi/dcam/dcam_property_table.h:143
+msgid "mode 0"
+msgstr "режим 0"
+
+#: ../cpi/dcam/dcam_property_table.h:144
+msgid "mode 1"
+msgstr "режим 1"
+
+#: ../cpi/dcam/dcam_property_table.h:145
+msgid "mode 2"
+msgstr "режим 2"
+
+#: ../cpi/dcam/dcam_property_table.h:146
+msgid "mode 3"
+msgstr "режим 3"
+
+#: ../cpi/dcam/dcam_property_table.h:151
+msgid "falling edge"
+msgstr "спад"
+
+#: ../cpi/dcam/dcam_property_table.h:152
+msgid "rising edge"
+msgstr "фронт"
+
+#: ../cpi/dcam/dcam_property_table.h:279
+msgid "strobe_mode"
+msgstr "режим стробирования"
+
+#: ../cpi/dcam/dcam_property_table.h:305
+msgid "strobe_duration"
+msgstr "длительность строба"
+
+#: ../cpi/dcam/dcam_property_table.h:332
+msgid "strobe_delay"
+msgstr "задержка строба"
+
+#: ../cpi/dcam/dcam_property_table.h:359
+msgid "strobe_polarity"
+msgstr "полярность строба"
+
+#: ../cpi/dcam/dcam_property_table.h:387
+msgid "auto_exposure"
+msgstr "автоматическая экспозиция"
+
+#: ../cpi/dcam/dcam_property_table.h:441
+msgid "white_balance_mode"
+msgstr "режим баланса белого"
+
+#: ../cpi/dcam/dcam_property_table.h:468
+msgid "white_balance_u"
+msgstr "баланс белого u"
+
+#: ../cpi/dcam/dcam_property_table.h:495
+msgid "white_balance_v"
+msgstr "баланс белого v"
+
+#: ../cpi/dcam/dcam_property_table.h:658
+msgid "iris"
+msgstr "диафрагма"
+
+#: ../cpi/dcam/dcam_property_table.h:685
+msgid "focus"
+msgstr "фокус"
+
+#: ../cpi/dcam/dcam_property_table.h:712
+msgid "temperature"
+msgstr "температура"
+
+#: ../cpi/dcam/dcam_property_table.h:740
+msgid "software trigger"
+msgstr "программный триггер"
+
+#: ../cpi/dcam/dcam_property_table.h:767
+msgid "trigger_mode"
+msgstr "триггерный режим"
+
+#: ../cpi/dcam/dcam_property_table.h:791
+msgid "trigger_polarity"
+msgstr "полярность триггера"
+
+#: ../cpi/dcam/dcam_property_table.h:815
+msgid "zoom"
+msgstr "приближение"
+
+#. TRANSLATORS: Lens pan
+#: ../cpi/dcam/dcam_property_table.h:843
+msgid "pan"
+msgstr "панорамирование"
+
+#. TRANSLATORS: Lens tilt
+#: ../cpi/dcam/dcam_property_table.h:871
+msgid "tilt"
+msgstr "сдвиг"
+
+#: ../cpi/dcam/dcam_property_table.h:898
+msgid "optical_filter"
+msgstr "оптический фильтр"
+
+#: ../cpi/dcam/dcam_property_table.h:925
+msgid "capture_quality"
+msgstr "качество записи"
+
+#. TRANSLATORS: Camera
+#. hardware register
+#: ../cpi/dcam/dcam_property_table.h:981
+msgid "register"
+msgstr "регистр"
+
+#: ../cpi/dcam/dcam_property_table.h:1008
+msgid "timeout"
+msgstr "время ожидания"
+
+#: ../cpi/dcam/dcam_property_table.h:1034
+msgid "gpio"
+msgstr "входы/выходы"
+

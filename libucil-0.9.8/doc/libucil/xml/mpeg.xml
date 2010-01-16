@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" 
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<refentry id="libucil-mpeg">
+<refmeta>
+<refentrytitle role="top_of_page" id="libucil-mpeg.top_of_page">mpeg</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>LIBUCIL Library</refmiscinfo>
+</refmeta>
+
+<refnamediv>
+<refname>mpeg</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="libucil-mpeg.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>
+extern              PixelFormatFourccMap *<link linkend="PixelFormatFourccs">PixelFormatFourccs</link>;
+extern              const int <link linkend="ucil-NumPixelFormatFourccs">ucil_NumPixelFormatFourccs</link>;
+extern              int *<link linkend="PixelFormatBPP">PixelFormatBPP</link>;
+</synopsis>
+</refsynopsisdiv>
+
+
+
+
+
+
+
+
+
+<refsect1 id="libucil-mpeg.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+
+<refsect1 id="libucil-mpeg.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="PixelFormatFourccs" role="variable">
+<title>PixelFormatFourccs</title>
+<indexterm zone="PixelFormatFourccs"><primary sortas="PixelFormatFourccs">PixelFormatFourccs</primary></indexterm><programlisting>extern PixelFormatFourccMap *PixelFormatFourccs;
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="ucil-NumPixelFormatFourccs" role="variable">
+<title>ucil_NumPixelFormatFourccs</title>
+<indexterm zone="ucil-NumPixelFormatFourccs"><primary sortas="ucil_NumPixelFormatFourccs">ucil_NumPixelFormatFourccs</primary></indexterm><programlisting>extern const int ucil_NumPixelFormatFourccs;
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="PixelFormatBPP" role="variable">
+<title>PixelFormatBPP</title>
+<indexterm zone="PixelFormatBPP"><primary sortas="PixelFormatBPP">PixelFormatBPP</primary></indexterm><programlisting>extern int *PixelFormatBPP;
+</programlisting>
+<para>
+</para></refsect2>
+
+</refsect1>
+
+
+
+
+</refentry>

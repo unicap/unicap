@@ -1,0 +1,291 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2009-10-07 18:29+0200\n"
+"Last-Translator: Niki Kovacs <contact@kikinovak.net>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../libunicapgtk/unicapgtk_device_property.c:654
+msgid "Auto"
+msgstr "Auto"
+
+#: ../libunicapgtk/unicapgtk_device_property.c:667
+msgid "One Push"
+msgstr "Unique"
+
+#: ../cpi/v4l2/v4l2.c:55
+#: ../cpi/v4l2/v4l2_i18n_strings.h:35
+msgid "video source"
+msgstr "Source vidéo"
+
+#: ../cpi/v4l2/v4l2.c:56
+msgid "video norm"
+msgstr "Norme vidéo"
+
+#: ../cpi/v4l2/v4l2.c:57
+#: ../cpi/v4l2/v4l2_i18n_strings.h:22
+#: ../cpi/dcam/dcam_property_table.h:887
+msgid "frame rate"
+msgstr "Taux d'images"
+
+#: ../cpi/v4l2/v4l2.c:131
+msgid "STK-1135 USB2 Camera Controller"
+msgstr "Contrôleur caméra STK-1135 USB2"
+
+#: ../cpi/v4l2/v4l2.c:132
+msgid "UVC Camera (eb1a:2761)"
+msgstr "Caméra UVC"
+
+#: ../cpi/v4l2/v4l2.c:1040
+msgid "video"
+msgstr "Vidéo"
+
+#: ../cpi/v4l2/v4l2.c:1080
+msgid "extended"
+msgstr "Etendu"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:14
+msgid "anti-flicking"
+msgstr "Anti-vacillement"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:15
+msgid "auto exposure/gain"
+msgstr "Exposition/Amplification automatique"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:16
+msgid "auto white balance"
+msgstr "Balance automatique"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:17
+msgid "Brightness"
+msgstr "Luminosité"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:18
+#: ../cpi/dcam/dcam_property_table.h:186
+msgid "brightness"
+msgstr "Luminosité"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:19
+msgid "Contrast"
+msgstr "Contraste"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:20
+msgid "contrast"
+msgstr "Contraste"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:21
+msgid "Exposure, Auto"
+msgstr "Exposition ( Auto )"
+
+#: ../cpi/v4l2/v4l2_i8n_strings.h:23
+msgid "Gamma"
+msgstr "Gamma"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:24
+#: ../cpi/dcam/dcam_property_table.h:564
+msgid "gamma"
+msgstr "Gamma"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:25
+msgid "horizontal flip"
+msgstr "Miroir horizontal"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:26
+msgid "Hue"
+msgstr "Coloration"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:27
+#: ../cpi/dcam/dcam_property_table.h:510
+msgid "hue"
+msgstr "Coloration"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:28
+msgid "Power Line Frequency"
+msgstr "Fréquence d'alimentation"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:29
+msgid "resolution"
+msgstr "Résolution"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:30
+msgid "Saturation"
+msgstr "Saturation"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:31
+#: ../cpi/dcam/dcam_property_table.h:537
+msgid "saturation"
+msgstr "Saturation"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:32
+msgid "Sharpness"
+msgstr "Netteté"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:33
+#: ../cpi/dcam/dcam_property_table.h:402
+msgid "sharpness"
+msgstr "Netteté"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:34
+msgid "vertical flip"
+msgstr "Miroir vertical"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:36
+msgid "White Balance Temperature, Auto"
+msgstr "Balance température ( Auto )"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:37
+msgid "White Balance Temperature"
+msgstr "Température couleur"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:39
+msgid "YUV 4:2:2 (YUYV)"
+msgstr "YUV 4:2:2 (YUYV)"
+
+#: ../cpi/v4l2/v4l2_i18n_strings.h:40
+msgid "Uncompressed"
+msgstr "Décompressé"
+
+#: ../cpi/dcam/dcam_property_table.h:33
+msgid "Video"
+msgstr "Vidéo"
+
+#: ../cpi/dcam/dcam_property_table.h:34
+msgid "Exposure"
+msgstr "Exposition"
+
+#: ../cpi/dcam/dcam_property_table.h:35
+msgid "Lens Control"
+msgstr "Contrôle de l'objectif"
+
+#: ../cpi/dcam/dcam_property_table.h:36
+msgid "Color"
+msgstr "Couleur"
+
+#: ../cpi/dcam/dcam_property_table.h:37
+msgid "Device"
+msgstr "Périphérique"
+
+#: ../cpi/dcam/dcam_property_table.h:43
+msgid "constant low"
+msgstr "Désactivation constante"
+
+#: ../cpi/dcam/dcam_property_table.h:44
+msgid "constant high"
+msgstr "Activation constante"
+
+#: ../cpi/dcam/dcam_property_table.h:46
+msgid "exposure"
+msgstr "Exposition"
+
+#: ../cpi/dcam/dcam_property_table.h:51
+msgid "active low"
+msgstr "Minimum actif"
+
+#: ../cpi/dcam/dcam_property_table.h:52
+msgid "active high"
+msgstr "Maximum actif"
+
+#: ../cpi/dcam/dcam_property_table.h:141
+msgid "free running"
+msgstr "Libre"
+
+#: ../cpi/dcam/dcam_property_table.h:142
+msgid "mode 0"
+msgstr "Mode 0"
+
+#: ../cpi/dcam/dcam_property_table.h:267
+msgid "strobe_mode"
+msgstr "Mode stroboscopique"
+
+#: ../cpi/dcam/dcam_property_table.h:293
+msgid "strobe_duration"
+msgstr "Durée stroboscopique"
+
+#: ../cpi/dcam/dcam_property_table.h:320
+msgid "strobe_delay"
+msgstr "Délai stroboscopique"
+
+#: ../cpi/dcam/dcam_property_table.h:347
+msgid "strobe_polarity"
+msgstr "Polarité stroboscopique"
+
+#: ../cpi/dcam/dcam_property_table.h:375
+msgid "auto_exposure"
+msgstr "Exposition/Amplification automatique"
+
+#: ../cpi/dcam/dcam_property_table.h:429
+msgid "white_balance_mode"
+msgstr "Mode Balance Automatique"
+
+#: ../cpi/dcam/dcam_property_table.h:456
+msgid "white_balance_u"
+msgstr "Balance U"
+
+#: ../cpi/dcam/dcam_property_table.h:483
+msgid "white_balance_v"
+msgstr "Balance V"
+
+#: ../cpi/dcam/dcam_property_table.h:591
+msgid "shutter"
+msgstr "Exposition"
+
+#: ../cpi/dcam/dcam_property_table.h:619
+msgid "gain"
+msgstr "Gain"
+
+#: ../cpi/dcam/dcam_property_table.h:646
+msgid "iris"
+msgstr "Diaphragme"
+
+#: ../cpi/dcam/dcam_property_table.h:673
+msgid "focus"
+msgstr "Focus"
+
+#: ../cpi/dcam/dcam_property_table.h:700
+msgid "temperature"
+msgstr "Température"
+
+#: ../cpi/dcam/dcam_property_table.h:727
+msgid "trigger_mode"
+msgstr "Mode déclencheur"
+
+#: ../cpi/dcam/dcam_property_table.h:750
+msgid "zoom"
+msgstr "Zoom"
+
+#. TRANSLATORS: Lens pan
+#: ../cpi/dcam/dcam_property_table.h:778
+msgid "pan"
+msgstr ""
+
+#. TRANSLATORS: Lens tilt
+#: ../cpi/dcam/dcam_property_table.h:806
+msgid "tilt"
+msgstr "Tilt"
+
+#: ../cpi/dcam/dcam_property_table.h:833
+msgid "optical_filter"
+msgstr "Filtre optique"
+
+#: ../cpi/dcam/dcam_property_table.h:860
+msgid "captuuality"
+msgstr "Qualité de l'enregistrement"
+
+#. TRANSLATORS: Camera
+#. hardware register
+#: ../cpi/dcam/dcam_property_table.h:916
+msgid "register"
+msgstr "Registre"
+
+#: ../cpi/dcam/dcam_property_table.h:943
+msgid "timeout"
+msgstr "Temps limite"
+
+#: ../cpi/dcam/dcam_property_table.h:969
+msgid "gpio"
+msgstr "Entrées/Sorties"
+

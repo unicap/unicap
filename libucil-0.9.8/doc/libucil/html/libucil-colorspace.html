@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>colorspace</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.75.1">
+<link rel="home" href="index.html" title="UCIL Reference Manual">
+<link rel="up" href="ch01.html" title="UCIL">
+<link rel="prev" href="libucil-queue.html" title="queue">
+<link rel="next" href="libucil-ucil-theora.html" title="ucil_theora">
+<meta name="generator" content="GTK-Doc V1.11 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+<link rel="chapter" href="ch01.html" title="UCIL">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="libucil-queue.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">UCIL Reference Manual</th>
+<td><a accesskey="n" href="libucil-ucil-theora.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#libucil-colorspace.synopsis" class="shortcut">Top</a>
+                 | 
+                <a href="#libucil-colorspace.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry" title="colorspace">
+<a name="libucil-colorspace"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="libucil-colorspace.top_of_page"></a>colorspace</span></h2>
+<p>colorspace</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv" title="Synopsis">
+<a name="libucil-colorspace.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">
+#define             <a class="link" href="libucil-colorspace.html#XFM-IN-PLACE--CAPS" title="XFM_IN_PLACE">XFM_IN_PLACE</a>
+#define             <a class="link" href="libucil-colorspace.html#XFM-PASSTHROUGH--CAPS" title="XFM_PASSTHROUGH">XFM_PASSTHROUGH</a>
+#define             <a class="link" href="libucil-colorspace.html#XFM-NO-CONVERSION--CAPS" title="XFM_NO_CONVERSION">XFM_NO_CONVERSION</a>
+#define             <a class="link" href="libucil-colorspace.html#FOURCC--CAPS" title="FOURCC()">FOURCC</a>                              (a,b,c,d)
+void                (<a class="link" href="libucil-colorspace.html#xfm-func-t" title="xfm_func_t ()">*xfm_func_t</a>)                       (unsigned char *dest_buffer,
+                                                         unsigned char *src_buffer,
+                                                         int width,
+                                                         int height,
+                                                         int shift);
+</pre>
+</div>
+<div class="refsect1" title="Description">
+<a name="libucil-colorspace.description"></a><h2>Description</h2>
+<p>
+</p>
+</div>
+<div class="refsect1" title="Details">
+<a name="libucil-colorspace.details"></a><h2>Details</h2>
+<div class="refsect2" title="XFM_IN_PLACE">
+<a name="XFM-IN-PLACE--CAPS"></a><h3>XFM_IN_PLACE</h3>
+<pre class="programlisting">#define XFM_IN_PLACE      0x1
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2" title="XFM_PASSTHROUGH">
+<a name="XFM-PASSTHROUGH--CAPS"></a><h3>XFM_PASSTHROUGH</h3>
+<pre class="programlisting">#define XFM_PASSTHROUGH   0x2
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2" title="XFM_NO_CONVERSION">
+<a name="XFM-NO-CONVERSION--CAPS"></a><h3>XFM_NO_CONVERSION</h3>
+<pre class="programlisting">#define XFM_NO_CONVERSION 0x4
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2" title="FOURCC()">
+<a name="FOURCC--CAPS"></a><h3>FOURCC()</h3>
+<pre class="programlisting">#define             FOURCC(a,b,c,d)</pre>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>a</code></em> :</span></p></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>b</code></em> :</span></p></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>c</code></em> :</span></p></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>d</code></em> :</span></p></td>
+<td>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" title="xfm_func_t ()">
+<a name="xfm-func-t"></a><h3>xfm_func_t ()</h3>
+<pre class="programlisting">void                (*xfm_func_t)                       (unsigned char *dest_buffer,
+                                                         unsigned char *src_buffer,
+                                                         int width,
+                                                         int height,
+                                                         int shift);</pre>
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>dest_buffer</code></em> :</span></p></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>src_buffer</code></em> :</span></p></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>width</code></em> :</span></p></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>height</code></em> :</span></p></td>
+<td>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>shift</code></em> :</span></p></td>
+<td>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.11</div>
+</body>
+</html>

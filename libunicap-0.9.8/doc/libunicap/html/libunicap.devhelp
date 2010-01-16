@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE book PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "">
+<book xmlns="http://www.devhelp.net/book" title="Unicap Reference Manual" link="index.html" author="" name="libunicap">
+  <chapters>
+    <sub name="unicap" link="ch01.html">
+      <sub name="unicap" link="libunicap-unicap.html"/>
+    </sub>
+  </chapters>
+  <functions>
+    <function name="enum unicap_buffer_type_t" link="libunicap-unicap.html#unicap-buffer-type-t"/>
+    <function name="unicap_device_t" link="libunicap-unicap.html#unicap-device-t"/>
+    <function name="unicap_rect_t" link="libunicap-unicap.html#unicap-rect-t"/>
+    <function name="unicap_format_t" link="libunicap-unicap.html#unicap-format-t"/>
+    <function name="unicap_data_buffer_t" link="libunicap-unicap.html#unicap-data-buffer-t"/>
+    <function name="enum unicap_property_flags_t" link="libunicap-unicap.html#unicap-property-flags-t"/>
+    <function name="unicap_property_range_t" link="libunicap-unicap.html#unicap-property-range-t"/>
+    <function name="unicap_property_value_list_t" link="libunicap-unicap.html#unicap-property-value-list-t"/>
+    <function name="unicap_property_menu_t" link="libunicap-unicap.html#unicap-property-menu-t"/>
+    <function name="enum unicap_property_type_enum_t" link="libunicap-unicap.html#unicap-property-type-enum-t"/>
+    <function name="unicap_property_t" link="libunicap-unicap.html#unicap-property-t"/>
+    <function name="enum unicap_event_t" link="libunicap-unicap.html#unicap-event-t"/>
+    <function name="UNICAP_FLAGS_MANUAL" link="libunicap-unicap.html#UNICAP-FLAGS-MANUAL--CAPS"/>
+    <function name="UNICAP_FLAGS_AUTO" link="libunicap-unicap.html#UNICAP-FLAGS-AUTO--CAPS"/>
+    <function name="UNICAP_FLAGS_ONE_PUSH" link="libunicap-unicap.html#UNICAP-FLAGS-ONE-PUSH--CAPS"/>
+    <function name="UNICAP_FLAGS_READ_OUT" link="libunicap-unicap.html#UNICAP-FLAGS-READ-OUT--CAPS"/>
+    <function name="UNICAP_FLAGS_ON_OFF" link="libunicap-unicap.html#UNICAP-FLAGS-ON-OFF--CAPS"/>
+    <function name="UNICAP_FLAGS_READ_ONLY" link="libunicap-unicap.html#UNICAP-FLAGS-READ-ONLY--CAPS"/>
+    <function name="UNICAP_FLAGS_FORMAT_CHANGE" link="libunicap-unicap.html#UNICAP-FLAGS-FORMAT-CHANGE--CAPS"/>
+    <function name="unicap_callback_t ()" link="libunicap-unicap.html#unicap-callback-t"/>
+    <function name="unicap_new_frame_callback_t ()" link="libunicap-unicap.html#unicap-new-frame-callback-t"/>
+    <function name="unicap_drop_frame_callback_t ()" link="libunicap-unicap.html#unicap-drop-frame-callback-t"/>
+    <function name="unicap_new_device_callback_t ()" link="libunicap-unicap.html#unicap-new-device-callback-t"/>
+    <function name="unicap_check_version ()" link="libunicap-unicap.html#unicap-check-version"/>
+    <function name="unicap_reenumerate_devices ()" link="libunicap-unicap.html#unicap-reenumerate-devices"/>
+    <function name="unicap_enumerate_devices ()" link="libunicap-unicap.html#unicap-enumerate-devices"/>
+    <function name="unicap_open ()" link="libunicap-unicap.html#unicap-open"/>
+    <function name="unicap_register_callback ()" link="libunicap-unicap.html#unicap-register-callback"/>
+    <function name="unicap_close ()" link="libunicap-unicap.html#unicap-close"/>
+    <function name="unicap_get_device ()" link="libunicap-unicap.html#unicap-get-device"/>
+    <function name="unicap_clone_handle ()" link="libunicap-unicap.html#unicap-clone-handle"/>
+    <function name="unicap_reenumerate_formats ()" link="libunicap-unicap.html#unicap-reenumerate-formats"/>
+    <function name="unicap_enumerate_formats ()" link="libunicap-unicap.html#unicap-enumerate-formats"/>
+    <function name="unicap_set_format ()" link="libunicap-unicap.html#unicap-set-format"/>
+    <function name="unicap_get_format ()" link="libunicap-unicap.html#unicap-get-format"/>
+    <function name="unicap_reenumerate_properties ()" link="libunicap-unicap.html#unicap-reenumerate-properties"/>
+    <function name="unicap_enumerate_properties ()" link="libunicap-unicap.html#unicap-enumerate-properties"/>
+    <function name="unicap_set_property ()" link="libunicap-unicap.html#unicap-set-property"/>
+    <function name="unicap_set_property_value ()" link="libunicap-unicap.html#unicap-set-property-value"/>
+    <function name="unicap_set_property_manual ()" link="libunicap-unicap.html#unicap-set-property-manual"/>
+    <function name="unicap_set_property_auto ()" link="libunicap-unicap.html#unicap-set-property-auto"/>
+    <function name="unicap_set_property_one_push ()" link="libunicap-unicap.html#unicap-set-property-one-push"/>
+    <function name="unicap_get_property ()" link="libunicap-unicap.html#unicap-get-property"/>
+    <function name="unicap_get_property_value ()" link="libunicap-unicap.html#unicap-get-property-value"/>
+    <function name="unicap_get_property_menu ()" link="libunicap-unicap.html#unicap-get-property-menu"/>
+    <function name="unicap_get_property_auto ()" link="libunicap-unicap.html#unicap-get-property-auto"/>
+    <function name="unicap_start_capture ()" link="libunicap-unicap.html#unicap-start-capture"/>
+    <function name="unicap_stop_capture ()" link="libunicap-unicap.html#unicap-stop-capture"/>
+    <function name="unicap_queue_buffer ()" link="libunicap-unicap.html#unicap-queue-buffer"/>
+    <function name="unicap_dequeue_buffer ()" link="libunicap-unicap.html#unicap-dequeue-buffer"/>
+    <function name="unicap_wait_buffer ()" link="libunicap-unicap.html#unicap-wait-buffer"/>
+    <function name="unicap_poll_buffer ()" link="libunicap-unicap.html#unicap-poll-buffer"/>
+  </functions>
+</book>

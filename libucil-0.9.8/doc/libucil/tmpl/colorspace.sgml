@@ -1,0 +1,63 @@
+<!-- ##### SECTION Title ##### -->
+colorspace
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### MACRO XFM_IN_PLACE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO XFM_PASSTHROUGH ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO XFM_NO_CONVERSION ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO FOURCC ##### -->
+<para>
+
+</para>
+
+@a: 
+@b: 
+@c: 
+@d: 
+
+
+<!-- ##### USER_FUNCTION xfm_func_t ##### -->
+<para>
+
+</para>
+
+@dest_buffer: 
+@src_buffer: 
+@width: 
+@height: 
+@shift: 
+
+

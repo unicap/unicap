@@ -1,0 +1,9 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+
+Name: libucil
+Description: Unicap Imaging Library is a set of simple image processing functions
+Version: @dist_version@
+Libs: -L@libdir@ -lucil -lm
+Cflags: -I@includedir@/unicap 
+Requires: libunicap pangoft2 glib-2.0

@@ -1,0 +1,1609 @@
+2009-10-08  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libunicap/unicap.c (unicap_dequeue_buffer): fix: allow to dequeue buffer if no stream lock was acquired at all
+
+2009-10-01  Arne Caspari  <arne@unicap-imaging.org>
+
+	* common/queue.c: code cleanup: join duplicate queue.c files into a convenience library
+
+2009-09-28  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libucil/video_file.h: using vtables for encoding modules ( patch from Martin Tschoepe )
+
+	* libucil/queue.c (_get_front_queue): code cleanup ( patch from Martin Tschoepe )
+
+2009-09-16  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libunicapgtk/libunicapgtk.pc.in (Libs): removed external libs - they should not be neccessary here
+
+	* libucil/libucil.pc.in (Cflags): removed external libs - they should not be neccessary here
+
+2009-08-05  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libunicapgtk/unicapgtk_device_property.c (range_value_changed_cb): only allow values that are multiples of property.stepping
+
+2009-07-27  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libunicapgtk/unicapgtk_video_display.c (struct _UnicapgtkVideoDisplay): fix cropping
+
+	* libunicapgtk/backend_gtk.c (backend_gtk_set_crop): fix cropping
+
+	* libunicap/unicap.c (lookup_device_cache): reuse existing handles during unicap_open
+
+	* cpi/v4l2cpi/v4l2.c (v4l2_set_format): stop and restart video stream when format changes
+
+2009-07-24  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libunicapgtk/unicapgtk_device_property.c (unicapgtk_device_property_redraw): fix: when updating a property, also update the range
+
+2009-06-23  Arne Caspari  <arne@unicap-imaging.org>
+
+	* cpi/v4l2cpi/tisuvccam.c (tisuvccam_get_wb_auto): fix: read back white balance auto mode correctly
+
+2009-06-17  Arne Caspari  <arne@unicap-imaging.org>
+
+	* include/unicap.h: typo
+
+2009-06-08  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libucil/draw.c (clip_line): fix deadlock when line is completely outside region
+
+2009-02-19  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libucil/ucil_rawavi.c (struct _ucil_rawavi_video_file_object): allow arbitrary FourCCs ( patch from Martin Tschoepe )
+
+	* libucil/ucil_theora.c (encode_parse_parameters): set frame_interval correctly for frame rates != 30 FPS ( Patch from Martin Tschoepe )
+
+2008-12-01  Arne Caspari  <arne@unicap-imaging.org>
+
+	* cpi/v4l2cpi/v4l2.c (v4l2_reenumerate_formats): stupid typo
+
+	* libucil/ucil_rawavi.c (ucil_rawavi_close_video_file): more error handling
+
+2008-11-25  Arne Caspari  <arne@unicap-imaging.org>
+
+	* include/unicap.h: src parameter of unicap_copy_format is const
+
+2008-09-29  Arne Caspari  <arne@unicap-imaging.org>
+
+	* cpi/v4l2cpi/v4l2.c: use libv4l2 mmap and mmunmap functions ( patch from Hans de Goede )
+	                      do not use ENUM_FRAMESIZES when camera does not support it ( patch from Hans de Goede )
+			      also try 176x144 frame size ( patch from Hans de Goede )
+
+	* libunicap/unicap.c : Install plugins in correct directory for x64 systems ( patch from Hans de Goede )
+
+	* libucil/ucil_theora.c (downsize_yuv420p): fix: allow arbitrary scaling factors
+
+2008-09-24  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libunicapgtk/unicapgtk_property_dialog.c (load_device_defaults): reset controls when update button got clicked ( Patch from Martin Tschoepe )
+
+2008-09-16  Arne Caspari  <arne@unicap-imaging.org>
+
+	* cpi/v4l2cpi/v4l2.c: implemented libv4l2 support
+
+	* cpi/v4l2cpi/Makefile.am: renamed v4l2 to v4l2cpi to avoid clash with libv4l2
+
+2008-09-14  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libucil/ucil_theora.c (ucil_theora_close_video_file): add a timeout to avoid hangs after a long recording ( reported in the forums )
+
+	* libunicapgtk/unicapgtk_video_display.c (unicapgtk_video_display_get_still_image): add destroy func to free allocated memory
+
+2008-09-10  Arne Caspari  <arne@unicap-imaging.org>
+
+	* include/unicap.h (enum): introduced flags to signal significant bits in video data ( patch from Sven Neumann )
+
+2008-09-09  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libunicapgtk/backend_gtk.c (backend_gtk_destroy): add backend locks to destroy func ( patch from Sven Neumann )
+
+	* libunicapgtk/backend_xv.c (backend_xv_destroy): add backend locks to destroy func ( patch from Sven Neumann )
+
+	* libucil/colorspace.c (ucil_convert_buffer): better debug output ( patch from Sven Neumann )
+
+2008-09-08  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libunicapgtk/unicapgtk_video_format_selection.c (format_id_changed_cb): always add max format size to the list of default formats for size ranges ( patch from Sven Neumann )
+
+2008-09-04  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libunicapgtk/unicapgtk_property_dialog.c (uri_escape_string): replace g_uri_escape_string with uri_escape_string implementation from Sven Neumann
+
+2008-08-29  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libunicapgtk/unicapgtk_property_dialog.c (unicapgtk_property_dialog_class_init): update-interval should not be a construct-only property
+
+	* libunicapgtk/unicapgtk_video_format_selection.c (format_id_changed_cb): create a size box for devices which only provide a size range
+
+2008-08-28  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libunicap/check_match.c (_check_format_match): do not check cropping size for height ( as for width )
+
+2008-08-19  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libucil/ucil_theora.c: constness and better error reporting ( Patch from Sven Neumann )
+
+	* libucil/ucil.h: added const to ucil_create_video_file ( Patch from Sven Neumann )
+
+2008-08-15  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libunicapgtk/unicapgtk_device_property.c (unicapgtk_pack_device_property): fix PROPERTY_TYPE_FLAGS handling ( patch by Sven Neumann )
+
+	* cpi/v4l2/tiseuvccam.c (tiseuvccam_override_property): fix compile issue with kernel versions providing their own uvc_compat definitions
+
+	* cpi/dcam/dcam_property.c (dcam_init_trigger_property): Check range of trigger property
+
+2008-08-06  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libucil/colorspace.c (yuv420ptoyuyv): fixed wrong conversion
+
+	* libucil/ucil_rawavi.c: fix endianess issue
+	(ucil_rawavi_encode_frame): fix: buffer locking issue
+
+	* libunicapgtk/unicapgtk_property_dialog.c (load_device_defaults): fixed: escape special chars from path names, fixes Defaults button not working
+
+	* libucil/colorspace.c (yuv420ptorgb24): fixed wrong conversion
+
+2008-07-30  Arne Caspari  <arne@unicap-imaging.org>
+
+	* cpi/v4l2/v4l2.c: remove iSight adaptor for it is incompatible with newer firmwares
+
+2008-07-16  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libucil/ucil_theora.c: implemented downsize option
+
+2008-07-10  Arne Caspari  <arne@unicap-imaging.org>
+
+	* include/unicap.h: unregister_callback
+
+2008-07-01  Arne Caspari  <arne@unicap-imaging.org>
+
+	* cpi/v4l2/v4l2.c (v4l2_enum_frameintervals): check for double frame intervals and drop them
+
+2008-06-30  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libunicapgtk/unicapgtk_device_property.c (menu_changed_cb): fix: i18n issue
+
+2008-06-27  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libunicapgtk/unicapgtk_device_property.h: make type check macros more like Gtk ones
+
+	* libunicapgtk/unicapgtk_property_dialog.h: make type check macros more like Gtk ones
+
+	* libunicapgtk/unicapgtk_video_display.h (UNICAPGTK_TYPE_VIDEO_DISPLAY): make type check macros more like Gtk ones
+
+2008-06-26  Arne Caspari  <arne@unicap-imaging.org>
+
+	* cpi/v4l2/v4l2.c (v4l2_capture_start): fix: capture_start sometimes failed because id found no free buffers
+	(v4l2_set_frame_interval): fix frame interval property
+
+2008-06-24  Arne Caspari  <arne@unicap-imaging.org>
+
+	* cpi/dcam/dcam_property.c (dcam_init_property_std_flags): added trigger polarity
+	(dcam_init_trigger_property): trigger polarity
+
+2008-06-19  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libunicapgtk/unicapgtk_video_display.c (unicapgtk_video_display_set_still_image): emit signal when a still image gets set
+
+2008-06-11  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libucil/Makefile.am (AM_CFLAGS): compile with -fno-strict-aliasing
+
+	* cpi/vid21394/visca.c: fixed some bugs that might cause VISCA
+	commands to fail
+
+	* cpi/vid21394/vid21394_base.c: code cleanup
+
+	* cpi/v4l2/tisuvccam.c (TISUVCPropertyOverrides): made all
+	identifiers lowercase
+
+	code cleanup
+
+	* cpi/v4l/v4l.c: code cleanup
+
+	* cpi/dcam/Makefile.am (libdcam_la_CFLAGS): compile with
+	-fno-strict-aliasing,  workaround for compiler warnings
+
+	* cpi/dcam/dcam_property.c: slight code cleanup
+
+	* cpi/dcam/dcam.c: added missing include to fix compiler warning
+
+	* cpi/v4l2/v4l2.c (queue_system_buffers): initialize v4l2 structs
+	with 0, fixes compatibility issues with bttv driver
+
+	* cpi/v4l2/tiseuvccam.c: support for TIS CMOS cameras
+
+2008-06-02  Arne Caspari  <arne@unicap-imaging.org>
+
+	* cpi/vid21394/vid21394_cpi.c (cpi_capture_start): only set
+	running flag on success
+
+2008-05-28  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libucil/colorspace.c (rgb242yuyv): new color conversion, fixes
+	not working still image preview for YUY2 ( USB Camera ) formats
+
+2008-05-22  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libucil/ucil_audio.c (ucil_audio_list_cards): added audio abstraction
+
+2008-05-20  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libucil/ucil_rawavi.c (ucil_rawavi_close_video_file): fix wrong
+	chunk size
+	(ucil_rawavi_create_video_file): default to 30000 ms per frame
+
+2008-05-19  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libunicapgtk/unicapgtk_video_display.c
+	(unicapgtk_video_display_set_still_image): allow still images to
+	be set in pause mode
+
+	* libunicapgtk/backend_gtk.c (scale_image): change interpolation type
+
+	* libucil/video_file.c (get_codec_id): added support for avi/raw
+
+	* libucil/colorspace.c (conversions): new alias: grey->y800
+
+2008-05-18  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libunicapgtk/Makefile.am : patch from Yi Zhan : fix build issue
+	with IA64
+
+	* libucil/ucil_theora.c (ucil_theora_create_video_file): disable
+	async_audio_encoding when audio is disabled
+
+2008-05-13  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libucil/ucil_theora.c (ucil_theora_encode_frame): fix possible
+	deadlock of buffers
+
+2008-05-12  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libucil/colorspace.c (rgb242uyvy): fixed conversion
+
+2008-05-07  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libucil/draw.c (ucil_draw_box): added YUYV colorspace
+
+2008-05-06  Arne Caspari  <arne@unicap-imaging.org>
+
+	* cpi/v4l2/v4l2.c (count_properties_ext): added compatibility fix
+	for older kernel versions
+
+2008-04-23  Arne Caspari  <arne@unicap-imaging.org>
+
+	* cpi/v4l2/v4l2.c (v4l2_reenumerate_properties): change property
+	enumeration to work with new uvcvideo driver versions
+
+2008-04-20  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libucil/colorspace.c: fixed rgb->i420 conversions
+
+2008-04-18  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libucil/colorspace.c (conversions): added bgr24toy420p
+	(conversions): fixed some GUIDs
+
+2008-03-31  Arne Caspari  <arne@unicap-imaging.org>
+
+	* include/unicap.h: added convenience functions for property access
+
+2008-03-18  Arne Caspari  <arne@unicap-imaging.org>
+
+	* cpi/v4l2/v4l2.c (fourcc_bpp_map): added format BA81
+
+	* libucil/colorspace.c (conversions): added mapping for BA81
+
+2008-02-14  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libunicapgtk/backend_xv.h: declare functions with visibility hidden
+
+	* libunicapgtk/cs_xfm.c: removed ( now using ucil )
+
+	* libunicapgtk/cs_xfm.h: removed ( now using ucil )
+
+2008-02-09  Arne Caspari  <arne@unicap-imaging.org>
+
+	* cpi/vid21394/vid21394_base.c: removed printfs
+
+2008-02-04  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libunicapgtk/unicapgtk_property_dialog.c
+	(unicapgtk_property_dialog_reset): don't select last page when no
+	page was previously selected
+
+2008-02-02  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libucil/draw.c (ucil_draw_line): added clipping
+
+2008-01-23  Arne Caspari  <arne@unicap-imaging.org>
+
+	* cpi/v4l2/v4l2.c (try_enum_framesizes): use
+	VIDIOC_ENUM_FRAMESIZES when available
+
+2008-01-10  Arne Caspari  <arne@unicap-imaging.org>
+
+	* cpi/v4l2/tisuvccam.c (tisuvc_fmt_v4l2_to_uc_func): map TIS
+	custom formats from v4l2 to unicap
+
+2008-01-09  Arne Caspari  <arne@unicap-imaging.org>
+
+	* cpi/v4l2/v4l2.c (v4l2_uc_compat_list): added support for custom controls
+
+	* cpi/v4l2/tisuvccam.c: handler for custom controls of TIS UVC cameras
+
+2007-12-10  Arne Caspari  <arne@arne-laptop>
+
+	* cpi/v4l2/v4l2.c (v4l2_reenumerate_properties): revert 
+
+2007-12-07  Arne Caspari  <arne@arne-laptop>
+
+	* Makefile.am (EXTRA_DIST): added OpenCV example
+
+2007-12-05  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/unicapgtk_device_selection.h: fix compile error
+	with C++ compiler
+
+2007-11-30  Arne Caspari  <arne@arne-laptop>
+
+	* examples/c/gl/gl-video.c (load_shader): added OpenGL example
+
+2007-11-27  Arne Caspari  <arne@arne-laptop>
+
+	* libucil/ucil.h: renamed reserved variable name delete ( thanks
+	Benjamin Knopp )
+
+2007-11-26  Arne Caspari  <arne@arne-laptop>
+
+	* cpi/vid21394/vid21394_base.c (vid21394_wait_buffer): applied
+	patch from Dr. Douglas C. MacKenzie: fix 1/2 second delay in unicap_wait_buffer
+
+	* libucil/ucil_theora.c (ucil_theora_close_video_file): fix
+	compile/link errors when compiling ucil_theora without alsa
+	support ( patch: Sven Neumann )
+
+	* configure.in: missing pangoft2 package 
+
+2007-10-23  Arne Caspari  <arne@arne-laptop>
+
+	* libucil/yuvops.c (ucil_composite_UYVY_YUVA): UYVY composite function
+	(ucil_composite_YUYV_YUVA): added YUY2 composite function
+
+	* libunicapgtk/unicapgtk_property_dialog.c
+	(unicapgtk_property_dialog_init): added update button
+
+2007-10-17  Arne Caspari  <arne@arne-laptop>
+
+	* libucil/yuvops.c (ucil_composite_UYVY_YUVA): added
+
+2007-10-04  Arne Caspari  <arne@arne-laptop>
+
+	* cpi/dcam/dcam_property.c (dcam_set_gpio_property): fixed bug:
+	property->data overwrite
+
+2007-09-27  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/unicapgtk_video_display.c: allow application to
+	force a fourcc
+
+	* libunicapgtk/unicapgtk_property_dialog.c: different size groups
+	for labels on each page
+
+	* libunicapgtk/unicapgtk_device_property.c: i18n support
+
+	* libucil/ucil_alsa.c: new alsa support
+
+	* libucil/ucil_theora.c: audio (vorbis) support
+
+	* libucil/draw.c (ucil_set_pixel): support I420
+
+	* libucil/colorspace.c (conversions): new fourcc: YUY2
+	(ucil_convert_buffer): set bpp on target buffer
+
+	* include/unicap.h: added buffer lock flags
+
+	* cpi/vid21394/vid21394_cpi.c (cpi_capture_stop): fix segfault
+	when stopping stream without a prefious capture_start
+
+	* cpi/v4l2/v4l2.c: i18n support
+	open NONBLOCK during enumeration
+	use predefined list of supported video format sizes for known devices
+
+	* cpi/v4l/v4l.c (v4l_enumerate_devices): open NONBLOCK
+
+	* cpi/dcam/dcam_property_table.h: i18n support
+
+2007-09-11  Arne Caspari  <arne@arne-laptop>
+
+	* libucil/ucil_theora.c (encode_parse_args): added blocking mode
+
+2007-09-06  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/unicapgtk_device_property.c: i18n support
+
+	* libunicapgtk/unicapgtk.c: i18n support
+
+	* libucil/ucil_theora.c: initial audio support
+
+	* libucil/ucil_alsa.h: initial audio support ( still broken )
+
+	* libucil/ucil_alsa.c: initial audio support ( still broken )
+
+	* cpi/v4l2/v4l2_i18n_strings.h: i18n support
+
+	* cpi/v4l2/v4l2.c (webcam_sizes): use stored tables of supported
+	sizes for known devices to increase startup speed
+	(v4l2_enumerate_devices): open O_NONBLOCK to avoid issues with
+	Luca's drivers
+
+	* cpi/v4l/v4l.c (v4l_enumerate_devices): open O_NONBLOCK to avoid
+	problems with Lucas drivers
+
+	* cpi/dcam/dcam_property_table.h: i18n support
+
+2007-09-04  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/backend_xv.c (backend_xv_destroy): fix: unlock port
+
+2007-08-30  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* m4/gettext.m4: New file, from gettext-0.16.1.
+	* m4/iconv.m4: New file, from gettext-0.16.1.
+	* m4/lib-ld.m4: New file, from gettext-0.16.1.
+	* m4/lib-link.m4: New file, from gettext-0.16.1.
+	* m4/lib-prefix.m4: New file, from gettext-0.16.1.
+	* m4/nls.m4: New file, from gettext-0.16.1.
+	* m4/po.m4: New file, from gettext-0.16.1.
+	* m4/progtest.m4: New file, from gettext-0.16.1.
+	* Makefile.am (SUBDIRS): Add po.
+	(ACLOCAL_AMFLAGS): New variable.
+	(EXTRA_DIST): Add config.rpath.
+	* configure.in (AC_CONFIG_FILES): Add po/Makefile.in.
+
+2007-08-28  Arne Caspari  <arne@arne-laptop>
+
+	* cpi/v4l2/v4l2.c (v4l2_open): fix small memleak
+
+	* libunicapgtk/backend_xv.c (backend_xv_init): fix small memleak
+
+2007-08-21  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/unicapgtk_video_display.c (set_backend): include
+	backends - removed modules
+
+2007-08-15  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/unicapgtk_video_display.c
+	(unicapgtk_video_display_set_scale_to_fit): fixed bugs: output
+	size not updated correctly; size allocation not updated correctly
+
+	* libunicapgtk/display_backends/backend_xv.c (backend_set_scale_to_fit): fix
+
+2007-08-01  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/unicapgtk_property_dialog.c: derive wron GTK_DIALOG
+	instead of GTK_WINDOW ( patch: Sven Neumann )
+
+	* libunicapgtk/display_backends/backend_xv.c (backend_init): set
+	dropout color not to be pure blue
+
+	* libunicap/unicap.c (enumerate_devices): versioned cpi directory
+
+2007-07-31  Arne Caspari  <arne@arne-laptop>
+
+	* libucil/colorspace.c (y4202rgb24): new conversion
+	(y4202rgb32): new conversion
+
+2007-07-12  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/display_backends/cs_xfm.c: correctly use UCIL
+
+2007-07-10  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/unicapgtk.c (unicapgtk_load_device_state): if
+	device identifier does not match, also try vendor_name and model_name
+
+	* cpi/dcam/dcam_capture.c (_dcam_dma_setup): make capture buffer
+	memory writable
+
+2007-07-09  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/display_backends/backend_xv.c (backend_destroy):
+	fix: Xv port leak
+
+	* libucil/colorspace.c (yuv420ptoyuyv): fixed conversions to/from yuv420p
+
+2007-07-06  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/display_backends/backend_gtk.c
+	(backend_get_image_data): fix: backend locking
+
+	* libucil/colorspace.c (ucil_conversion_supported): fix: patch
+	from Benjamin Knopp
+
+	* doc/reference/libunicapgtk/Makefile.am (GTKDOC_LIBS): patch from
+	Sven Neumann
+
+	* doc/reference/libunicapgtk/libunicapgtk.types: patch from Sven Neumann
+
+2007-07-05  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/unicapgtk_video_display.c
+	(unicapgtk_video_display_set_handle): fix: do not change video
+	format when setting a handle
+
+2007-07-02  Arne Caspari  <arne@arne-laptop>
+
+	* libucil/colorspace.c (yuv420ptouyvy): fix
+
+2007-06-27  Arne Caspari  <arne@arne-laptop>
+
+	* libucil/colorspace.c (conversions): fix: yuyv <> i420p
+
+2007-06-26  Arne Caspari  <arne@arne-laptop>
+
+	* libucil/colorspace.c (ucil_conversion_supported): fix: patch
+	from Benjamin Knopp
+
+2007-06-18  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/unicapgtk_video_display.c (timeout_cb): fix:
+	disp_time overrun
+
+	* cpi/v4l2/v4l2.c (v4l2_reenumerate_formats): add fourcc to format identifier
+
+2007-06-15  Arne Caspari  <arne@arne-laptop>
+
+	* cpi/vid21394/vid21394_cpi.c (cpi_register): allow static linkage
+
+	* cpi/dcam/dcam.c (cpi_register): allow static linkage
+
+	* cpi/v4l2/v4l2.c (cpi_register): allow static linkage
+
+	* cpi/v4l/v4l.c (cpi_register): allow static linkage
+
+	* configure.in: new option: --enable-static-cpi
+
+	* libunicap/unicap.c: allow static linkage of cpis
+
+2007-05-19  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/unicapgtk.c (unicapgtk_save_device_state): fix:
+	added missing unicap_get_property
+
+	* libunicapgtk/unicapgtk_video_display.c
+	(unicapgtk_video_display_set_pause): fix: used wrong buffer for pause
+
+2007-05-11  Arne Caspari  <arne@arne-laptop>
+
+	* libunicap/unicap.c (unicap_open): remove clone_handle
+
+2007-05-10  Arne Caspari  <arne@arne-laptop>
+
+	* libucil/colorspace.c (y8002y420): new xform
+	(y8002y422): new xform
+	(bgr242uyvy): fix wrong rgb order
+	(rgb24toyuv420p): new xform
+	(yuv420ptorgb24): new xform
+	(bgr24torgb24): new xform
+	(rgb32torgb24): new xform
+
+	* cpi/v4l/v4l.c (v4l_enumerate_devices): fix: v4l devices where
+	not detected
+
+2007-05-08  Arne Caspari  <arne@arne-laptop>
+
+	* libucil/ucil_theora.c (ucil_theora_encode_thread): added encode
+	callback function
+
+2007-04-26  Arne Caspari  <arne@arne-laptop>
+
+	* include/unicap.h: use gtk-doc for documentation
+
+2007-04-20  Arne Caspari  <arne@arne-laptop>
+
+	* cpi/v4l2/v4l2.c (v4l2_reenumerate_properties): query private
+	properties also
+
+2007-04-17  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/unicapgtk_video_display.c
+	(unicapgtk_video_display_set_new_frame_callback): allow
+	applications to register a new_frame_callback
+
+2007-04-12  Arne Caspari  <arne@arne-laptop>
+
+	* cpi/v4l/v4l.c (v4l_enumerate_devices): fix: enumerate all
+	devices even if device files have non-continuous numbering
+
+	* cpi/v4l2/v4l2.c (v4l2_enumerate_devices): fix: enumerate all
+	devices even if device files have non-continuous numbering
+
+2007-04-11  Arne Caspari  <arne@arne-laptop>
+
+	* libucil/ucil_theora.c (ucil_theora_worker_thread): eos handling
+
+2007-03-29  Arne Caspari  <arne@arne-laptop>
+
+	* cpi/dcam/dcam.c (dcam_capture_start): Support speeds > S800
+
+	* cpi/v4l2/v4l2.c (cpi_register): fix: get_current_format
+
+2007-03-28  Arne Caspari  <arne@arne-laptop>
+
+	* cpi/v4l2/v4l2.c (v4l2_capture_start): fix: return value of ioctl was
+	misinterpreted as error
+
+2007-03-23  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/unicapgtk_video_format_selection.c
+	(size_changed_cb): fix: size change was not set correctly
+
+	* cpi/v4l/v4l.c (wait_buffer): fix: timestamp information
+
+	* cpi/vid21394/vid21394_base.c (_vid21394_new_iso_handler): fix:
+	timestamp information
+
+	* cpi/dcam/dcam_capture.c (dcam_dma_capture_thread): fix: copy
+	timestamp information
+
+	* libunicapgtk/display_backends/backend_gtk.c
+	(backend_get_image_data): fix: copy timestamp information
+
+	* libucil/ucil_theora.c (ucil_theora_encode_thread): implemented fill_frames
+
+	* libunicapgtk/display_backends/backend_xv.c
+	(backend_get_image_data): fix: copy timestamp information
+
+	* libunicapgtk/unicapgtk_video_display.c (timeout_cb): fix: copy
+	timestamp information
+
+	* libucil/ucil_theora.c (ucil_theora_encode_frame): fix: copy timestamp
+
+	* cpi/v4l2/v4l2.c (v4l2_capture_thread): fix: missing timestamp
+	information when using callbacks
+
+2007-03-22  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/unicapgtk_device_property.c (create_mapping): fix:
+	uninitialized nmappings
+
+	* configure.in: arg-enable for avcodec and ogg/theora
+
+	* cpi/Makefile.am (DIST_SUBDIRS): remove not working 'remote' cpi
+
+2007-03-21  Arne Caspari  <arne@arne-laptop>
+
+	* libucil/video_file.c: added video recording/playback functionality
+
+	* libucil/mpeg.c: added avcodec support
+
+	* libucil/ucil_theora.c: added theora support
+
+	* libucil/colorspace.c (uyvytoyuv420p): fixed
+	(rgb322uyvy): new conversion
+	(bgr242uyvy): new conversion
+	(rgb242uyvy): new conversion
+
+2007-03-16  Arne Caspari  <arne@arne-laptop>
+
+	* include/unicap_status.h (STATUS_UNSUPPORTED_CODEC): added
+	UNSUPPORTED_CODEC and FILE_NOT_FOUND
+
+2007-03-09  Arne Caspari  <arne@arne-laptop>
+
+	* libucil/colorspace.c (ucil_convert_buffer): fix: copy buffers
+	with same fourccs
+
+2007-03-05  Arne Caspari  <arne@arne-laptop>
+
+	* cpi/v4l2/v4l2.c (v4l2_capture_thread): fix(?) to avoid blocking
+	with bt878
+
+2007-02-21  Arne Caspari  <arne@arne-laptop>
+
+	* libucil/colorspace.c (ucil_convert_buffer): direct copy of
+	buffers not needing conversion
+
+	* cpi/v4l2/v4l2.c (v4l2_capture_thread): fix potential blocking
+
+2007-02-05  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/unicapgtk_video_format_selection.c
+	(size_changed_cb): emit signal with correct format
+
+	* libunicapgtk/display_backends/backend_gtk.c (scale_image):
+	implemented image scaling
+
+2007-01-23  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/display_backends/backend_xv.c (backend_init): use
+	widgets window again
+
+2007-01-22  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/unicapgtk_video_display.c (set_backend): fixed
+	small memleak
+
+2007-01-16  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/unicapgtk.c: replacement for g_keyfile_set_double
+
+	* libucil/font.c: use pango for text rendering
+
+	* libucil/draw.c: yuy2 support
+
+	* cpi/dcam/dcam_property.c: support for AF/BF 	strobe modes
+
+	* cpi/dcam/dcam.h (enum dcam_property_enum): support for AF/BF
+	strobe modes
+
+	* libunicapgtk/unicapgtk_video_display.c: support for new backend
+	drawing scheme
+
+	* libunicapgtk/display_backends/backend_gtk.c
+	(create_overlay_window): draw in our own window
+
+	* libunicapgtk/display_backends/backend_xv.c
+	(create_overlay_window): draw in our own window
+
+2007-01-09  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/unicapgtk.c (unicapgtk_key_file_set_double): added
+
+2007-01-08  Arne Caspari  <arne@arne-laptop>
+
+	* cpi/dcam/dcam_property_table.h (_dcam_properties): added strobe properties
+
+	* cpi/dcam/dcam_property.c (dcam_get_strobe_polarity_property):
+	added strobe properties
+
+	* libucil/font.c (draw_bitmap): added text drawing functions
+
+2007-01-07  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/unicapgtk_video_display.c (da_expose_event): fix:
+	check if backend is present
+
+	* libunicapgtk/colorspace.c (grey2rgb24): new conversion
+
+	* libunicapgtk/cs_xfm.c (cs_xfm_new_pixbuf): fix: memcpy
+
+	* libucil/ucil.c (ucil_get_colorspace_from_fourcc): new function
+
+	* libucil/draw.c (ucil_set_pixel_alpha): new function
+	(ucil_draw_circle): new function
+
+	* cpi/v4l/v4l.c (v4l_capture_thread): implemented threaded capturing
+	(v4l_set_event_notify): implemented unicap event handling
+	(v4l_enumerate_formats): changed RGB24 --> BGR24 since this seems
+	to be the correct ordering
+	(v4l_enumerate_properties): set flags correctly
+	made all functions static
+
+	* libunicapgtk/colorspace.c (y4202rgb24): added new conversion
+	(y4202uyvy): added new conversion
+	(y4202yuy2): added new conversion
+	(bgr242rgb24): added new conversion
+
+2007-01-02  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/display_backends/backend_gtk.c (backend_lock):
+	implemented locking
+
+	* libunicapgtk/display_backends/backend_xv.c (backend_lock):
+	implemented locking
+
+	* libunicapgtk/unicapgtk_video_display.c (da_expose_event):
+	correct handling of predisplay signal
+
+2006-12-11  Arne Caspari  <arne@arne-laptop>
+
+	* include/unicap.h (enum _unicap_buffer_type): fixed compile issue
+
+	* cpi/vid21394/vid21394_base.c: implemented threaded capturing
+
+	* cpi/dcam/dcam_property.c (dcam_set_frame_rate_property): fix:
+	set frame rate only worked when streaming was on
+
+	* cpi/dcam/dcam_busreset.c (dcam_device_removed_event): rename
+	DEVICE_LOST -> DEVICE_REMOVED
+
+2006-11-27  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/unicapgtk_video_display.c: use unicap callbacks
+
+2006-11-24  Arne Caspari  <arne@arne-laptop>
+
+	* cpi/vid21394/vid21394_cpi.c (cpi_get_format): use
+	unicap_copy_format instead of memcpy
+	(cpi_set_format): add SYSTEM_BUFFERS
+
+2006-11-20  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/unicapgtk_video_format_selection.h: missed
+	get_handle prototype
+
+2006-11-15  Arne Caspari  <arne@arne-laptop>
+
+	* debian/control (Description): added libucil-0 and libucil-dev
+
+2006-11-14  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/unicapgtk_video_display.c
+	(unicapgtk_video_display_set_format): initialize correctly even
+	when no unicap_handle is associated with the display
+
+2006-11-13  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/unicapgtk.c (unicapgtk_key_file_get_double): add
+	replacement for g_key_file_get_double, removes requirement for glib-2.12
+
+2006-11-10  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/unicapgtk_video_display.c (timeout_cb): thread awareness
+
+	* libunicapgtk/display_backends/backend_xv.c (backend_init): load
+	configuration data from user home directory
+
+	* cpi/v4l2/v4l2.c (v4l2_capture_thread): new threaded capture mechanism
+
+	* libunicap/unicap.c (unicap_event_callback): new event system
+
+	* cpi/dcam/dcam_capture.c (dcam_dma_capture_thread): fire a new
+	frame event even when no user-buffer is queued
+
+	* libunicap/unicap.c (unicap_open): clone handle for event_notify
+
+2006-10-30  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/display_backends/backend_xv.c (backend_init): look
+	for other Xv adaptors if the first one is in use or not suitable
+	(backend_init): small memleak fix
+
+2006-10-25  Arne Caspari  <arne@arne-laptop>
+
+	* libucil/Makefile.am: Added libucil, a library for simple image
+	processing tasks
+
+	* libunicapgtk/libunicapgtk.pc.in (Version): Set correct version information
+
+	* libunicap/libunicap.pc.in (Version): Set correct version information
+
+2006-10-23  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/display_backends/backend_xv.c (backend_init): also
+	look in userconf dir for unicapgtk.conf
+
+	* libunicapgtk/unicapgtk_video_display.c (set_backend): also look
+	in userconf dir for unicapgtk.conf
+
+2006-10-20  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/unicapgtk.c: added functionality to store and
+	restore the device state
+
+	* libunicapgtk/unicapgtk_property_dialog.c (save_device_defaults):
+	Added functionality to store/restore device defaults
+
+2006-10-12  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/unicapgtk_property_dialog.c
+	(unicapgtk_property_dialog_reset): destroy all widgets in the
+	notebook instead of just removing the pages
+
+	* libunicapgtk/unicapgtk_video_format_selection.c
+	(unicapgtk_video_format_selection_set_handle): Do not try to open
+	NULL handle
+
+	* libunicapgtk/unicapgtk_property_dialog.c
+	(unicapgtk_property_dialog_set_handle): Do not try to open NULL handle
+
+2006-10-04  Arne Caspari  <arne@arne-laptop>
+
+	* libunicap/unicap.c: renamed union semun -> union semun_linux to
+	avoid conflict on OSX
+
+	* libunicapgtk/display_backends/Makefile.am (BACKENDS_LIB): do not
+	build backends when unicapgtk is disabled
+
+2006-10-01  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/unicapgtk_property_dialog.c (append_pages): fix memleak
+
+	* libunicapgtk/unicapgtk_video_display.c
+	(unicapgtk_video_display_destroy): fix memleak
+
+	* libunicapgtk/unicapgtk_video_format_selection.c
+	(unicapgtk_video_format_selection_destroy): fix memleak
+
+	* libunicapgtk/display_backends/backend_xv.c (backend_destroy):
+	Fix memleak
+
+2006-09-25  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/unicapgtk_device_property.c: map shutter values to
+	human readable strings
+
+2006-09-18  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/unicapgtk_property_dialog.c: continuously update
+	property widgets
+
+	* libunicapgtk/unicapgtk_video_display.c
+	(unicapgtk_video_display_stop): removed 'display not running' message
+
+2006-09-14  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/display_backends/backend_xv.c
+	(backend_expose_event): redraw image in expose ( fixes pause )
+
+	* libunicapgtk/unicapgtk_device_selection.c
+	(unicapgtk_device_selection_set_label_fmt): added
+
+	* fixed: key file not loaded in xv backend
+
+2006-08-28  Arne Caspari  <arne@arne-laptop>
+
+	* cpi/thing/thing.c: initialize cpi_data structure, fixes memory corruption
+
+	* libunicapgtk/unicapgtk_video_display.c
+	(unicapgtk_video_display_start): fix: use USER_BUFFER when
+	SYSTEM_BUFFER is not available
+
+2006-08-22  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/unicapgtk_video_display.c
+	(unicapgtk_video_display_start): improved error handling
+
+2006-08-21  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/unicapgtk_video_display.c: Changed event mask for
+	drawing_area to allow button press events 
+	fix: set output width and height in backend_xv when
+	scale_to_fit==TRUE
+	
+
+2006-08-18  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/unicapgtk_device_selection.c
+	(device_combo_box_changed): added a device change signal
+
+	* examples/unicapgtk/smallapp/smallapp.c
+	(create_application_window): changed window default size
+	(create_application_window): small layout changes
+
+	* libunicapgtk/unicapgtk_video_display.c: Added functionality to
+	load backend merit from keyfile
+
+2006-08-17  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/colorspace.c: performance improvements for
+	yuv->rgb24 and yuv->rgb32
+
+	* cpi/v4l2/v4l2.c (v4l2_wait_buffer): fixed memleak
+
+	* libunicapgtk/unicapgtk_property_dialog.c: changed from treeview
+	to notebook layout
+
+2006-08-02  Arne Caspari  <arne@arne-laptop>
+
+	* include/unicap.h: fixes for SYSTEM_BUFFERS
+
+	* cpi/v4l2/v4l2.c (v4l2_reenumerate_formats): better handling of v4l2_crop
+	handling of system buffers
+
+	* cpi/dcam/dcam_capture.c: support for SYSTEM_BUFFERS
+
+	* cpi/dcam/dcam.c (cpi_set_format): support for SYSTEM_BUFFERS
+
+	* examples/unicapgtk/smallapp/smallapp.c (menu_entries): removed
+	view menu
+	removed zoom functionality
+
+	* cleaned up unicapgtk example directory
+
+	* examples/unicapgtk/callback/callback.c: fix: open by device
+
+	* libunicapgtk/display_backends/backend_gtk.c: backend for video
+	display using GTK/GDK
+
+	* libunicapgtk/display_backends/backend_xv.c: backend for video
+	display using Xv extensions
+
+	* libunicapgtk/unicapgtk_video_display.c: implemented modules for
+	display backend
+
+	* cpi/v4l2/v4l2.c (v4l2_reenumerate_properties): fix: remove video
+	norm property for devices without a video norm
+	(queue_buffer): pre-queue buffers when live video is not yet started
+
+2006-06-27  Arne Caspari  <arne@arne-laptop>
+
+	* libunicapgtk/unicapgtk_video_display.c: change resize behaviour to scale-to-fit ( patch by Sven Neumann )
+	use GBOOLEAN instead of C-int ( patch by Sven Neumann )
+	
+
+	* libunicapgtk/colorspace.c: fix endianess issue
+
+	* cpi/v4l2/v4l2.c: added video norm property
+
+2006-06-13  Arne Caspari  <arne@localhost>
+
+	* removal of deprecated GTK functions ( patch by Sven Neumann )
+	* fix for compiler warnings ( patch by Sven Neumann )
+
+2006-06-12  Arne Caspari  <arne@localhost>
+
+	* libunicapgtk/unicapgtk_property_dialog.c (selection_changed_cb):
+	crash fix ( patch from Sven Neumann )
+
+	* libunicapgtk/unicapgtk_device_property.c: fix: incorrect
+	sensitivity handling of auto check box ( patch from Sven Neumann )
+
+	* libunicapgtk/unicapgtk_property_dialog.c: HIG compliance patches
+	from Sven Neumann
+
+	* libunicapgtk/unicapgtk_video_display.c: applied patches from
+	Sven Neumann: dropout color changed to blue; container changed to
+	GtkAspectFrame; 
+	
+
+2006-06-09  Arne Caspari  <arne@localhost>
+
+	* cpi/v4l2/v4l2.c (v4l2_enum_inputs): fix bug: list of video input
+	strings was static
+
+2006-05-12  Arne Caspari  <arne@localhost>
+
+	* libunicapgtk/xv.c: fix wrong includes
+
+	* libunicapgtk/unicapgtk_video_display.c
+	(unicapgtk_video_display_start): check whether color format can be displayed
+	(unicapgtk_video_display_class_init): add USE_XV property ( Sven
+	Neumann )
+
+2006-05-11  Arne Caspari  <arne@localhost>
+
+	* Makefile.am (EXTRA_DIST): added debian control files ( thanks
+	Sven Neumann! )
+
+	* examples/c/sdl_display/sdl_display.c (main): code cleanup
+	(main): try to use right overlay for selected fourcc
+
+	* cpi/v4l2/v4l2.c (fourcc_bpp_map): add/fix: bpp for video formats
+	( Frank Loemker )
+	(v4l2_capture_stop): fix: check whether capture_start was called
+	before freeing buffers and shutting down the stream
+
+	* cpi/v4l/v4l.c (cpi_open): initialize format and property table (
+	Frank Loemker )
+	(cpi_reenumerate_formats): fix: video_picture structure was not
+	initialized ( Frank Loemker )
+	(cpi_enumerate_formats): fix fourcc: Y41P to 411P ( thanks Frank
+	Loemker )
+	(cpi_queue_buffer): fix: buffer handling ( Frank Loemker )
+
+	* cpi/v4l2/v4l2.c (build_format_size_table): check for supported
+	video format sizes
+
+2006-04-12  Arne Caspari  <arne@localhost>
+
+	* libunicapgtk/colorspace.c
+	(unicapgtk_cs_get_converter_from_fourcc): more flexible handling
+	of colorspace transform functions
+
+2006-04-09  Arne Caspari  <arne@localhost>
+
+	* cpi/vid21394/vid21394_base.c (vid21394_open): fix memleak
+
+2006-04-06  Arne Caspari  <arne@localhost>
+
+	* libunicapgtk/xv.c: code cleanup
+
+	* libunicapgtk/unicapgtk_video_format_selection.c
+	(unicapgtk_video_format_selection_init): Better layout
+
+	* libunicapgtk/unicapgtk_video_display.c: Better Xv handling
+	
+	* libunicapgtk/unicapgtk_video_display.c (new): automatically set
+	biggest available image size
+
+	* libunicapgtk/unicapgtk_device_selection.c: new widget
+	contributed by JPK Instruments AG
+
+	* libunicapgtk/colorspace.c (grey2uyvy): added grey->uyvy
+	conversion to use Xv for monochrome video
+	(uyvy2rgb24): optimizations
+
+	* examples/unicapgtk/unicapgtk_smallapp/unicapgtk_smallapp.c: use
+	new device_selection widget
+
+	* examples/device_specific/dfg1394/sdl_display/sdl_display.c:
+	removed bogus #include
+
+	* cpi/vid21394/visca.c (visca_set_ae_mode): fix: signed
+	vs. unsigned char
+
+	* cpi/vid21394/vid21394_base.c: code cleanup
+
+	* cpi/dcam/dcam.c: code cleanup
+
+	* libunicapgtk/unicapgtk_video_display.c
+	(unicapgtk_video_display_start): use YUY2 instead of UYVY
+
+2006-04-05  Arne Caspari  <arne@localhost>
+
+	* libunicapgtk/unicapgtk_video_format_selection.c: applied patch
+	from Sven Neumann: Memory leak fix
+
+	* libunicapgtk/xv.c (xv_init): use fourcc even if chars are not printable
+
+2006-03-24  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libunicapgtk/unicapgtk_video_display.c
+	(unicapgtk_video_display_destroy): implement GtkObject::destroy
+	and chain up instead of connecting to our own "destroy" signal (
+	thanks Sven Neumann )
+	(unicapgtk_video_display_set_property): added construct-only
+	property "disable-xv" to explicitely disable use of the XVideo
+	extension ( thanks Sven Neumann )
+	(display_xv): check frontbuffer pointer before accessing it (
+	thanks Sven Neumann )
+
+2006-03-21  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libunicapgtk/unicapgtk_video_display.c (new): better default for video format size
+
+	* libunicapgtk/colorspace.c (grey2uyvy): endianess fix ( thanks Sven Neumann )
+	(uyvy2rgb24): Optimizations
+
+	* cpi/dcam/dcam_capture.c (_dcam_dma_setup): check for new naming convention of video1394 device file
+
+2006-03-14  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libunicapgtk/unicapgtk_video_display.c (unicapgtk_video_display_set_handle): fix: ugtk->device not updated after display_set_handle
+
+2006-03-13  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libunicapgtk/xv.c (xv_update_image): allow image dimensions to be set
+
+	* libunicapgtk/xv.c: cleanup
+
+2006-03-10  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libunicapgtk/unicapgtk_device_selection.c: Added device selection windget ( contributed by JPK instruments )
+
+2006-03-08  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libunicapgtk/unicapgtk_video_display.c (unicapgtk_video_display_get_format): add get_format function
+
+2006-02-17  Arne Caspari  <arne@unicap-imaging.org>
+
+	* examples/unicapgtk/unicapgtk_smallapp/unicapgtk_smallapp.c (create_application_window): Use menu_bar instead of buttons
+
+2006-02-15  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libunicap/unicap.c (unicap_lock_stream): Use semaphores instead of file locking ( experimental )
+
+	* libunicapgtk/unicapgtk_video_display.c (unicapgtk_video_display_start): Added simple GREY->YUV conversion and use YUV overlay for Y800 images
+
+2006-02-14  Arne Caspari  <arne@unicap-imaging.org>
+
+	* examples/unicapgtk/unicapgtk_smallapp/unicapgtk_smallapp.c (create_device_menu): use unicap_is_stream_locked: saves one unicap_open 
+
+	* libunicap/unicap.c (unicap_is_stream_locked): new function to check stream lock without the need to open the device
+
+	* libunicapgtk/unicapgtk_video_format_selection.c (new): Better handling of devices lacking a video format
+
+	* cpi/dcam/dcam.h: added performance timing helper
+
+	* cpi/dcam/dcam.c (cpi_open): fix bug: command_regs_base used before initialized ( lead to long startup times for IIDC cameras)
+
+2006-02-04  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libunicapgtk/unicapgtk_video_format_selection.h (UNICAPGTK_VIDEO_FORMAT_SELECTION): Fix: copy/paste error: wrong macro definitions ( thanks Sven Neumann )
+
+	* cpi/dcam/dcam_functions.c (_dcam_check_compat_fast): Fix: detect iSight camera again
+
+2006-02-03  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libunicapgtk/libunicapgtk.pc.in (Libs): Included XLib dependencies in linker flags ( Sven Neumann )
+	(prefix): prefix now set by 'configure' ( Sven Neumann )
+
+	* libunicap/libunicap.pc.in (prefix): prefix now set by 'configure' ( Sven Neumann )
+	(Libs): librt dependency added to linker flags ( Sven Neumann )
+	
+	* configure.in (GTK_PACKAGE_LIBS): Removed GConf dependency ( patch from Sven Neumann )
+
+	* libunicapgtk/unicapgtk_video_display.c (unicapgtk_video_display_start): fixed crash when changing video formats ( bug #1422614
+
+2006-01-23  Arne Caspari  <arne@unicap-imaging.org>
+
+	* libunicapgtk/unicapgtk_device_property.c (unicapgtk_device_property_set_label): fixed obvious bug
+
+	* libunicapgtk/unicapgtk_xv.h (struct _xv_handle): fixed incorrect struct _xv_handle definition
+
+	* libunicapgtk/unicapgtk_property_dialog.h: added missing include for gtkwindow.h
+
+2006-01-09  Arne Caspari  <arne@unicap-imaging.org>
+
+	* cpi/dcam/dcam_functions.c (_dcam_read_register): do not retry when error condition is "invalid arg"
+	(_dcam_get_vendor_name_leaf_address): directly work on unit_dir_address to avoid unneccessary register reads
+	(_dcam_get_model_name_leaf_address): directly work on unit_dir_address to avoid unneccessary register reads
+	(_dcam_check_compat_fast): search for spec_id and sw_version at fixed offsets to speed up device detection
+	(_dcam_is_compatible): added shortcut for devices that only have 1 unit directory
+
+	* libunicapgtk/unicapgtk_property_dialog.c (unicapgtk_property_dialog_init): made GtkPaned widget resizable
+	(unicapgtk_property_dialog_init): added some horizontal spacing
+
+	* libunicapgtk/unicapgtk_device_property.c (range_value_changed_cb): set correct flags on slider movement
+
+2006-01-04  Arne Caspari  <arne@unicap-imaging.org>
+
+	* cpi/vid21394/visca.c (visca_htofla): Endianess conversion
+
+2006-01-03  Arne Caspari  <arne@unicap-imaging.org>
+
+	* cpi/vid21394/visca.c: fix endianess issue with serial communication
+
+2006-01-03  Arne Caspari  <arne@localhost.localdomain>
+
+	* cpi/dcam/dcam.c (cpi_open): send camera initialize command and wait for completion
+
+	* libunucapgtk/device_property: fix: change widget sensitive state when auto button is clicked
+
+2005-12-29  Arne Caspari  <arne@localhost.localdomain>
+
+	* libunicapgtk/device_property: use combo_box instead of option_menu
+
+	* libunicapgtk/device_property: add redraw function
+
+	* cpi/dcam: fix for trigger property
+
+2005-10-23  Arne Caspari  <arne@localhost.localdomain>
+
+	* unicap.c: Fixed memleak: handle->ref_count was not freed when ref_count == 0
+
+2005-10-12  Arne Caspari  <arne@localhost.localdomain>
+
+	* cpi/dcam: support absolute values for shutter
+
+	* Frank Loemkers patches: 
+
+	* cpi/dcam: fix access to uninitialized raw1394 userdata
+
+	* cpi/dcam: fix count value for reenumerate_properties
+
+	* cpi/dcam: look for /dev/video1394 if /dev/video1394/n is not available
+
+	* cpi/vid21394: add missing prototypes
+
+	* cpi/v4l2: property type in reenumerate_properties was not set
+
+	* cpi/vid21394: get property for video source and video norm was incorrect
+
+	* cpi/vid21394: fix in cpi_open: incorrect use of raw1394_new_handle_on_port
+
+09-28-2005
+	- libunicapgtk/property_dialog: update window title when device changes
+	- examples/unicapgtk_smallapp: disabled menu items for devices which stream is locked
+	- examples/unicapgtk_smallapp: added 'rescan' menu item
+
+09-26-2005
+	- libunicap: implemented locking mechanism for multiple devices
+	
+09-15-2005
+	- cpi/vid21394: cleanup
+
+09-13-2005
+	- cpi/vid21394: fix for multiple cards/devices support
+	- cpi/dcam: fix for multiple cards/devices support
+	- libunicapgtk/video_format_selection: added "new_by_device" and "set_device"
+	- libunicapgtk/video_display: fix "set_device"
+
+09-08-2005:
+	- unicapgtk/device_property: deactivate slider when auto is active
+
+09-07-2005
+	- cpi/vid21394: fix get_property "firmware version"
+	- cpi/vid21394: fix(?) support multiple IEEE1394 cards
+
+09-06-2005
+	- unicapgtk/videoformatselection: added get_format
+
+08-26-2005
+	- cpi/dcam: added absolute value support for shutter 
+
+08-24-2005
+	- libunicapgtk/property_dialog: add reset function
+	- libunicapgtk/property_dialog: fix memory leak ( property list not freed on widget_destroy )
+
+08-23-2005
+	- libunicapgtk/property_dialog: made all labels same length
+	- libunicapgtk/property_dialog: set window type hint to DIALOG
+	
+08-22-2005
+	- cpi/dcam: add timeout value
+	- cpi/dcam: fix: capture_thread_quit flag was not removed after capture_stop
+
+08-19-2005
+	- libunicap: Changed RTLD_LAZY to RTLD_NOW
+	- cpi/v4l2: fixed unitialized format structures ( patch from Frank Loemker )
+	- cpi/v4l2: replaced memcpy with unicap_copy_property/unicap_copy_format
+	- cpi/v4l2/cpi_reenumerate_properties: fixed : incorrect number of properties returned ( patch from Frank Loemker )
+	- cpi/vid21394: fix raw1394 handle leaks ( patch from Frank Loemker )
+	- cpi/vid21394: fix brightness/contrast range ( patch from Frank Loemker )
+	- cpi/dcam: wait for capture thread to terminate ( patch from Frank Loemker )
+	- cpi/dcam: fix : the DMA buffer was returned instead of copied
+
+08-18-2005
+	- code cleanup
+
+08-17-2005
+	- cpi/dcam: when changing frame rate property, capture is now stopped and restarted
+	- cpi/vid21394: when changing video mode, capture is now stopped and restarted
+	
+
+08-17-2005
+	- cpi/dcam: fixed bug in DMA capture ( wrong offsets for formats with vmmapped buffer size different to frame size )
+	- cpi/dcam: changed some property categories
+	- libunicapgtk/colorspace.c: added code for Y411
+	- libunicapgtk/property_dialog: added missing property_change signal handler 
+	- cpi/dcam: fixed property flags and flags_mask
+	
+08-14-2005
+	- cpi/vid21394: improved and debugged VISCA support
+	- cpi/vid21394: revised property settings
+
+08-02-2005
+	- cpi/dcam: individual dcam_get_property/dcam_set_property functions for each property
+	- cpi/dcam: specified property relations
+
+07-29-2005
+	- configure.in & Makefile.am: Changed automake files to use AM_CONDITIONAL instead of conditional AC_SUBST
+
+07-28-2005
+	- cpi/vid21394: 21cf04 detection
+	
+07-27-2005: 
+	- cpi/dcam: dcam_property_table: made more readable
+
+07-26-2005
+	- cpi/vid21394: added VISCA support
+
+07-15-2005
+	- cpi/dcam: DMA capture now runs in seperate thread
+
+07-13-2005
+	- cpi/vid21394: fixed timeout function ( was waking up too fast )
+	- fixed timeout thread cleanup
+
+06-21-2005 
+	- configure.in: 'tests' are only build when libunicapxml is enabled ( dependency problem )
+	- configure.in: vid21394 bootload support is now a --enable option ( default: disable )
+
+06-03-2005
+	- configure.in: Fixed versioning information
+	- tests: added test for unicapxml
+	- unicapxml: implemented and tested functionality for unicap_property; unicap_format and unicap_device
+
+05-25-2005
+	- configure.in: added provisions for unicapxml
+	- libunicapxml: imported code for unicapxml
+	- libunicapgtk/unicapgtk_video_display: implemented cropping
+	- examples: added 'device_specific' sample for Dxx41f02
+	- examples/unicapgtk: added example for cropping
+
+05-18-2005
+	- configure.in: commented out standard tests for faster configure
+
+05-11-2005
+	- libunicap/unicap.c: set_filter_remote function implemented
+	- cpi/remote.c: added
+
+05-04-2005
+	- libunicap/unicap.c: New function: unicap_get_device
+	- libunicapgtk/unicap_property_dialog: New widget
+	- libunicapgtk/unicap_device_property: changed widget layout
+
+05-02-2005
+	- libunicap/Makefile.am: added dependency to "libunicap.pc"
+	- libunicapgtk/Makefile.am: added dependency to "libunicapgtk.pc"
+	
+04-22-2005 
+	- libunicapgtk/videoformatselection: replaced deprecated gtk_option_menu with gtk_combo_box
+
+04-21-2005
+	- libunicapgtk/videodisplay: added pause function
+	- libunicapgtk/videodisplay: display still image when paused
+	- examples/unicapgtk_smallap: replaced deprecated gtk_option_menu with combo_box
+	- libunicapgtk/videodisplay: added set_handle function to change device
+	- libunicapgtk/videoformatselection: added set_handle function to change device
+
+04-20-2005
+	- libunicapgtk/videoformatselection: added missing signal emission when no sizes are present for a format
+	- examples/unicapgtk_smallapp: added missing callback for property changes
+	- libunicapgtk/videodisplay: fixed memleak when a buffer is colour converted
+
+
+04-19-2005
+	- libunicapgtk/videodisplay: fix for display_timeout bug fix
+	- libunicapgtk/videodisplay: fixes for cleanup when widget gets destroyed
+	- cpi/dcam: fixes for poll buffer; dequeue buffer
+
+04-18-2005
+	- cpi/dcam: check for UNICAP_BUFFER_TYPE_SYSTEM/memcpy on TYPE_USER
+	- cpi/v4l: mmap buffers for UNICAP_BUFFER_TYPE_SYSTEM/memcpy on TYPE_USER
+	- cpi/v4l2: mmap buffers for UNICAP_BUFFER_TYPE_SYSTEM/memcpy for TYPE_USER
+	
+04-14-2005
+	- cpi/dcam: make poll_buffer work. This fixes not working unicapgtk_videodisplay for dcam cameras
+
+04-13-2005
+	- cpi/vid21394: code cleanup
+	- cpi/vid21394: disable "enter bootload" and rs232 functions for default build
+	- libunicapgtk/videodisplay: fixed severe bug: old display_timeout functions where not removed
+	- libunicapgtk: added missing config.h includes
+	- examples/c/raw_image: store original image buffer pointer to free correct one when cpi returns a bogus buffer ptr
+	
+04-12-2005
+	- libunicapgtk: removed some debug output junk
+	- libunicap: fixed bug in device model name matching
+
+04-11-2005
+	- examples/c/sdl_display: fixed bugs: buffer_size not set; ask for video format size
+	- examples/c/raw_image: fixed: buffer_size not set
+
+04-11-2005
+	- added new example for DFG/1394
+	- cleaned up the dist package a bit
+	- changed bpp of V4L_PALETTE_RAW to 8
+
+04-07-2005
+	- examples/raw_image: fixed compile issue; more error checking; output PNM headers for image data
+	- configure: added --enable-debug- options to enable verbose debug output
+	- reorganized the example directory
+
+04-04-2005
+	- cpi/vid21394: final changes for libraw1394 >= 1.1.0
+	- cpi/dcam: fixes for white balance and property flags
+
+	
+09-03-2005 
+	- cpi/dcam: changes to support libraw1394 >= 1.1.0 versions
+	- cpi/vid21394: changes to support libraw1394 >= 1.1.0 versions
+	- configure: changes to support libraw1394 >= 1.1.0 versions
+	- added example: device_property
+	- cpi/dcam: input/output queue initializion fix
+	- libunicapgtk/unicapgtk_device_property: added a sanity check for properties that might crash GTK
+
+09-03-2005  
+	- cpi/dcam: fixed video format table sizes
+	- cpi/vid21394: video format size fixes
+
+30-01-2005
+	- cpi/dcam: trigger mode
+	- libunicapgtk/unicapgtk_smallapp: added error message when no device found; fixes
+	- libunicapgtk/cs_xfm.c: removed a memcpy
+	- libunicapgtk/unicapgtk_videodisplay.c: workaround for gtk hang
+	- libunicapgtk/unicapgtk_videodisplay.c: change format fixes
+	- renamed unicapgtk_videodisplay ==> unicapgtk_video_display
+	- added "unicapgtk.h" include file for all unicapgtk includes
+	- libunicapgtk/video_format_selection: Fix for menu not displaying correct format sometimes
+	- libunicapgtk/video_format_selection: Emit a format change signal when color format changes
+	- unicapgtk example changes for unicapgtk_video_display rename
+	- unicapgtk examples now include only "unicapgtk.h"
+	- renamed unicapgtk_deviceproperty ==> unicapgtk_device_property
+	- libunicapgtk/unicapgtk_video_display: Fix for crash when no device found
+	
+
+11-16-2004
+	- cpi/thing: fixes
+	- libunicapgtk/unicap_video_format_selection: fixes
+	- examples/unicapgtk_smallapp: added callbacks for video format selection
+	- examples/unicap--: C++ wrapper classes for libunicap
+	- include/unicap.h: Changed C++ keyword "class" to "klass" ( will change name again on next release! )
+	- cpi/dcam: neccessary changes for new "unicap.h"
+	- cpi/v4l: neccessary changes for new "unicap.h"
+	- cpi/v4l2: neccessary changes for new "unicap.h"
+	- libunicap/*: neccessary changes for new "unicap.h"
+
+11-01-2004
+	- cpi/dcam: Code cleanup
+	- cpi/dcam: fixed possible endianess issue
+	- cpi/dcam: added property for direct register access
+	- libunicapgtk/unicap_video_format_selection: New widget
+	- examples/unicapgtk_smallapp: enhanced example for video_format_selection
+
+10-25-2004
+	- unicap.h: added extern "C"
+	
+
+10-13-2004
+	- libunicapgtk/unicap_deviceproperty.c: Added support for value lists
+
+10-08-2004
+	- libunicapgtk/unicap_deviceproperty.c: Added support for menu selections
+
+10-05-2004
+	- cpi/dcam: Added slowdown value cope with slow cameras
+	- cpi/vid21394: New command for experimental firmware
+	- libunicapgtk: "auto" and "one push" buttons should now work
+	- Added and updated some documentation
+	
+09-07-2004
+        - cpi/dcam: Changed bandwidth control: Per default ignore bandwidth
+		  set UNICAP_DCAM_BW_CONTROL to "enable" to re-enable BW control
+	- cpi/dcam: start a watchdog thread to avoid ieee1394 hangs
+	- cpi/dcam: various fixes
+	- cpi/vid21394: removed bitops; this fixes some compile problems on RH fedora core ( and maybe others )
+	- cpi/vid21394: recognize devices with VISCA firmware extension
+	- cpi/v4l2: "video source" property
+	- cpi/v4l2: various bugfixes ( correct bpp reporting, correct number of properties returned from enum_properties )
+	- libunicapgtk/unicapgtk_deviceproperty.c: added an expander for "auto"/"one push"... properties
+	- libunicapgtk/unicapgtk_deviceproperty.c: first try to let the controls do something usefull ( ie. set_property )
+	- fixed the 'make clean' issue of the configure script
+	- enhanced the configure script ( you can now say --enable-[some cpi] )
+	- enhanced the configure script: build of unicapgtk is now optional
+	- configure script: removed unused dependencies ( SDL )
+	- examples/Makefile: removed xv_display from subdirs ( no own makefile )
+	- NEW example: sdl_image_saving: saves images using jpeglib
+	- NEW README for examples
+	- disabled debug output per default
+	
+08-09-2004
+	- Added missing files/directories to dist
+	- fixed various compile issues
+
+08-06-2004
+	- renamed status.h -> unicap_status.h
+	  ** Please change all old programs to use unicap_status.h
+	- added autoconf/automake scripts
+	- removed strange 'dbg_alloc' debug statements
+	- cpi/dcam: fix for 1024x768 UYVY format definition
+	- cpi/v4l: link with pthread ( sem_init and co. )
+	- cpi/v4l2: link with pthread ( sem_init and co. )
+	- cpi/thing: link with pthread ( sem_init and co. )
+
+07-11-2004
+	- cpi/dcam: update properties on reenumeration
+	- cpi/dcam: fix for whitebalance property
+	- cpi/dcam: fix for frame rate property
+	- cpi/vid21394: functionality for experimental firmware
+	- cpi/vid21394: fixed bug in video format definitions
+	- cpi/vid21394: fixed bug in video source selection
+	- cpi/vid21394: return a status on set_property
+	- examples/device_info: print range/value for each property
+	- examples/sdl_display.c: added sdl_rgb_display ( not finished )
+	- libunicap: added unicap_clone_handle
+	- libunicapgtk: severall fixes
+	- libunicapgtk: added unicapgtk_deviceproperty
+
+06-28-2004
+	- unicap_clone_handle added
+	- unicap_gtk widget known as libunicapgtk
+	- added unicapgtk samples: unicapgtk_simple, unicapgtk_cp and unicapgtk_smallapp
+	
+05-10-2004
+	- added xv_display example
+	- started work on unicap_gtk widget
+	
+05-07-2004:
+	- added sdl_display example
+
+05-06-2004:
+	- added examples directory
+	- added raw_image example
+	- added device_info example
+
+04-29-2004:
+	- missing closedir() in cpi loading function
+	
+04-26-2004: 
+	- fixed bug leading to a crash while loading cpi plugins
+	

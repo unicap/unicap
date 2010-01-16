@@ -1,0 +1,63 @@
+<!-- ##### SECTION Title ##### -->
+unicap_private
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT unicap_callback_info ##### -->
+<para>
+
+</para>
+
+@func: 
+@user_ptr: 
+
+<!-- ##### STRUCT unicap_shm_reg ##### -->
+<para>
+
+</para>
+
+@shm_reg_version: 
+@device_identifier: 
+@use_count: 
+@stream_owner: 
+@properties_owner: 
+
+<!-- ##### STRUCT unicap_handle ##### -->
+<para>
+
+</para>
+
+@device: 
+@cpi: 
+@dlhandle: 
+@cpi_data: 
+@cpi_flags: 
+@sem_key: 
+@sem_id: 
+@ref_count: 
+@lock: 
+@cb_info: 
+
+<!-- ##### FUNCTION unicap_real_enumerate_devices ##### -->
+<para>
+
+</para>
+
+@count: 
+@Returns: 
+
+

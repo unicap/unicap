@@ -1,0 +1,78 @@
+<!-- ##### SECTION Title ##### -->
+ucil_theora
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT ucil_theora_video_file_object ##### -->
+<para>
+
+</para>
+
+@os: 
+@ti: 
+@th: 
+@f: 
+@blocking_mode: 
+@downsize: 
+@format: 
+@fill_frames: 
+@last_frame_time: 
+@recording_start_time: 
+@frame_count: 
+@op: 
+@encoder_thread: 
+@quit_thread: 
+@full_queue: 
+@empty_queue: 
+@last_frame: 
+@encode_frame_cb: 
+@encode_frame_cb_data: 
+@vi: 
+@vd: 
+@vo: 
+@vb: 
+@audio: 
+@audio_data: 
+@audio_card: 
+@audio_rate: 
+@vorbis_bitrate: 
+@total_samples: 
+@async_audio_encoding: 
+@audiof: 
+@nocopy: 
+@sema: 
+@lock: 
+@requires_resizing_frames: 
+
+<!-- ##### TYPEDEF ucil_theora_video_file_object_t ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION ucil_theora_create_video_file ##### -->
+<para>
+
+</para>
+
+@path: 
+@format: 
+@codec: 
+@ap: 
+@Returns: 
+
+

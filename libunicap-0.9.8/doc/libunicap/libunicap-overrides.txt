@@ -1,0 +1,32 @@
+<STRUCT>
+<NAME>unicap_property_t</NAME>
+struct unicap_property_t
+{
+      char identifier[128];
+      char category[128];
+      char unit[128];
+      
+      char **relations;
+      int relations_count;	
+      
+      union
+	    double value;
+	    char menu_item[128]; 
+      
+      
+      union	
+	    unicap_property_range_t range;
+	    unicap_property_value_list_t value_list;
+	    unicap_property_menu_t menu; 
+	    
+      
+      double stepping;
+      
+      unicap_property_type_enum_t type;	
+      unicap_property_flags_t flags;
+      unicap_property_flags_t flags_mask;
+      
+      void *property_data; 
+      size_t property_data_size;	
+};
+</STRUCT>

@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" 
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<refentry id="libucil-colorspace">
+<refmeta>
+<refentrytitle role="top_of_page" id="libucil-colorspace.top_of_page">colorspace</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>LIBUCIL Library</refmiscinfo>
+</refmeta>
+
+<refnamediv>
+<refname>colorspace</refname>
+<refpurpose></refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id="libucil-colorspace.synopsis" role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>
+#define             <link linkend="XFM-IN-PLACE--CAPS">XFM_IN_PLACE</link>
+#define             <link linkend="XFM-PASSTHROUGH--CAPS">XFM_PASSTHROUGH</link>
+#define             <link linkend="XFM-NO-CONVERSION--CAPS">XFM_NO_CONVERSION</link>
+#define             <link linkend="FOURCC--CAPS">FOURCC</link>                              (a,b,c,d)
+<link linkend="void">void</link>                (<link linkend="xfm-func-t">*xfm_func_t</link>)                       (unsigned <link linkend="char">char</link> *dest_buffer,
+                                                         unsigned <link linkend="char">char</link> *src_buffer,
+                                                         <link linkend="int">int</link> width,
+                                                         <link linkend="int">int</link> height,
+                                                         <link linkend="int">int</link> shift);
+</synopsis>
+</refsynopsisdiv>
+
+
+
+
+
+
+
+
+
+<refsect1 id="libucil-colorspace.description" role="desc">
+<title role="desc.title">Description</title>
+<para>
+</para>
+</refsect1>
+
+<refsect1 id="libucil-colorspace.details" role="details">
+<title role="details.title">Details</title>
+<refsect2 id="XFM-IN-PLACE--CAPS" role="macro">
+<title>XFM_IN_PLACE</title>
+<indexterm zone="XFM-IN-PLACE--CAPS"><primary sortas="XFM_IN_PLACE">XFM_IN_PLACE</primary></indexterm><programlisting>#define XFM_IN_PLACE      0x1
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="XFM-PASSTHROUGH--CAPS" role="macro">
+<title>XFM_PASSTHROUGH</title>
+<indexterm zone="XFM-PASSTHROUGH--CAPS"><primary sortas="XFM_PASSTHROUGH">XFM_PASSTHROUGH</primary></indexterm><programlisting>#define XFM_PASSTHROUGH   0x2
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="XFM-NO-CONVERSION--CAPS" role="macro">
+<title>XFM_NO_CONVERSION</title>
+<indexterm zone="XFM-NO-CONVERSION--CAPS"><primary sortas="XFM_NO_CONVERSION">XFM_NO_CONVERSION</primary></indexterm><programlisting>#define XFM_NO_CONVERSION 0x4
+</programlisting>
+<para>
+</para></refsect2>
+<refsect2 id="FOURCC--CAPS" role="macro">
+<title>FOURCC()</title>
+<indexterm zone="FOURCC--CAPS"><primary sortas="FOURCC">FOURCC</primary></indexterm><programlisting>#define             FOURCC(a,b,c,d)</programlisting>
+<para>
+</para><variablelist role="params">
+<varlistentry><term><parameter>a</parameter>&#160;:</term>
+<listitem><simpara>
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>b</parameter>&#160;:</term>
+<listitem><simpara>
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>c</parameter>&#160;:</term>
+<listitem><simpara>
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>d</parameter>&#160;:</term>
+<listitem><simpara>
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2 id="xfm-func-t" role="function">
+<title>xfm_func_t ()</title>
+<indexterm zone="xfm-func-t"><primary sortas="xfm_func_t">xfm_func_t</primary></indexterm><programlisting><link linkend="void">void</link>                (*xfm_func_t)                       (unsigned <link linkend="char">char</link> *dest_buffer,
+                                                         unsigned <link linkend="char">char</link> *src_buffer,
+                                                         <link linkend="int">int</link> width,
+                                                         <link linkend="int">int</link> height,
+                                                         <link linkend="int">int</link> shift);</programlisting>
+<para>
+</para><variablelist role="params">
+<varlistentry><term><parameter>dest_buffer</parameter>&#160;:</term>
+<listitem><simpara>
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>src_buffer</parameter>&#160;:</term>
+<listitem><simpara>
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>width</parameter>&#160;:</term>
+<listitem><simpara>
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>height</parameter>&#160;:</term>
+<listitem><simpara>
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>shift</parameter>&#160;:</term>
+<listitem><simpara>
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+
+</refsect1>
+
+
+
+
+</refentry>

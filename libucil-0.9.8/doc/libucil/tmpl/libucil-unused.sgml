@@ -1,0 +1,42 @@
+<!-- ##### STRUCT ucil_theora_input_file_object ##### -->
+<para>
+
+</para>
+
+@f: 
+@oy: 
+@os: 
+@th: 
+@ti: 
+@worker_thread: 
+@quit_capture_thread: 
+@frame_intervall: 
+@format: 
+@event_callback: 
+@event_unicap_handle: 
+@in_queue: 
+@out_queue: 
+@sema: 
+
+<!-- ##### TYPEDEF ucil_theora_input_file_object_t ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT unicap_queue ##### -->
+<para>
+
+</para>
+
+@sema: 
+@psema: 
+@data: 
+@next: 
+
+<!-- ##### TYPEDEF unicap_queue_t ##### -->
+<para>
+
+</para>
+
+

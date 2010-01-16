@@ -1,0 +1,8 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+
+Name: libunicap
+Description: video capture library
+Version: @dist_version@
+Libs: -L@libdir@ -lunicap @RT_LIBS@
+Cflags: -I@includedir@/unicap

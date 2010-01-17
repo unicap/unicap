@@ -289,8 +289,8 @@ ucil
 
 </para>
 
-@src: 
 @dest: 
+@src: 
 
 
 <!-- ##### FUNCTION ucil_convert_buffer ##### -->

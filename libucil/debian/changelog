@@ -1,0 +1,13 @@
+libucil (0.9.8.1) karmic; urgency=low
+
+  * fix: old references to ucutils removed
+
+ -- Arne Caspari <arne@unicap-imaging.org>  Sun, 17 Jan 2010 15:30:11 +0100
+
+libucil (0.9.8) karmic; urgency=low
+
+  * initial PPS package
+
+ -- Arne Caspari <arne@unicap-imaging.org>  Sun, 17 Jan 2010 14:36:20 +0100
+
+

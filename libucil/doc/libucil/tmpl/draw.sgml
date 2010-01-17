@@ -22,8 +22,8 @@ draw
 
 </para>
 
-@src: 
 @dest: 
+@src: 
 
 
 <!-- ##### FUNCTION ucil_draw_box ##### -->

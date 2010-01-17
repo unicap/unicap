@@ -10,9 +10,9 @@ endif
 libcpidir = $(libdir)/unicap$(pkg_version)/cpi
 
 libdcam_la_CPPFLAGS = -D@LIBRAW1394_VERSION@
-libdcam_la_CFLAGS = -fno-strict-aliasing
+libdcam_la_CFLAGS = -fno-strict-aliasing -Wl,-z,defs
 
-libdcam_la_LDFLAGS = 
+libdcam_la_LDFLAGS = -module -avoid-version
 
 libdcam_la_SOURCES =  \
 	1394util.c \

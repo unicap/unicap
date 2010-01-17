@@ -1,3 +1,21 @@
+<!-- ##### VARIABLE PixelFormatBPP ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### VARIABLE PixelFormatFourccs ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### VARIABLE ucil_NumPixelFormatFourccs ##### -->
+<para>
+
+</para>
+
+
 <!-- ##### STRUCT ucil_theora_input_file_object ##### -->
 <para>
 

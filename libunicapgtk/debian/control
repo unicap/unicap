@@ -1,0 +1,42 @@
+Source: libunicapgtk
+Section: libs
+Priority: optional
+Maintainer: Arne Caspari <arne@unicap-imaging.org>
+Build-Depends: debhelper (>= 7), autotools-dev, libunicap-dev (>= 0.9.8), libucil-dev(>= 0.9.8), libgtk2.0-dev, libxv-dev, gtk-doc-tools, libtool
+Standards-Version: 3.8.3
+
+Package: libunicapgtk2
+Section: libs
+Architecture: any
+Depends: libunicap2 (>= 0.9.8), libucil2 (>= 0.9.8), libgtk2.0-0, libxv1, ${shlibs:Depends}
+Conflicts: libunicapgtk-0
+Description: graphical user interface to be used with libunicap
+ .
+ This package provides a library to build graphical video capture
+ applications
+
+Package: libunicapgtk-dev
+Section: libdevel
+Architecture: any
+Depends: libunicapgtk2 (= ${binary:Version}), libunicap-dev (>= 0.9.8), libgtk2.0-dev, libxv-dev
+Description: unicapgtk library, development files
+ .
+ This package contains the files needed to compile and link 
+ programs which use libunicapgtk.
+
+Package: libunicapgtk-doc
+Section: doc
+Architecture: any
+Description: unicapgtk library, documentation
+ . 
+ This package provides the API documentation for libunicapgtk ( GTK+
+ support library for unicap ).
+
+Package: libunicapgtk-2
+Section: misc
+Architecture: any
+Depends: libunicapgtk2 (= ${binary:Version})
+Description: transitional package for libunicapgtk2
+ .
+ This package is a transitional package. It could be removed after the 
+ installation of the libunicapgtk2 package.

@@ -1,0 +1,3 @@
+usr/lib/libunicap.so.*
+usr/lib/unicap2/cpi/lib*.so*
+usr/share/locale/*

@@ -1,3 +1,7 @@
+2010-01-17  Arne Caspari  <arne@unicap-imaging.org>
+
+	* src/ucil_theora.c (fill_frames): replaced ucutil_queue with GQueue
+
 2009-10-08  Arne Caspari  <arne@unicap-imaging.org>
 
 	* libunicap/unicap.c (unicap_dequeue_buffer): fix: allow to dequeue buffer if no stream lock was acquired at all

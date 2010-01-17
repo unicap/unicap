@@ -253,7 +253,7 @@ INCLUDES = -I../include -I../../include -I../../common
 @ENABLE_STATIC_CPI_TRUE@noinst_LTLIBRARIES = libv4l.la
 @ENABLE_STATIC_CPI_FALSE@libcpi_LTLIBRARIES = libv4l.la
 libcpidir = $(libdir)/unicap$(pkg_version)/cpi
-libv4l_la_LDFLAGS = 
+libv4l_la_LDFLAGS = -module -avoid-version
 libv4l_la_LIBADD = @PTHREAD_LIBS@ -L../../src/.libs/ -lunicap -L../../common -lucutils
 libv4l_la_SOURCES = \
 	v4l.c v4l.h 

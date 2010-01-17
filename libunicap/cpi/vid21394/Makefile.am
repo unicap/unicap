@@ -9,7 +9,7 @@ endif
 
 libcpidir = $(libdir)/unicap$(pkg_version)/cpi
 
-libvid21394_la_LDFLAGS = 
+libvid21394_la_LDFLAGS = -module -avoid-version
 
 libvid21394_la_SOURCES = 1394util.c \
 			 Fcp.h \

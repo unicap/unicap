@@ -89,8 +89,8 @@ typedef             <link linkend="ucil-video-file-object-t">ucil_video_file_obj
                                                          <link linkend="ucil-color-t">ucil_color_t</link> *color,
                                                          <link linkend="int">int</link> x,
                                                          <link linkend="int">int</link> y);
-<link linkend="void">void</link>                <link linkend="ucil-convert-color">ucil_convert_color</link>                  (<link linkend="ucil-color-t">ucil_color_t</link> *src,
-                                                         <link linkend="ucil-color-t">ucil_color_t</link> *dest);
+<link linkend="void">void</link>                <link linkend="ucil-convert-color">ucil_convert_color</link>                  (<link linkend="ucil-color-t">ucil_color_t</link> *dest,
+                                                         <link linkend="ucil-color-t">ucil_color_t</link> *src);
 <link linkend="unicap-status-t">unicap_status_t</link>     <link linkend="ucil-convert-buffer">ucil_convert_buffer</link>                 (<link linkend="unicap-data-buffer-t">unicap_data_buffer_t</link> *dest,
                                                          <link linkend="unicap-data-buffer-t">unicap_data_buffer_t</link> *src);
 <link linkend="int">int</link>                 <link linkend="ucil-conversion-supported">ucil_conversion_supported</link>           (unsigned <link linkend="int">int</link> dest_fourcc,
@@ -598,8 +598,8 @@ Reads the pixel at position (x,y) and stores the result in <structfield>color</s
 </variablelist></refsect2>
 <refsect2 id="ucil-convert-color" role="function">
 <title>ucil_convert_color ()</title>
-<indexterm zone="ucil-convert-color"><primary sortas="ucil_convert_color">ucil_convert_color</primary></indexterm><programlisting><link linkend="void">void</link>                ucil_convert_color                  (<link linkend="ucil-color-t">ucil_color_t</link> *src,
-                                                         <link linkend="ucil-color-t">ucil_color_t</link> *dest);</programlisting>
+<indexterm zone="ucil-convert-color"><primary sortas="ucil_convert_color">ucil_convert_color</primary></indexterm><programlisting><link linkend="void">void</link>                ucil_convert_color                  (<link linkend="ucil-color-t">ucil_color_t</link> *dest,
+                                                         <link linkend="ucil-color-t">ucil_color_t</link> *src);</programlisting>
 <para>
 Convert colors between colorspaces. The
 <structfield>colorspace</structfield> field of
@@ -619,10 +619,10 @@ ucil_convert_color( &amp;dest, &amp;src );
 </informalexample></para>
 <para>
 </para><variablelist role="params">
-<varlistentry><term><parameter>src</parameter>&#160;:</term>
+<varlistentry><term><parameter>dest</parameter>&#160;:</term>
 <listitem><simpara>
 </simpara></listitem></varlistentry>
-<varlistentry><term><parameter>dest</parameter>&#160;:</term>
+<varlistentry><term><parameter>src</parameter>&#160;:</term>
 <listitem><simpara>
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>

@@ -5,10 +5,6 @@
 <indexdiv><title>F</title>
 <indexentry><primaryie linkends="FOURCC--CAPS"><link linkend="FOURCC--CAPS">FOURCC</link></primaryie></indexentry>
 </indexdiv>
-<indexdiv><title>P</title>
-<indexentry><primaryie linkends="PixelFormatBPP"><link linkend="PixelFormatBPP">PixelFormatBPP</link></primaryie></indexentry>
-<indexentry><primaryie linkends="PixelFormatFourccs"><link linkend="PixelFormatFourccs">PixelFormatFourccs</link></primaryie></indexentry>
-</indexdiv>
 <indexdiv><title>U</title>
 <indexentry><primaryie linkends="ucil-blend-alpha"><link linkend="ucil-blend-alpha">ucil_blend_alpha</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ucil-blend-uyvy-a"><link linkend="ucil-blend-uyvy-a">ucil_blend_uyvy_a</link></primaryie></indexentry>
@@ -45,7 +41,6 @@
 <indexentry><primaryie linkends="UCIL-MICRO-VERSION--CAPS"><link linkend="UCIL-MICRO-VERSION--CAPS">UCIL_MICRO_VERSION</link></primaryie></indexentry>
 <indexentry><primaryie linkends="UCIL-MINOR-VERSION--CAPS"><link linkend="UCIL-MINOR-VERSION--CAPS">UCIL_MINOR_VERSION</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ucil-minor-version"><link linkend="ucil-minor-version">ucil_minor_version</link></primaryie></indexentry>
-<indexentry><primaryie linkends="ucil-NumPixelFormatFourccs"><link linkend="ucil-NumPixelFormatFourccs">ucil_NumPixelFormatFourccs</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ucil-open-video-file"><link linkend="ucil-open-video-file">ucil_open_video_file</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ucil-rgb24-t"><link linkend="ucil-rgb24-t">ucil_rgb24_t</link></primaryie></indexentry>
 <indexentry><primaryie linkends="ucil-rgb32"><link linkend="ucil-rgb32">ucil_rgb32</link></primaryie></indexentry>

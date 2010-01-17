@@ -1,0 +1,43 @@
+Source: libucil
+Section: libs
+Priority: optional
+Maintainer: Arne Caspari <arne@unicap-imaging.org>
+Build-Depends: debhelper (>= 7), autotools-dev, libunicap-dev (>=0.9.8), libtheora-dev, libglib2.0-dev, libpango1.0-dev, gtk-doc-tools, libasound2-dev, libvorbis-dev, libtool
+Standards-Version: 3.8.3
+
+Package: libucil2
+Section: libs
+Architecture: any
+Depends: libunicap2 (>= 0.9.8), libtheora0, libasound2, libvorbis0a, libvorbisenc2, libpango1.0-0, libglib2.0-0, ${shlibs:Depends}
+Conflicts: libucil-0
+Description: a simple image processing library, designed to work with unicap
+ .
+ This package provides ucil, a simple image processing library. The
+ library is designed to work with unicap.
+
+Package: libucil-dev
+Section: libdevel
+Architecture: any
+Depends: libucil2 (=${binary:Version}), libunicap-dev (>= 0.9.8), libtheora-dev, libvorbis-dev
+Description: ucil library, development files
+ .
+ This package provides the development files required to develop
+ applications with UCIL ( a support library for unicap )
+
+Package: libucil-doc
+Section: doc
+Architecture: any
+Description: ucil library, documentation
+ . 
+ This package provides the API documentation for libucil ( a support
+ library for unicap ).
+
+Package: libucil-2
+Section: misc
+Architecture: any
+Depends: libucil2 (= ${binary:Version})
+Description: transitional package for libucil2
+ .
+ This package is a transitional package. It could be removed after the 
+ installation of the libucil2 package.
+

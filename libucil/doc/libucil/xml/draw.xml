@@ -17,8 +17,8 @@
 <title role="synopsis.title">Synopsis</title>
 
 <synopsis>
-<link linkend="void">void</link>                <link linkend="ucil-convert-color">ucil_convert_color</link>                  (<link linkend="ucil-color-t">ucil_color_t</link> *src,
-                                                         <link linkend="ucil-color-t">ucil_color_t</link> *dest);
+<link linkend="void">void</link>                <link linkend="ucil-convert-color">ucil_convert_color</link>                  (<link linkend="ucil-color-t">ucil_color_t</link> *dest,
+                                                         <link linkend="ucil-color-t">ucil_color_t</link> *src);
 <link linkend="void">void</link>                <link linkend="ucil-draw-box">ucil_draw_box</link>                       (<link linkend="unicap-data-buffer-t">unicap_data_buffer_t</link> *data_buffer,
                                                          <link linkend="ucil-color-t">ucil_color_t</link> *color,
                                                          <link linkend="int">int</link> x1,
@@ -64,8 +64,8 @@
 <title role="details.title">Details</title>
 <refsect2 id="ucil-convert-color" role="function">
 <title>ucil_convert_color ()</title>
-<indexterm zone="ucil-convert-color"><primary sortas="ucil_convert_color">ucil_convert_color</primary></indexterm><programlisting><link linkend="void">void</link>                ucil_convert_color                  (<link linkend="ucil-color-t">ucil_color_t</link> *src,
-                                                         <link linkend="ucil-color-t">ucil_color_t</link> *dest);</programlisting>
+<indexterm zone="ucil-convert-color"><primary sortas="ucil_convert_color">ucil_convert_color</primary></indexterm><programlisting><link linkend="void">void</link>                ucil_convert_color                  (<link linkend="ucil-color-t">ucil_color_t</link> *dest,
+                                                         <link linkend="ucil-color-t">ucil_color_t</link> *src);</programlisting>
 <para>
 Convert colors between colorspaces. The
 <structfield>colorspace</structfield> field of
@@ -85,11 +85,11 @@ ucil_convert_color( &amp;dest, &amp;src );
 </informalexample></para>
 <para>
 </para><variablelist role="params">
-<varlistentry><term><parameter>src</parameter>&#160;:</term>
-<listitem><simpara> source color
-</simpara></listitem></varlistentry>
 <varlistentry><term><parameter>dest</parameter>&#160;:</term>
 <listitem><simpara> target color
+</simpara></listitem></varlistentry>
+<varlistentry><term><parameter>src</parameter>&#160;:</term>
+<listitem><simpara> source color
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2 id="ucil-draw-box" role="function">

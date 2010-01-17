@@ -10,7 +10,7 @@ endif
 libcpidir = $(libdir)/unicap$(pkg_version)/cpi
 
 
-libv4l_la_LDFLAGS = 
+libv4l_la_LDFLAGS = -module -avoid-version
 
 libv4l_la_LIBADD = @PTHREAD_LIBS@ -L../../src/.libs/ -lunicap -L../../common -lucutils
 

@@ -39,8 +39,8 @@
 <div class="refsynopsisdiv" title="Synopsis">
 <a name="libucil-draw.synopsis"></a><h2>Synopsis</h2>
 <pre class="synopsis">
-void                <a class="link" href="libucil-draw.html#ucil-convert-color" title="ucil_convert_color ()">ucil_convert_color</a>                  (<a class="link" href="libucil-ucil.html#ucil-color-t" title="ucil_color_t">ucil_color_t</a> *src,
-                                                         <a class="link" href="libucil-ucil.html#ucil-color-t" title="ucil_color_t">ucil_color_t</a> *dest);
+void                <a class="link" href="libucil-draw.html#ucil-convert-color" title="ucil_convert_color ()">ucil_convert_color</a>                  (<a class="link" href="libucil-ucil.html#ucil-color-t" title="ucil_color_t">ucil_color_t</a> *dest,
+                                                         <a class="link" href="libucil-ucil.html#ucil-color-t" title="ucil_color_t">ucil_color_t</a> *src);
 void                <a class="link" href="libucil-draw.html#ucil-draw-box" title="ucil_draw_box ()">ucil_draw_box</a>                       (<a
 href="../libunicap/libunicap-unicap.html#unicap-data-buffer-t"
 >unicap_data_buffer_t</a> *data_buffer,
@@ -86,8 +86,8 @@ href="../libunicap/libunicap-unicap.html#unicap-data-buffer-t"
 <a name="libucil-draw.details"></a><h2>Details</h2>
 <div class="refsect2" title="ucil_convert_color ()">
 <a name="ucil-convert-color"></a><h3>ucil_convert_color ()</h3>
-<pre class="programlisting">void                ucil_convert_color                  (<a class="link" href="libucil-ucil.html#ucil-color-t" title="ucil_color_t">ucil_color_t</a> *src,
-                                                         <a class="link" href="libucil-ucil.html#ucil-color-t" title="ucil_color_t">ucil_color_t</a> *dest);</pre>
+<pre class="programlisting">void                ucil_convert_color                  (<a class="link" href="libucil-ucil.html#ucil-color-t" title="ucil_color_t">ucil_color_t</a> *dest,
+                                                         <a class="link" href="libucil-ucil.html#ucil-color-t" title="ucil_color_t">ucil_color_t</a> *src);</pre>
 <p>
 Convert colors between colorspaces. The
 <em class="structfield"><code>colorspace</code></em> field of
@@ -110,13 +110,13 @@ ucil_convert_color( &amp;dest, &amp;src );
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td><p><span class="term"><em class="parameter"><code>src</code></em> :</span></p></td>
-<td> source color
+<td><p><span class="term"><em class="parameter"><code>dest</code></em> :</span></p></td>
+<td> target color
 </td>
 </tr>
 <tr>
-<td><p><span class="term"><em class="parameter"><code>dest</code></em> :</span></p></td>
-<td> target color
+<td><p><span class="term"><em class="parameter"><code>src</code></em> :</span></p></td>
+<td> source color
 </td>
 </tr>
 </tbody>

@@ -66,9 +66,6 @@
     <keyword type="variable" name="ucil_major_version" link="libucil-ucil-version.html#ucil-major-version"/>
     <keyword type="variable" name="ucil_minor_version" link="libucil-ucil-version.html#ucil-minor-version"/>
     <keyword type="variable" name="ucil_micro_version" link="libucil-ucil-version.html#ucil-micro-version"/>
-    <keyword type="variable" name="PixelFormatFourccs" link="libucil-mpeg.html#PixelFormatFourccs"/>
-    <keyword type="variable" name="ucil_NumPixelFormatFourccs" link="libucil-mpeg.html#ucil-NumPixelFormatFourccs"/>
-    <keyword type="variable" name="PixelFormatBPP" link="libucil-mpeg.html#PixelFormatBPP"/>
     <keyword type="function" name="ucil_blend_uyvy_a ()" link="libucil-yuvops.html#ucil-blend-uyvy-a"/>
     <keyword type="function" name="ucil_fill_uyvy ()" link="libucil-yuvops.html#ucil-fill-uyvy"/>
     <keyword type="macro" name="XFM_IN_PLACE" link="libucil-colorspace.html#XFM-IN-PLACE--CAPS"/>

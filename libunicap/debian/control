@@ -1,0 +1,40 @@
+Source: libunicap
+Section: libs
+Priority: optional
+Maintainer: Arne Caspari <arne@unicap-imaging.org>
+Build-Depends: debhelper (>= 7), autotools-dev, libraw1394-dev, libtheora-dev, gtk-doc-tools, libasound2-dev, libvorbis-dev, libtool
+Standards-Version: 3.8.3
+
+Package: libunicap2
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}
+Conflicts: libunicap-0
+Description: a library to access different kinds of video capture devices
+ .
+ This package provides unicap, a video capture library.
+
+Package: libunicap-dev
+Section: libdevel
+Architecture: any
+Depends: libunicap2 (= ${binary:Version}), libraw1394-dev, pkg-config
+Description: unicap library, development files
+ .
+ This package contains the files needed to compile and link 
+ programs which use libunicap.
+
+Package: libunicap-doc
+Section: doc
+Architecture: any
+Description: unicap library, documentation
+ . 
+ This package provides the API documentation for libunicap. 
+
+Package: libunicap-2
+Section: misc
+Architecture: any
+Depends: libunicap2 (= ${binary:Version})
+Description: transitional package for libunicap2
+ .
+ This package is a transitional package. It could be removed after the 
+ installation of the libunicap2 package.

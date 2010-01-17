@@ -11,7 +11,7 @@ libcpidir = $(libdir)/unicap$(pkg_version)/cpi
 
 
 # need to rename v4l2 plugin to avoid name clash with libv4l2
-libv4l2cpi_la_LDFLAGS = 
+libv4l2cpi_la_LDFLAGS = -module -avoid-version
 
 libv4l2cpi_la_LIBADD = @PTHREAD_LIBS@  @LIBV4L_LIBS@ -L../../src/.libs/ -lunicap -L../../common -lucutils
 

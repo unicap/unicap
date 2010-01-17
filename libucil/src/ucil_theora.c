@@ -1007,7 +1007,7 @@ static void *ucil_theora_worker_thread( ucil_theora_input_file_object_t *vobj )
    {
       struct timespec abs_timeout;
       struct timeval  ctime;
-      unicap_queue_t *entry;
+      GList *entry;
       ogg_page og;
       ogg_packet op;
       size_t bytes;
@@ -1062,15 +1062,13 @@ static void *ucil_theora_worker_thread( ucil_theora_input_file_object_t *vobj )
 	 TRACE( "New frame\n" );
       }
       
-      entry = ucutil_get_front_queue( vobj->in_queue );
-      if( entry )
+      unicap_data_buffer_t *data_buffer = g_queue_pop_head( vobj->in_queue );
+      if( data_buffer )
       {
-	 unicap_data_buffer_t *data_buffer = ( unicap_data_buffer_t * ) entry->data;
-
 	 unicap_copy_format( &data_buffer->format, &vobj->format );
 	 memcpy( data_buffer->data, new_frame_buffer.data, vobj->format.buffer_size );
 	 
-	 ucutil_insert_back_queue( vobj->out_queue, entry );
+	 g_queue_push_tail( vobj->out_queue, data_buffer );
       }
 
       sem_post( &vobj->sema );
@@ -1195,11 +1193,8 @@ static unicap_status_t theoracpi_capture_stop( ucil_theora_input_file_object_t *
 static unicap_status_t theoracpi_queue_buffer( ucil_theora_input_file_object_t *vobj, unicap_data_buffer_t *buffer )
 {
    unicap_status_t status = STATUS_SUCCESS;
-   unicap_queue_t *entry;
    
-   entry = malloc( sizeof( unicap_queue_t ) );
-   entry->data = buffer;
-   ucutil_insert_back_queue( vobj->in_queue, entry );
+   g_queue_push_tail( vobj->in_queue, buffer );
 
    return status;
 }
@@ -1697,7 +1692,7 @@ unicap_status_t ucil_theora_close_video_file( ucil_theora_video_file_object_t *v
 {
    if( !vobj->nocopy )
    {
-      while( ucutil_queue_get_size( vobj->full_queue ) )
+      while( g_queue_get_length( vobj->full_queue ) )
       {
 	 usleep( 1000 );
       }
@@ -1906,8 +1901,8 @@ unicap_status_t ucil_theora_open_video_file( unicap_handle_t *unicap_handle, cha
 
    *unicap_handle = handle;
 
-   vobj->in_queue = ucutil_queue_new();
-   vobj->out_queue = ucutil_queue_new();
+   vobj->in_queue = g_queue_new();
+   vobj->out_queue = g_queue_new();
 
    return STATUS_SUCCESS;
 }

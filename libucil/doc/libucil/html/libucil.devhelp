@@ -66,9 +66,6 @@
     <function name="ucil_major_version" link="libucil-ucil-version.html#ucil-major-version"/>
     <function name="ucil_minor_version" link="libucil-ucil-version.html#ucil-minor-version"/>
     <function name="ucil_micro_version" link="libucil-ucil-version.html#ucil-micro-version"/>
-    <function name="PixelFormatFourccs" link="libucil-mpeg.html#PixelFormatFourccs"/>
-    <function name="ucil_NumPixelFormatFourccs" link="libucil-mpeg.html#ucil-NumPixelFormatFourccs"/>
-    <function name="PixelFormatBPP" link="libucil-mpeg.html#PixelFormatBPP"/>
     <function name="ucil_blend_uyvy_a ()" link="libucil-yuvops.html#ucil-blend-uyvy-a"/>
     <function name="ucil_fill_uyvy ()" link="libucil-yuvops.html#ucil-fill-uyvy"/>
     <function name="XFM_IN_PLACE" link="libucil-colorspace.html#XFM-IN-PLACE--CAPS"/>

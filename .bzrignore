@@ -1,0 +1,10 @@
+*.o
+*.lo
+*.la
+*.tar.gz
+*~
+*.tmp
+*.py[co]
+*.log
+*.stamp
+*.bak

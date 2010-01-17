@@ -8,6 +8,7 @@ pkgconfig_DATA = libunicapgtk.pc
 
 
 EXTRA_DIST = \
+	gtk-doc.make \
 	intltool-extract.in \
 	intltool-merge.in 	\
 	intltool-update.in \

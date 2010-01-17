@@ -66,9 +66,6 @@
 <ANCHOR id="libucil-mpeg.synopsis" href="libucil/libucil-mpeg.html#libucil-mpeg.synopsis">
 <ANCHOR id="libucil-mpeg.description" href="libucil/libucil-mpeg.html#libucil-mpeg.description">
 <ANCHOR id="libucil-mpeg.details" href="libucil/libucil-mpeg.html#libucil-mpeg.details">
-<ANCHOR id="PixelFormatFourccs" href="libucil/libucil-mpeg.html#PixelFormatFourccs">
-<ANCHOR id="ucil-NumPixelFormatFourccs" href="libucil/libucil-mpeg.html#ucil-NumPixelFormatFourccs">
-<ANCHOR id="PixelFormatBPP" href="libucil/libucil-mpeg.html#PixelFormatBPP">
 <ANCHOR id="libucil-yuvops" href="libucil/libucil-yuvops.html">
 <ANCHOR id="libucil-yuvops.synopsis" href="libucil/libucil-yuvops.html#libucil-yuvops.synopsis">
 <ANCHOR id="libucil-yuvops.description" href="libucil/libucil-yuvops.html#libucil-yuvops.description">

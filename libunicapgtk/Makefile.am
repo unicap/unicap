@@ -1,4 +1,4 @@
-SUBDIRS=src include po
+SUBDIRS=src include po doc
 
 MAINTAINERCLEANFILES = Makefile.in
 

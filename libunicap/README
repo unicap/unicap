@@ -6,7 +6,7 @@ drivers can easily be added.
 
 unicap provides a simple yet flexible and powerfull API. The capture
 application is able to access very different kinds of capture devices
-and set all of their properties ( such as brightness/contrasst... )
+and set all of their properties ( such as brightness/contrast... )
 without the exact knowledge of the device.
 
 Currently unicap provides support for IIDC cameras, video-4-linux,
@@ -31,9 +31,6 @@ QUICKSTART:
    Note: Currently the examples expect the device to deliver UYVY
 	 color format
    
- * There is currently no API documentation. The API is simple
-   though. Have a look at the
-
  * run the sdl_display example at first to see if you can get a live
    video with your video capture device
 

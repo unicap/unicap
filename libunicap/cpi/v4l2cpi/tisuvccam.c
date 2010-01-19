@@ -664,21 +664,22 @@ unicap_status_t tisuvccam_set_property( v4l2_handle_t handle, unicap_property_t 
 	 struct uvc_xu_control autoctrl;
 	 __u8 u8data;
 	 
-	 u8data = ( property->flags & UNICAP_FLAGS_AUTO ) ? 1 : 0;
+	 /* u8data = ( property->flags & UNICAP_FLAGS_AUTO ) ? 1 : 0; */
 	    
-	 autoctrl.unit = 6;
-	 autoctrl.selector = XU_AUTO_SHUTTER_MAX_AUTO;
-	 autoctrl.size = 1;
-	 autoctrl.data = &u8data;
+	 /* autoctrl.unit = 6; */
+	 /* autoctrl.selector = XU_AUTO_SHUTTER_MAX_AUTO; */
+	 /* autoctrl.size = 1; */
+	 /* autoctrl.data = &u8data; */
 	    
-	 if( IOCTL( handle->fd, UVCIOC_CTRL_SET, &autoctrl ) < 0 )
-	 {
-	    TRACE( "failed to set XU_AUTO_SHUTTER_MAX_AUTO!\n" );
-	    status = STATUS_FAILURE;
-	    break;
-	 }
+	 /* if( IOCTL( handle->fd, UVCIOC_CTRL_SET, &autoctrl ) < 0 ) */
+	 /* { */
+	 /*    TRACE( "failed to set XU_AUTO_SHUTTER_MAX_AUTO!\n" ); */
+	 /*    status = STATUS_FAILURE; */
+	 /*    break; */
+	 /* } */
 	 
-	 data = property->value * 10000;
+	 /* data = property->value * 10000; */
+	 data = property->value;
 	 
 	 if( IOCTL( handle->fd, UVCIOC_CTRL_SET, &xuctrl ) < 0 )
 	 {

@@ -369,6 +369,18 @@ if test "x$USE_LIBV4L" == "xyes"; then
 fi
 AM_CONDITIONAL(HAVE_LIBV4L, test x$HAVE_LIBV4L == "xyes" )
 
+AC_ARG_ENABLE(euvccam, 
+	      AS_HELP_STRING( [--enable-euvccam], 
+		              [build plugin for The Imaging Source USB CMOS cameras \[default=yes\]] ),
+	      {
+	      	if test "x$enableval" != "xno"; then
+			EUVCCAM="yes";
+	      	else
+			EUVCCAM="no";
+	      	fi
+	      },
+	      EUVCCAM="yes" )
+
 AC_ARG_ENABLE(thing, 
 	      AS_HELP_STRING( [--enable-thing], 
 		              [build plugin for a dummy device ( usefull for debugging ) \[default=no\]] ),
@@ -417,6 +429,7 @@ AM_CONDITIONAL(BUILD_VID21394, test x$VID21394 = xyes )
 AM_CONDITIONAL(BUILD_DCAM, test x$DCAM = xyes )
 AM_CONDITIONAL(BUILD_V4L, test x$V4L = xyes )
 AM_CONDITIONAL(BUILD_V4L2, test x$V4L2 = xyes )
+AM_CONDITIONAL(BUILD_EUVCCAM, test x$EUVCCAM = xyes)
 AM_CONDITIONAL(BUILD_THING, test x$THING = xyes )
 
 AC_CONFIG_FILES([ include/unicap_version.h po/Makefile.in include/Makefile src/Makefile common/Makefile ])
@@ -425,6 +438,7 @@ AC_CONFIG_FILES([ cpi/vid21394/Makefile ])
 AC_CONFIG_FILES([ cpi/dcam/Makefile ])
 AC_CONFIG_FILES([ cpi/v4l/Makefile ])
 AC_CONFIG_FILES([ cpi/v4l2cpi/Makefile ])
+AC_CONFIG_FILES([ cpi/euvccam/Makefile ])
 AC_CONFIG_FILES([ cpi/thing/Makefile ])
 AC_CONFIG_FILES([ cpi/Makefile cpi/include/Makefile ])
 AC_CONFIG_FILES([ doc/libunicap/Makefile doc/Makefile ])
@@ -457,6 +471,7 @@ AC_MSG_RESULT([  video-to-1394:      $VID21394 ])
 AC_MSG_RESULT([  IIDC 1394 camera:   $DCAM ])
 AC_MSG_RESULT([  video-4-linux:      $V4L ])
 AC_MSG_RESULT([  video-4-linux v2:   $V4L2 ])
+AC_MSG_RESULT([  euvccam:            $EUVCCAM ])
 AC_MSG_RESULT([])
 AC_MSG_RESULT([ ****************************************************** ])
 AC_MSG_RESULT([ ***  Please read the file README.troubleshooting   *** ])

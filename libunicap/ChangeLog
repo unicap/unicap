@@ -1,3 +1,7 @@
+2010-01-19  Arne Caspari  <arne@unicap-imaging.org>
+
+	* configure.ac: Added euvccam plugin
+
 2009-10-08  Arne Caspari  <arne@unicap-imaging.org>
 
 	* libunicap/unicap.c (unicap_dequeue_buffer): fix: allow to dequeue buffer if no stream lock was acquired at all

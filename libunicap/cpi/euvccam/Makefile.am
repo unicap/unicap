@@ -1,11 +1,11 @@
-INCLUDES=-I../include
+INCLUDES = -I../include -I../../include -I../../ -I../../common
 
 libcpi_LTLIBRARIES=libeuvccam_cpi.la
 
 libcpidir=$(libdir)/unicap$(unicap_pkg_version)/cpi
 
-libeuvccam_cpi_la_LIBADD=@MODULES_LIBS@ -lpthread
-libeuvccam_cpi_la_CFLAGS=@MODULES_CFLAGS@ -msse2 -O2 -g
+libeuvccam_cpi_la_LIBADD=-lpthread
+libeuvccam_cpi_la_CFLAGS=-msse2 -O2 -g
 libeuvccam_cpi_la_LDFLAGS=-module -avoid-version
 
 libeuvccam_cpi_la_SOURCES= \

@@ -1858,6 +1858,23 @@ _vid21394_new_iso_handler( raw1394handle_t handle,
 	    data_buffer.buffer_size = data_buffer.format.buffer_size;
 	    data_buffer.data = vid21394handle->current_data_buffer->data;
 	    gettimeofday( &data_buffer.fill_time, NULL );
+
+	    if( field_type != 0 ){
+	       data_buffer.flags = UNICAP_FLAGS_BUFFER_TYPE_SYSTEM | UNICAP_FLAGS_BUFFER_INTERLACED | UNICAP_FLAGS_BUFFER_ODD_FIELD_FIRST;
+	       unicap_data_buffer_t *b;
+	       b = ( unicap_data_buffer_t * )vid21394handle->current_data_buffer->data;
+	       if( b )
+		  b->flags |= UNICAP_FLAGS_BUFFER_INTERLACED | UNICAP_FLAGS_BUFFER_ODD_FIELD_FIRST;
+	    } else {
+	       data_buffer.flags = UNICAP_FLAGS_BUFFER_TYPE_SYSTEM | UNICAP_FLAGS_BUFFER_INTERLACED;
+	       unicap_data_buffer_t *b;
+	       b = ( unicap_data_buffer_t * )vid21394handle->current_data_buffer->data;
+	       if( b ){
+		  b->flags |= UNICAP_FLAGS_BUFFER_INTERLACED;
+		  b->flags &= ~UNICAP_FLAGS_BUFFER_ODD_FIELD_FIRST;
+	       }
+	    }
+
 	    vid21394handle->event_callback( vid21394handle->unicap_handle, UNICAP_EVENT_NEW_FRAME, &data_buffer );
 	    
 	    if( vid21394handle->current_format.buffer_type == UNICAP_BUFFER_TYPE_USER )

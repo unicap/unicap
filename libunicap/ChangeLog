@@ -1,3 +1,9 @@
+2010-01-25  Arne Caspari  <arne@unicap-imaging.org>
+
+	* include/unicap.h (enum): add flags for interlaced buffers
+
+	* cpi/vid21394/vid21394_base.c (_vid21394_new_iso_handler): Mark buffers as interlaced and odd field first
+
 2010-01-19  Arne Caspari  <arne@unicap-imaging.org>
 
 	* configure.ac: Added euvccam plugin

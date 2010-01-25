@@ -53,10 +53,12 @@ typedef enum
 
 typedef enum
 {
-   UNICAP_FLAGS_BUFFER_TYPE_USER   = 1,      
-   UNICAP_FLAGS_BUFFER_TYPE_SYSTEM = 1 << 1,
+   UNICAP_FLAGS_BUFFER_TYPE_USER       = 1,      
+   UNICAP_FLAGS_BUFFER_TYPE_SYSTEM     = 1 << 1,
+   UNICAP_FLAGS_BUFFER_INTERLACED      = 1 << 2,
+   UNICAP_FLAGS_BUFFER_ODD_FIELD_FIRST = 1 << 3,
    
-   UNICAP_FLAGS_BUFFER_LOCKED      = 1 << 16,
+   UNICAP_FLAGS_BUFFER_LOCKED          = 1 << 16,
 } unicap_buffer_flags_t;
 
 /**

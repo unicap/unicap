@@ -1,0 +1,55 @@
+This directory contains examples for 'libunicap' and 'libunicapgtk'. 
+
+
+** INSTALLATION **
+
+ Before you can build any example, you have to build 'libunicap' first. 
+ Most examples come with a simple 'Makefile' and use 'pkg-config' to find their libraries. 
+ If 'pkg-config' complains that it can not find a specific library, you will have to set 
+ the 'PKG_CONFIG_PATH' variable to the path where the 'libunicap.pc' got installed. This 
+ should be '/usr/local/lib/pkgconfig' per default. 
+
+ The 'xv_display' example comes in it's own "xv_display*.tar.gz" archive and has it's own 
+ 'configure' script. This script will look for all required X11 and unicap libraries. 
+
+
+** EXAMPLES **
+
+Below is a short description of ( hopefully ) each example: 
+
+device_info: 
+	Enumerates all devices found by unicap and prints out all supported video 
+	formats and properties of each device. 
+
+raw_image: 
+	Opens the first device found by unicap, captures one frame with the default video 
+	format of this device and outputs the captured data to stdout.
+
+sdl_display: 
+	Prompts the user for a video capture device and video format. Then it starts capturing 
+	from this device and displays the captured data using a SDL YUV overlay. 
+
+	Currently only UYVY formats are supported by this example. 
+
+sdl_image_saving:
+	Saves images from the live stream to .jpg files using "jpeglib". 
+	Click on the video window to save an image.
+
+xv_display: 
+	Works like the SDL example but uses the Xv extension to display the video data. 
+
+	Again only UYVY formats are supported. 
+
+unicapgtk_simple: 
+	Shows the use of the videodisplay widget of 'libunicapgtk'. Creates a GTK window and 
+	displays a live video from the first capture device found by unicap. 
+
+unicapgtk_cb: 
+	Shows the use of callbacks with 'libunicapgtk'. Creates a GTK window and captures data
+	from the first capture device found by unicap. For each captured frame it inverts the 
+	first half of the image data before this data gets displayed. 
+
+unicapgtk_smallapp: 
+	Shows the use of the deviceproperty widget of 'libunicapgtk'. Shows a live video 
+	from the first capture device found by unicap and presents a set of controls to 
+	adjust the properties for this device. 

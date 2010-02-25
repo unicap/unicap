@@ -301,7 +301,6 @@ unicap_status_t euvccam_usb_open_device( unicap_device_t *unicap_device, euvccam
 	 strcpy( unicap_device->model_name, dev->strProduct );
 	 unicap_device->vendor_id = dev->idVendor;
 	 unicap_device->model_id = string_to_number( dev->strSerialNumber );
-	 strcpy( unicap_device->cpi_layer,"euvccam_cpi" );
 	 strcpy( unicap_device->device, dev->devpath );
 	 unicap_device->flags = 0;
 	 status = STATUS_SUCCESS;

@@ -31,6 +31,7 @@
 #include <unicap.h>
 #include <unicap_cpi.h>
 #include <stdlib.h>
+#include <time.h>
 
 
 #include "euvccam_cpi.h"
@@ -74,7 +75,12 @@ static void *buffer_done_thread( struct buffer_done_context *context )
 {
    
    while( !context->quit ){
-      sem_wait( &context->sema );
+      struct timespec ts;
+      clock_gettime(CLOCK_REALTIME, &ts);
+      ts.tv_sec += 1;
+      if( sem_timedwait( &context->sema, &ts) != 0 )
+	 continue;
+      
       if( context->quit )
 	 break;
 
@@ -219,9 +225,7 @@ static void *capture_thread( euvccam_handle_t handle )
 	 switch( errno ){
 	 case ENODEV:
 	    perror( "reap: " );
-	    if( !handle->removed && handle->event_callback ){
-	       TRACE( "removed\n" );
-	       handle->event_callback( handle->unicap_handle, UNICAP_EVENT_DEVICE_REMOVED );
+	    if( !handle->removed){
 	       handle->removed = 1;
 	    }
 	    break;
@@ -329,6 +333,10 @@ static void *capture_thread( euvccam_handle_t handle )
    for( i = 0; i < NUM_SYSTEM_BUFFERS; i++ ){
       free( system_buffers[i].data );
    }   
+
+   if( handle->removed  && handle->event_callback ){
+      handle->event_callback( handle->unicap_handle, UNICAP_EVENT_DEVICE_REMOVED );
+   }
       
    return NULL;
 }
@@ -363,6 +371,7 @@ unicap_status_t euvccam_capture_start_capture( euvccam_handle_t handle )
 unicap_status_t euvccam_capture_stop_capture( euvccam_handle_t handle )
 {
    if( handle->capture_running ){
+      /* // send signal to interrupt blocking ioctls */
       pthread_kill( handle->capture_thread, SIGUSR1 );
       handle->capture_thread_quit = 1;
       pthread_join( handle->capture_thread, NULL );

@@ -1,0 +1,4 @@
+#ifndef __UNICAPGTK_MODULE_H__
+#define __UNICAPGTK_MODULE_H__
+
+#endif//__UNICAPGTK_MODULE_H__

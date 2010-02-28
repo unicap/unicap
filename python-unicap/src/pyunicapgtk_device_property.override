@@ -1,0 +1,72 @@
+%%
+headers
+#include <Python.h>
+#include <pygobject.h>
+#include <pygtk/pygtk.h>
+#include <unicap.h>
+#include "unicapmodule.h"
+#include "utils.h"
+#include "unicapgtk.h"
+%%
+modulename unicapgtk
+%%
+import gtk.HBox as PyGtkHBox_Type
+import gtk.Widget as PyGtkWidget_Type
+import unicap
+%%
+new-constructor UNICAPGTK_TYPE_DEVICE_PROPERTY
+%%
+ignore unicapgtk_device_property_new_by_handle
+%%
+override unicapgtk_device_property_new kwargs
+static int
+_wrap_unicapgtk_device_property_new(PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+   static char* kwlist[] = { "property", NULL };
+   PyObject *propertyobj = NULL;
+   unicap_property_t property;
+   
+   unicap_void_property( &property );
+
+   if (!PyArg_ParseTupleAndKeywords(args, kwargs,
+				    "O:unicapgtk.DeviceProperty.__init__",
+				    kwlist, &propertyobj ))
+      return -1;
+
+   pygobject_constructv(self, 0, NULL);
+
+   if( parse_property( &property, propertyobj ) < 0 ){
+      PyErr_SetString( PyExc_ValueError, "Invalid property specification" );
+      return -1;
+   }
+   
+   unicapgtk_device_property_set( UNICAPGTK_DEVICE_PROPERTY( self->obj ), &property );
+
+   return 0;
+}
+%%
+override unicapgtk_device_property_set kwargs
+static int
+_wrap_unicapgtk_device_property_set(PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+   static char* kwlist[] = { "property", NULL };
+   PyObject *propertyobj = NULL;
+   unicap_property_t property;
+   
+   unicap_void_property( &property );
+
+   if (!PyArg_ParseTupleAndKeywords(args, kwargs,
+				    "O:unicapgtk.DeviceProperty.__init__",
+				    kwlist, &propertyobj ))
+      return -1;
+
+   if( parse_property( &property, propertyobj ) < 0 ){
+      PyErr_SetString( PyExc_ValueError, "Invalid property specification" );
+      return -1;
+   }
+   
+   unicapgtk_device_property_set( UNICAPGTK_DEVICE_PROPERTY( self->obj ), &property );
+
+   return 0;
+}
+%%

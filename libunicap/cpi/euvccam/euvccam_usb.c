@@ -260,9 +260,15 @@ euvccam_usb_device_t *euvccam_usb_find_device( int index )
 		     dev.idVendor = descriptor.idVendor;
 		     dev.idProduct = descriptor.idProduct;
 		     dev.fd = -1;
-		     euvccam_usb_read_ascii_string( fd, descriptor.iManufacturer, dev.strVendor, sizeof( dev.strVendor ) );
-		     euvccam_usb_read_ascii_string( fd, descriptor.iProduct, dev.strProduct, sizeof( dev.strProduct ) );
-		     euvccam_usb_read_ascii_string( fd, descriptor.iSerialNumber, dev.strSerialNumber, sizeof( dev.strSerialNumber ) );
+		     if( !SUCCESS( euvccam_usb_read_ascii_string( fd, descriptor.iManufacturer, dev.strVendor, sizeof( dev.strVendor ) ) ) ){
+			strcpy( dev.strVendor, "The Imaging Source" );
+		     }
+		     if( !SUCCESS( euvccam_usb_read_ascii_string( fd, descriptor.iProduct, dev.strProduct, sizeof( dev.strProduct ) ) ) ){
+			strcpy( dev.strProduct, "CMOS camera" );
+		     }
+		     if( !SUCCESS( euvccam_usb_read_ascii_string( fd, descriptor.iSerialNumber, dev.strSerialNumber, sizeof( dev.strSerialNumber ) ) ) ){
+			strcpy( dev.strSerialNumber, "0" );
+		     }
 		     strcpy( dev.devpath, devpath );
 		     sprintf( dev.identifier, "%s %s %s", dev.strVendor, dev.strProduct, dev.strSerialNumber );
 		     dev.serial = string_to_number( dev.strSerialNumber );

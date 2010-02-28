@@ -1,0 +1,15 @@
+%%
+headers
+#include <Python.h>
+#include <pygobject.h>
+#include <unicap.h>
+#include <unicapgtk.h>
+%%
+modulename unicapgtk
+%%
+import gtk.Plug as PyGtkPlug_Type
+import unicap
+%%
+ignore-glob
+ *_get_type
+%%

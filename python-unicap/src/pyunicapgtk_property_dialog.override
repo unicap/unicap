@@ -1,0 +1,124 @@
+%%
+headers
+#include <Python.h>
+#include <pygobject.h>
+#include <pygtk/pygtk.h>
+#include <unicap.h>
+#include "unicapmodule.h"
+#include "utils.h"
+#include "unicapgtk.h"
+%%
+modulename unicapgtk
+%%
+import gtk.Dialog as PyGtkDialog_Type
+import unicap
+%%
+new-constructor UNICAPGTK_TYPE_PROPERTY_DIALOG
+%%
+override unicapgtk_property_dialog_new kwargs
+static int
+_wrap_unicapgtk_property_dialog_new(PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+   static char* kwlist[] = { "device", NULL };
+   unicap_device_t device_spec;
+   unicap_device_t device;
+   char *device_id = NULL;
+   
+   if( import_unicap() < 0 )
+      return -1;
+
+   if (!PyArg_ParseTupleAndKeywords(args, kwargs,
+				    "|O&:unicapgtk.PropertyDialog.__init__",
+				    kwlist, conv_device_identifier, &device_id))
+      return -1;
+
+   pygobject_constructv(self, 0, NULL);
+   unicap_void_device( &device );
+   unicap_void_device( &device_spec );
+   if( device_id )
+      strcpy( device_spec.identifier, device_id );
+
+   unicap_reenumerate_devices( NULL );
+   
+   if( !SUCCESS( unicap_enumerate_devices( &device_spec, &device, 0 ) ) ){
+      PyErr_SetString( PyExc_RuntimeError, "failed to enumerate device" );
+      return -1;
+   }
+   unicapgtk_property_dialog_set_device( UNICAPGTK_PROPERTY_DIALOG( self->obj ), &device );
+
+   return 0;
+}
+%%
+override unicapgtk_property_dialog_get_device
+static PyObject *
+_wrap_unicapgtk_property_dialog_get_device(PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+   unicap_handle_t handle;
+   PyObject *obj;
+   
+   
+   handle = unicapgtk_property_dialog_get_handle( UNICAPGTK_PROPERTY_DIALOG( self->obj ) );
+
+   obj = UnicapDevice_new_from_handle( handle );
+
+   return obj;
+}
+%%
+define UnicapgtkPropertyDialog.set_device_id kwargs 
+static PyObject *
+_wrap_unicapgtk_property_dialog_set_device_id( PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+   const char *device_id;
+   unicap_device_t dev_spec, device;
+
+   static char *kwlist[] = { "device_id", NULL };
+
+   if( !PyArg_ParseTupleAndKeywords( args, kwargs, "s", kwlist, &device_id ) )
+   {
+      PyErr_SetString( PyExc_ValueError, "Invalid argument" );
+      return NULL;
+   }
+   
+   unicap_void_device( &dev_spec );
+   strcpy( dev_spec.identifier, device_id );
+   if( !SUCCESS( unicap_enumerate_devices( &dev_spec, &device, 0 ) ) )
+   {
+      PyErr_SetString( PyExc_IOError, "Could not enumerate device" );
+      return NULL;   
+   }
+   
+   unicapgtk_property_dialog_set_device( UNICAPGTK_PROPERTY_DIALOG( self->obj ), &device );
+
+   Py_INCREF( Py_None );
+   return( Py_None );   
+}
+%%
+override unicapgtk_property_dialog_set_device
+static PyObject *
+_wrap_unicapgtk_property_dialog_set_device( PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+   unicap_device_t dev_spec, device;
+   char *identifier;
+
+   static char *kwlist[] = { "device", NULL };
+
+   if( !PyArg_ParseTupleAndKeywords( args, kwargs, "O&", kwlist, conv_device_identifier, &identifier ) )
+   {
+      PyErr_SetString( PyExc_ValueError, "Invalid argument" );
+      return NULL;
+   }
+
+   unicap_void_device( &dev_spec );
+   strcpy( dev_spec.identifier, identifier );
+   if( !SUCCESS( unicap_enumerate_devices( &dev_spec, &device, 0 ) ) )
+   {
+      PyErr_SetString( PyExc_IOError, "Could not enumerate device" );
+      return NULL;   
+   }
+   
+   unicapgtk_property_dialog_set_device( UNICAPGTK_PROPERTY_DIALOG( self->obj ), &device );
+
+   Py_INCREF( Py_None );
+   return( Py_None );   
+}
+%%

@@ -1,0 +1,68 @@
+;; -*- scheme -*-
+; object definitions ...
+(define-object PropertyDialog
+  (in-module "Unicapgtk")
+  (parent "GtkDialog")
+  (c-name "UnicapgtkPropertyDialog")
+  (gtype-id "UNICAPGTK_TYPE_PROPERTY_DIALOG")
+)
+
+;; Enumerations and flags ...
+
+
+;; From unicapgtk_property_dialog.h
+
+(define-function unicapgtk_property_dialog_get_type
+  (c-name "unicapgtk_property_dialog_get_type")
+  (return-type "GType")
+)
+
+(define-function unicapgtk_property_dialog_new
+  (c-name "unicapgtk_property_dialog_new")
+  (is-constructor-of "UnicapgtkPropertyDialog")
+  (return-type "GtkWidget*")
+)
+
+(define-function unicapgtk_property_dialog_new_by_handle
+  (c-name "unicapgtk_property_dialog_new_by_handle")
+  (return-type "GtkWidget*")
+  (parameters
+    '("unicap_handle_t" "handle")
+  )
+)
+
+(define-method reset
+  (of-object "UnicapgtkPropertyDialog")
+  (c-name "unicapgtk_property_dialog_reset")
+  (return-type "none")
+)
+
+(define-method set_device
+  (of-object "UnicapgtkPropertyDialog")
+  (c-name "unicapgtk_property_dialog_set_device")
+  (return-type "none")
+  (parameters
+    '("unicap_device_t*" "device_spec")
+  )
+)
+
+(define-method set_handle
+  (of-object "UnicapgtkPropertyDialog")
+  (c-name "unicapgtk_property_dialog_set_handle")
+  (return-type "none")
+  (parameters
+    '("unicap_handle_t" "handle")
+  )
+)
+
+(define-method set_filter
+  (of-object "UnicapgtkPropertyDialog")
+  (c-name "unicapgtk_property_dialog_set_filter")
+  (return-type "none")
+  (parameters
+    '("unicap_property_filter_func_t" "func")
+    '("gpointer" "user_data")
+  )
+)
+
+

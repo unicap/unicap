@@ -1,0 +1,70 @@
+%%
+headers
+#include <Python.h>
+#include <pygobject.h>
+#include <pygtk/pygtk.h>
+#include <unicap.h>
+#include "unicapmodule.h"
+#include "utils.h"
+#include "unicapgtk.h"
+%%
+modulename unicapgtk
+%%
+import gtk.ComboBox as PyGtkComboBox_Type
+import gtk.Widget as PyGtkWidget_Type
+import unicap
+%%
+new-constructor UNICAPGTK_TYPE_DEVICE_SELECTION
+%%
+override unicapgtk_device_selection_new kwargs
+static int
+_wrap_unicapgtk_device_selection_new(PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+   static char* kwlist[] = { "include_rescan", NULL };
+   int include_rescan = FALSE;
+   
+   if( import_unicap() < 0 ){
+      PyErr_SetString( PyExc_RuntimeError, "Could not import unicap module" );
+      return -1;
+   }
+
+   if (!PyArg_ParseTupleAndKeywords(args, kwargs,
+				    "|i:unicapgtk.DeviceSelection.__init__",
+				    kwlist, &include_rescan ))
+      return -1;
+
+   pygobject_construct( self, "include-rescan-entry", include_rescan, NULL );
+
+   return 0;
+}
+%%
+override unicapgtk_device_selection_set_device
+static PyObject *
+_wrap_unicapgtk_device_selection_set_device(PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+   unicap_device_t device_spec;
+   unicap_device_t device;
+   char *identifier;
+   static char* kwlist[] = { "device_id", NULL };
+   
+   unicap_void_device( &device_spec );
+   
+   if (!PyArg_ParseTupleAndKeywords(args, kwargs,
+				    "O&:unicapgtk.DeviceSelection.set_device",
+				    kwlist, conv_device_identifier, &identifier )){
+      return NULL;
+   }
+   
+   strcpy( device_spec.identifier, identifier );
+   
+   if( !SUCCESS( unicap_enumerate_devices( &device_spec, &device, 0 ) ) ){
+      PyErr_SetString( PyExc_RuntimeError, "Could not enumerate device" );
+      printf( "::%s\n", device_spec.identifier );
+      return NULL;
+   }
+   
+   unicapgtk_device_selection_set_device( UNICAPGTK_DEVICE_SELECTION( self->obj ), &device );
+
+   Py_INCREF( Py_None );
+   return( Py_None );   
+}

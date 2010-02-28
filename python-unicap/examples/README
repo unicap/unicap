@@ -1,0 +1,21 @@
+This directory contains various examples for pyunicap: 
+
+
+
+GettingStarted:
+
+ GettingStartedUnicap.py:
+
+   This example demonstrates the basic use of the unicap module.
+
+
+ GettingStartedUnicapGtk.py:
+
+   This example demonstrates how to build a simple UI-driven capture application with the unicapgtk module.
+
+
+SnapImage:
+
+ SnapImage.py
+
+  This example provides a simple command line utility to capture and save image in various image formats. 

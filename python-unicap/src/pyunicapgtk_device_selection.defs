@@ -1,0 +1,62 @@
+;; -*- scheme -*-
+; object definitions ...
+(define-object DeviceSelection
+  (in-module "Unicapgtk")
+  (parent "GtkComboBox")
+  (c-name "UnicapgtkDeviceSelection")
+  (gtype-id "UNICAPGTK_TYPE_DEVICE_SELECTION")
+)
+
+;; Enumerations and flags ...
+
+
+;; From unicapgtk_device_selection.h
+
+(define-function unicapgtk_device_selection_get_type
+  (c-name "unicapgtk_device_selection_get_type")
+  (return-type "GType")
+)
+
+(define-function unicapgtk_device_selection_new
+  (c-name "unicapgtk_device_selection_new")
+  (is-constructor-of "UnicapgtkDeviceSelection")
+  (return-type "GtkWidget*")
+  (parameters
+    '("gboolean" "include_rescan_entry")
+  )
+  (docstring "Creates a DeviceSelection widget.\n"
+	     "\n"
+	     "include_rescan: when True, include a menu entry to trigger a device rescan")
+)
+
+(define-method rescan
+  (of-object "UnicapgtkDeviceSelection")
+  (c-name "unicapgtk_device_selection_rescan")
+  (return-type "gint")
+  (docstring "rescan()\n"
+	     "\n"
+	     "Triggers a rescan of the available video capture devices.")
+)
+
+(define-method set_device
+  (of-object "UnicapgtkDeviceSelection")
+  (c-name "unicapgtk_device_selection_set_device")
+  (return-type "gboolean")
+  (parameters
+    '("unicap_device_t*" "device")
+  )
+  (docstring "set_device(device_id)\n"
+	     "\n"
+             "Sets the current device.")
+)
+
+(define-method set_label_fmt
+  (of-object "UnicapgtkDeviceSelection")
+  (c-name "unicapgtk_device_selection_set_label_fmt")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "fmt")
+  )
+)
+
+

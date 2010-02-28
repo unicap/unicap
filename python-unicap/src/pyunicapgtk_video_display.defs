@@ -1,0 +1,232 @@
+;; -*- scheme -*-
+; object definitions ...
+;; Enumerations and flags ...
+
+;(define-flags CallbackFlags
+;  (in-module "Unicapgtk")
+;  (c-name "UnicapgtkCallbackFlags")
+;  (gtype-id "UNICAPGTK_TYPE_CALLBACK_FLAGS")
+;  (values
+;    '("before" "UNICAPGTK_CALLBACK_FLAGS_BEFORE")
+;    '("after" "UNICAPGTK_CALLBACK_FLAGS_AFTER")
+;    '("xv-cb" "UNICAPGTK_CALLBACK_FLAGS_XV_CB")
+;  )
+;)
+
+
+;; From unicapgtk_video_display.h
+
+(define-object VideoDisplay
+  (in-module "Unicapgtk")
+  (parent    "GtkAspectFrame")
+  (c-name    "UnicapgtkVideoDisplay")
+  (gtype-id  "UNICAPGTK_TYPE_VIDEO_DISPLAY")
+)
+
+(define-function unicapgtk_video_display_new
+  (c-name "unicapgtk_video_display_new")
+  (is-constructor-of "UnicapgtkVideoDisplay")
+  (return-type "GtkWidget*")
+  (docstring "VideoDisplay( {device=None|device_id=None} )\n\Creates a new VideoDisplay object.")
+)
+
+(define-function unicapgtk_video_display_new_by_device
+  (c-name "unicapgtk_video_display_new_by_device")
+  (is-constructor-of "UnicapgtkVideoDisplay")
+  (return-type "GtkWidget*")
+  (parameters
+    '("unicap_device_t*" "device_spec")
+  )
+)
+
+(define-function unicapgtk_video_display_get_type
+  (c-name "unicapgtk_video_display_get_type")
+  (return-type "GType")
+)
+
+
+
+(define-function unicapgtk_video_display_new_by_handle
+  (c-name "unicapgtk_video_display_new_by_handle")
+  (return-type "GtkWidget*")
+  (parameters
+    '("unicap_handle_t" "handle")
+  )
+)
+
+(define-method start
+  (of-object "UnicapgtkVideoDisplay")
+  (c-name "unicapgtk_video_display_start")
+  (return-type "gboolean")
+  (docstring "start()\nStarts capturing and displaying video.")
+)
+
+(define-method stop
+  (of-object "UnicapgtkVideoDisplay")
+  (c-name "unicapgtk_video_display_stop")
+  (return-type "none")
+  (docstring "stop()\nStops capturing video. The last video image capture will be displayed")
+)
+
+(define-method get_device
+  (of-object "UnicapgtkVideoDisplay")
+  (c-name "unicapgtk_video_display_get_device")
+  (return-type "unicap_device_t*")
+  (docstring "get_device()\nReturns currently used video device")
+)
+
+(define-method get_handle
+  (of-object "UnicapgtkVideoDisplay")
+  (c-name "unicapgtk_video_display_get_handle")
+  (return-type "unicap_handle_t")
+)
+
+(define-method set_format
+  (of-object "UnicapgtkVideoDisplay")
+  (c-name "unicapgtk_video_display_set_format")
+  (return-type "gboolean")
+  (parameters
+    '("unicap_format_t*" "format_spec")
+  )
+  (docstring "set_format(format)\nSets the video format.\n\nSee unicap.enumerate_formats for the definition of a video format." )
+)
+
+(define-method get_format
+  (of-object "UnicapgtkVideoDisplay")
+  (c-name "unicapgtk_video_display_get_format")
+  (return-type "none")
+  (parameters
+    '("unicap_format_t*" "format")
+  )
+  (docstring "get_format()\nReturns the current video format." )
+)
+
+(define-method set_pause
+  (of-object "UnicapgtkVideoDisplay")
+  (c-name "unicapgtk_video_display_set_pause")
+  (return-type "none")
+  (parameters
+    '("gboolean" "state")
+  )
+  (docstring "set_pause(state)\nSets the pause state of the display.\n\nstate: True: The display gets paused; False: The display gets unpaused")
+)
+
+(define-method get_pause
+  (of-object "UnicapgtkVideoDisplay")
+  (c-name "unicapgtk_video_display_get_pause")
+  (return-type "gboolean")
+  (docstring "get_pause()\nReturns the pause state of the device\n\nReturns True when the display is paused; False otherwise" )
+)
+
+(define-method set_device
+  (of-object "UnicapgtkVideoDisplay")
+  (c-name "unicapgtk_video_display_set_device")
+  (return-type "gboolean")
+  (parameters
+    '("unicap_device_t*" "device_spec")
+  )
+  (docstring "set_device(device)\nSets the current video capture device\n\ndevice: A unicap.Device")
+)
+
+(define-method set_handle
+  (of-object "UnicapgtkVideoDisplay")
+  (c-name "unicapgtk_video_display_set_handle")
+  (return-type "gboolean")
+  (parameters
+    '("unicap_handle_t" "handle")
+  )
+)
+
+(define-method get_still_image
+  (of-object "UnicapgtkVideoDisplay")
+  (c-name "unicapgtk_video_display_get_still_image")
+  (return-type "GdkPixbuf*")
+  (docstring "get_still_image()\nReturns a gdk.Pixbuf with the currently displayed image.")
+)
+
+(define-method set_still_image
+  (of-object "UnicapgtkVideoDisplay")
+  (c-name "unicapgtk_video_display_set_still_image")
+  (return-type "none")
+  (parameters
+    '("unicap_data_buffer_t*" "buffer")
+  )
+)
+
+(define-method get_data_buffer
+  (of-object "UnicapgtkVideoDisplay")
+  (c-name "unicapgtk_video_display_get_data_buffer")
+  (return-type "none")
+  (parameters
+    '("unicap_data_buffer_t**" "dest_buffer")
+  )
+)
+
+(define-method set_data_buffer
+  (of-object "UnicapgtkVideoDisplay")
+  (c-name "unicapgtk_video_display_set_data_buffer")
+  (return-type "none")
+  (parameters
+    '("unicap_data_buffer_t*" "buffer")
+  )
+)
+
+(define-method set_crop
+  (of-object "UnicapgtkVideoDisplay")
+  (c-name "unicapgtk_video_display_set_crop")
+  (return-type "none")
+  (parameters
+    '("UnicapgtkVideoDisplayCropping*" "crop")
+  )
+)
+
+(define-method get_crop
+  (of-object "UnicapgtkVideoDisplay")
+  (c-name "unicapgtk_video_display_get_crop")
+  (return-type "none")
+  (parameters
+    '("UnicapgtkVideoDisplayCropping*" "crop")
+  )
+)
+
+(define-method set_size
+  (of-object "UnicapgtkVideoDisplay")
+  (c-name "unicapgtk_video_display_set_size")
+  (return-type "none")
+  (parameters
+    '("gint" "width")
+    '("gint" "height")
+  )
+  (docstring "set_size(width,height)\nSets the size of the display" )
+)
+
+(define-method set_scale_to_fit
+  (of-object "UnicapgtkVideoDisplay")
+  (c-name "unicapgtk_video_display_set_scale_to_fit")
+  (return-type "none")
+  (parameters
+    '("gboolean" "scale")
+  )
+  (docstring "set_scale_to_fit(scale)\nDetermines whether the display should be scaled to fill all available space.\n\nscale: When True, the display fills the available space; otherwise the video image has the size of the current video format.")
+)
+
+(define-method set_new_frame_callback
+  (of-object "UnicapgtkVideoDisplay")
+  (c-name "unicapgtk_video_display_set_new_frame_callback")
+  (return-type "unicap_new_frame_callback_t")
+  (parameters
+    '("UnicapgtkCallbackFlags" "flags")
+    '("unicap_new_frame_callback_t" "cb")
+    '("void*" "data")
+  )
+)
+
+(define-method set_color_conversion_callback
+  (of-object "UnicapgtkVideoDisplay")
+  (c-name "unicapgtk_video_display_set_color_conversion_callback")
+  (return-type "unicapgtk_color_conversion_callback_t")
+  (parameters
+    '("unicapgtk_color_conversion_callback_t" "cb")
+    '("void*" "data")
+  )
+)

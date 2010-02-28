@@ -1,0 +1,31 @@
+pyunicap is a Python extension to access video capture devices supported by 
+the unicap library from Python programs. 
+
+REQUIREMENTS: 
+
+To build the extension on your system, the following packages are required: 
+
+python-dev
+python-gtk2-dev
+python-gobject-dev
+libunicap-dev
+libunicapgtk-dev
+libucil-dev
+
+
+BUILDING and INSTALLING:
+
+If you are using an Ubuntu Linux distribution, please considder installing 
+the software from the package repositories available on the unicap website. 
+
+To compile the extension, run 'make' in the toplevel source directory. The 
+command 'make install' will install the extension to the appropriate 
+directories. 
+
+To install the extension to a different location, you can set the variables
+DESTDIR and PREFIX to the appropriate locations. The DESTDIR specifies the 
+target location of the installation ( default "/" ) and PREFIX specifies the 
+prefix which is prepended to the paths ( default "/usr" ). Additionally, the 
+SETUPOPTS variable can be used to supply optional arguments to the setup.py 
+script. 
+

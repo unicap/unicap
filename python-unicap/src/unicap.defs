@@ -1,0 +1,401 @@
+;; -*- scheme -*-
+; object definitions ...
+;; Enumerations and flags ...
+
+
+;; From unicap.h
+
+(define-function unicap_reenumerate_devices
+  (c-name "unicap_reenumerate_devices")
+  (return-type "unicap_status_t")
+  (parameters
+    '("int*" "count")
+  )
+)
+
+(define-function unicap_enumerate_devices
+  (c-name "unicap_enumerate_devices")
+  (return-type "unicap_status_t")
+  (parameters
+    '("unicap_device_t*" "specifier")
+    '("unicap_device_t*" "device")
+    '("int" "index")
+  )
+)
+
+(define-function unicap_open
+  (c-name "unicap_open")
+  (return-type "unicap_status_t")
+  (parameters
+    '("unicap_handle_t*" "handle")
+    '("unicap_device_t*" "device")
+  )
+)
+
+(define-function unicap_register_callback
+  (c-name "unicap_register_callback")
+  (return-type "unicap_status_t")
+  (parameters
+    '("unicap_handle_t" "handle")
+    '("unicap_event_t" "event")
+    '("unicap_callback_t" "func")
+    '("void*" "user_ptr")
+  )
+)
+
+(define-function unicap_unregister_callback
+  (c-name "unicap_unregister_callback")
+  (return-type "unicap_status_t")
+  (parameters
+    '("unicap_handle_t" "handle")
+    '("unicap_event_t" "event")
+  )
+)
+
+(define-function unicap_close
+  (c-name "unicap_close")
+  (return-type "unicap_status_t")
+  (parameters
+    '("unicap_handle_t" "handle")
+  )
+)
+
+(define-function unicap_get_device
+  (c-name "unicap_get_device")
+  (return-type "unicap_status_t")
+  (parameters
+    '("unicap_handle_t" "handle")
+    '("unicap_device_t*" "device")
+  )
+)
+
+(define-function unicap_clone_handle
+  (c-name "unicap_clone_handle")
+  (return-type "unicap_handle_t")
+  (parameters
+    '("unicap_handle_t" "old_handle")
+  )
+)
+
+(define-function unicap_reenumerate_formats
+  (c-name "unicap_reenumerate_formats")
+  (return-type "unicap_status_t")
+  (parameters
+    '("unicap_handle_t" "handle")
+    '("int*" "count")
+  )
+)
+
+(define-function unicap_enumerate_formats
+  (c-name "unicap_enumerate_formats")
+  (return-type "unicap_status_t")
+  (parameters
+    '("unicap_handle_t" "handle")
+    '("unicap_format_t*" "specifier")
+    '("unicap_format_t*" "format")
+    '("int" "index")
+  )
+)
+
+(define-function unicap_set_format
+  (c-name "unicap_set_format")
+  (return-type "unicap_status_t")
+  (parameters
+    '("unicap_handle_t" "handle")
+    '("unicap_format_t*" "format")
+  )
+)
+
+(define-function unicap_get_format
+  (c-name "unicap_get_format")
+  (return-type "unicap_status_t")
+  (parameters
+    '("unicap_handle_t" "handle")
+    '("unicap_format_t*" "format")
+  )
+)
+
+(define-function unicap_reenumerate_properties
+  (c-name "unicap_reenumerate_properties")
+  (return-type "unicap_status_t")
+  (parameters
+    '("unicap_handle_t" "handle")
+    '("int*" "count")
+  )
+)
+
+(define-function unicap_enumerate_properties
+  (c-name "unicap_enumerate_properties")
+  (return-type "unicap_status_t")
+  (parameters
+    '("unicap_handle_t" "handle")
+    '("unicap_property_t*" "specifier")
+    '("unicap_property_t*" "property")
+    '("int" "index")
+  )
+)
+
+(define-function unicap_set_property
+  (c-name "unicap_set_property")
+  (return-type "unicap_status_t")
+  (parameters
+    '("unicap_handle_t" "handle")
+    '("unicap_property_t*" "property")
+  )
+)
+
+(define-function unicap_set_property_value
+  (c-name "unicap_set_property_value")
+  (return-type "unicap_status_t")
+  (parameters
+    '("unicap_handle_t" "handle")
+    '("char*" "identifier")
+    '("double" "value")
+  )
+)
+
+(define-function unicap_set_property_manual
+  (c-name "unicap_set_property_manual")
+  (return-type "unicap_status_t")
+  (parameters
+    '("unicap_handle_t" "handle")
+    '("char*" "identifier")
+  )
+)
+
+(define-function unicap_set_property_auto
+  (c-name "unicap_set_property_auto")
+  (return-type "unicap_status_t")
+  (parameters
+    '("unicap_handle_t" "handle")
+    '("char*" "identifier")
+  )
+)
+
+(define-function unicap_set_property_one_push
+  (c-name "unicap_set_property_one_push")
+  (return-type "unicap_status_t")
+  (parameters
+    '("unicap_handle_t" "handle")
+    '("char*" "identifier")
+  )
+)
+
+(define-function unicap_get_property
+  (c-name "unicap_get_property")
+  (return-type "unicap_status_t")
+  (parameters
+    '("unicap_handle_t" "handle")
+    '("unicap_property_t*" "property")
+  )
+)
+
+(define-function unicap_get_property_value
+  (c-name "unicap_get_property_value")
+  (return-type "unicap_status_t")
+  (parameters
+    '("unicap_handle_t" "handle")
+    '("const-char*" "identifier")
+    '("double*" "value")
+  )
+)
+
+(define-function unicap_get_property_menu
+  (c-name "unicap_get_property_menu")
+  (return-type "unicap_status_t")
+  (parameters
+    '("unicap_handle_t" "handle")
+    '("const-char*" "identifier")
+    '("char**" "value")
+  )
+)
+
+(define-function unicap_get_property_auto
+  (c-name "unicap_get_property_auto")
+  (return-type "unicap_status_t")
+  (parameters
+    '("unicap_handle_t" "handle")
+    '("const-char*" "identifier")
+    '("int*" "enabled")
+  )
+)
+
+(define-function unicap_start_capture
+  (c-name "unicap_start_capture")
+  (return-type "unicap_status_t")
+  (parameters
+    '("unicap_handle_t" "handle")
+  )
+)
+
+(define-function unicap_stop_capture
+  (c-name "unicap_stop_capture")
+  (return-type "unicap_status_t")
+  (parameters
+    '("unicap_handle_t" "handle")
+  )
+)
+
+(define-function unicap_queue_buffer
+  (c-name "unicap_queue_buffer")
+  (return-type "unicap_status_t")
+  (parameters
+    '("unicap_handle_t" "handle")
+    '("unicap_data_buffer_t*" "data_buffer")
+  )
+)
+
+(define-function unicap_dequeue_buffer
+  (c-name "unicap_dequeue_buffer")
+  (return-type "unicap_status_t")
+  (parameters
+    '("unicap_handle_t" "handle")
+    '("unicap_data_buffer_t**" "data_buffer")
+  )
+)
+
+(define-function unicap_wait_buffer
+  (c-name "unicap_wait_buffer")
+  (return-type "unicap_status_t")
+  (parameters
+    '("unicap_handle_t" "handle")
+    '("unicap_data_buffer_t**" "data_buffer")
+  )
+)
+
+(define-function unicap_poll_buffer
+  (c-name "unicap_poll_buffer")
+  (return-type "unicap_status_t")
+  (parameters
+    '("unicap_handle_t" "handle")
+    '("int*" "count")
+  )
+)
+
+(define-function unicap_describe_device
+  (c-name "unicap_describe_device")
+  (return-type "unicap_status_t")
+  (parameters
+    '("unicap_device_t*" "device")
+    '("char*" "buffer")
+    '("size_t*" "buffer_size")
+  )
+)
+
+(define-function unicap_describe_format
+  (c-name "unicap_describe_format")
+  (return-type "unicap_status_t")
+  (parameters
+    '("unicap_format_t*" "format")
+    '("char*" "buffer")
+    '("size_t*" "buffer_size")
+  )
+)
+
+(define-function unicap_describe_property
+  (c-name "unicap_describe_property")
+  (return-type "unicap_status_t")
+  (parameters
+    '("unicap_property_t*" "property")
+    '("char*" "buffer")
+    '("size_t*" "buffer_size")
+  )
+)
+
+(define-function unicap_void_device
+  (c-name "unicap_void_device")
+  (return-type "unicap_status_t")
+  (parameters
+    '("unicap_device_t*" "device")
+  )
+)
+
+(define-function unicap_void_format
+  (c-name "unicap_void_format")
+  (return-type "unicap_status_t")
+  (parameters
+    '("unicap_format_t*" "format")
+  )
+)
+
+(define-function unicap_void_property
+  (c-name "unicap_void_property")
+  (return-type "unicap_status_t")
+  (parameters
+    '("unicap_property_t*" "property")
+  )
+)
+
+(define-function unicap_copy_format
+  (c-name "unicap_copy_format")
+  (return-type "unicap_format_t*")
+  (parameters
+    '("unicap_format_t*" "dest")
+    '("const-unicap_format_t*" "src")
+  )
+)
+
+(define-function unicap_copy_property
+  (c-name "unicap_copy_property")
+  (return-type "unicap_property_t*")
+  (parameters
+    '("unicap_property_t*" "dest")
+    '("unicap_property_t*" "src")
+  )
+)
+
+(define-function unicap_lock_stream
+  (c-name "unicap_lock_stream")
+  (return-type "unicap_status_t")
+  (parameters
+    '("unicap_handle_t" "handle")
+  )
+)
+
+(define-function unicap_unlock_stream
+  (c-name "unicap_unlock_stream")
+  (return-type "unicap_status_t")
+  (parameters
+    '("unicap_handle_t" "handle")
+  )
+)
+
+(define-function unicap_is_stream_locked
+  (c-name "unicap_is_stream_locked")
+  (return-type "int")
+  (parameters
+    '("unicap_device_t*" "device")
+  )
+)
+
+(define-function unicap_lock_properties
+  (c-name "unicap_lock_properties")
+  (return-type "unicap_status_t")
+  (parameters
+    '("unicap_handle_t" "handle")
+  )
+)
+
+(define-function unicap_unlock_properties
+  (c-name "unicap_unlock_properties")
+  (return-type "unicap_status_t")
+  (parameters
+    '("unicap_handle_t" "handle")
+  )
+)
+
+(define-function unicap_cpi_register_event_notification
+  (c-name "unicap_cpi_register_event_notification")
+  (return-type "none")
+  (parameters
+    '("void" "*")
+    '("void*" "data")
+    '("unicap_handle_t" "handle")
+  )
+)
+
+(define-function unicap_cache_init
+  (c-name "unicap_cache_init")
+  (return-type "none")
+)
+

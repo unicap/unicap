@@ -1,0 +1,185 @@
+%%
+headers
+#include <Python.h>
+#include <pygobject.h>
+#include <pygtk/pygtk.h>
+#include <unicap.h>
+#include "unicapmodule.h"
+#include "utils.h"
+#include "unicapgtk.h"
+%%
+modulename unicapgtk
+%%
+import gtk.AspectFrame as PyGtkAspectFrame_Type
+import unicap
+%%
+ignore unicapgtk_video_display_new_by_handle
+ignore unicapgtk_video_display_new_by_device
+ignore unicapgtk_video_display_get_handle
+ignore unicapgtk_video_display_set_handle
+ignore UnicapgtkCallbackFlags
+%%
+ignore-glob
+	*_get_type
+%%
+new-constructor UNICAPGTK_TYPE_VIDEO_DISPLAY
+%%
+override unicapgtk_video_display_new kwargs
+static int
+_wrap_unicapgtk_video_display_new(PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+   static char* kwlist[] = { "device_id", "device", NULL };
+   unicap_device_t device_spec;
+   unicap_device_t device;
+   char *device_id = NULL;
+   
+   if( import_unicap() < 0 ){
+      PyErr_SetString( PyExc_RuntimeError, "Could not import unicap module" );
+      return -1;
+   }
+
+   if (!PyArg_ParseTupleAndKeywords(args, kwargs,
+				    "|O&:unicapgtk.VideoDisplay.__init__",
+				    kwlist, conv_device_identifier, &device_id ))
+      return -1;
+
+   pygobject_constructv(self, 0, NULL);
+   if( device_id ){
+      unicap_void_device( &device );
+      unicap_void_device( &device_spec );
+      if( device_id )
+	 strcpy( device_spec.identifier, device_id );
+
+      unicap_reenumerate_devices( NULL );
+
+      if( !SUCCESS( unicap_enumerate_devices( &device_spec, &device, 0 ) ) ){
+	 PyErr_SetString( PyExc_RuntimeError, "failed to enumerate device" );
+	 return -1;
+      }
+      if( !SUCCESS( unicapgtk_video_display_set_device( UNICAPGTK_VIDEO_DISPLAY( self->obj ), &device ) ) ){
+	 PyErr_SetString( PyExc_RuntimeError, "failed to set device" );
+	 return -1;
+      }
+   }
+
+   return 0;
+}
+%%
+override unicapgtk_video_display_get_device
+static PyObject *
+_wrap_unicapgtk_video_display_get_device(PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+   unicap_handle_t handle;
+   PyObject *obj;   
+   
+   handle = unicapgtk_video_display_get_handle( UNICAPGTK_VIDEO_DISPLAY( self->obj ) );
+
+   obj = UnicapDevice_new_from_handle( handle );
+
+   return obj;
+}
+%%
+override unicapgtk_video_display_set_format
+static PyObject *
+_wrap_unicapgtk_video_display_set_format(PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+   unicap_format_t format_spec;
+   PyObject *fmt_obj;
+
+   if( !PyArg_ParseTuple( args, "O", &fmt_obj ) )
+   {
+      return NULL;
+   }
+   
+   parse_video_format( &format_spec, fmt_obj );
+   format_spec.buffer_size = -1;
+
+   format_spec.buffer_type =  UNICAP_BUFFER_TYPE_SYSTEM;
+   
+   if( !SUCCESS( unicapgtk_video_display_set_format( UNICAPGTK_VIDEO_DISPLAY( self->obj ), &format_spec ) ) )
+   {
+      PyErr_SetString( PyExc_IOError, "Failed to set video format on device" );
+      return NULL;
+   }
+   
+   Py_INCREF( Py_None );
+   return( Py_None );   
+}
+%%
+override unicapgtk_video_display_get_format
+static PyObject *
+_wrap_unicapgtk_video_display_get_format( PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+   PyObject *result = NULL;
+   unicap_format_t format;
+   
+   unicapgtk_video_display_get_format( UNICAPGTK_VIDEO_DISPLAY( self->obj ), &format );
+   
+   result = build_video_format( &format );
+   
+   return result;
+}   
+%%
+define UnicapgtkVideoDisplay.set_device_id kwargs 
+static PyObject *
+_wrap_unicapgtk_video_display_set_device_id( PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+   const char *device_id;
+   unicap_device_t dev_spec, device;
+
+   static char *kwlist[] = { "device_id", NULL };
+
+   if( !PyArg_ParseTupleAndKeywords( args, kwargs, "s", kwlist, &device_id ) )
+   {
+      PyErr_SetString( PyExc_ValueError, "Invalid argument" );
+      return NULL;
+   }
+      
+   unicap_void_device( &dev_spec );
+   strcpy( dev_spec.identifier, device_id );
+   if( !SUCCESS( unicap_enumerate_devices( &dev_spec, &device, 0 ) ) )
+   {
+      PyErr_SetString( PyExc_IOError, "Could not enumerate device" );
+      return NULL;   
+   }
+   
+   if( !SUCCESS( unicapgtk_video_display_set_device( UNICAPGTK_VIDEO_DISPLAY( self->obj ), &device ) ) ){
+      PyErr_SetString( PyExc_IOError, "Failed to set device" );
+      return NULL;
+   }
+
+   Py_INCREF( Py_None );
+   return( Py_None );   
+}
+%%
+override unicapgtk_video_display_set_device
+static PyObject *
+_wrap_unicapgtk_video_display_set_device( PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+   unicap_device_t dev_spec, device;
+   char *identifier;
+
+   static char *kwlist[] = { "device", NULL };
+
+   if( !PyArg_ParseTupleAndKeywords( args, kwargs, "O&", kwlist, conv_device_identifier, &identifier ) )
+   {
+      PyErr_SetString( PyExc_ValueError, "Invalid argument" );
+      return NULL;
+   }
+
+   unicap_void_device( &dev_spec );
+   strcpy( dev_spec.identifier, identifier );
+   if( !SUCCESS( unicap_enumerate_devices( &dev_spec, &device, 0 ) ) )
+   {
+      PyErr_SetString( PyExc_IOError, "Could not enumerate device" );
+      return NULL;   
+   }
+   
+   if( !SUCCESS( unicapgtk_video_display_set_device( UNICAPGTK_VIDEO_DISPLAY( self->obj ), &device ) ) ){
+      PyErr_SetString( PyExc_IOError, "Failed to set device" );
+      return NULL;
+   }
+
+   Py_INCREF( Py_None );
+   return( Py_None );   
+}

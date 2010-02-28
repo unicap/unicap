@@ -1,0 +1,165 @@
+
+unicapmodule.c,378
+#define UNICAP_MODULEUNICAP_MODULE23,834
+PyObject *UnicapException = NULL;UnicapException28,945
+PyObject *UnicapTimeoutException = NULL;UnicapTimeoutException29,979
+static PyObject *pyunicap_enumerate_devices(PyObject *self, PyObject *args)pyunicap_enumerate_devices32,1022
+static PyMethodDef UnicapMethods[] = UnicapMethods65,1812
+initunicap(void)initunicap72,1999
+
+unicapmodule.h,1768
+#define __UNICAPMODULE_H____UNICAPMODULE_H__20,794
+#define pyunicap_device_new_from_handle_NUM pyunicap_device_new_from_handle_NUM30,904
+#define pyunicap_device_new_from_handle_RETURN pyunicap_device_new_from_handle_RETURN31,953
+#define pyunicap_device_new_from_handle_PROTO pyunicap_device_new_from_handle_PROTO32,1011
+#define pyunicap_device_get_handle_NUM pyunicap_device_get_handle_NUM34,1086
+#define pyunicap_device_get_handle_RETURN pyunicap_device_get_handle_RETURN35,1135
+#define pyunicap_device_get_handle_PROTO pyunicap_device_get_handle_PROTO36,1199
+#define pyunicap_UnicapDeviceType_NUM pyunicap_UnicapDeviceType_NUM38,1266
+#define pyunicap_device_check_NUM pyunicap_device_check_NUM40,1316
+#define pyunicap_device_check_RETURN pyunicap_device_check_RETURN41,1365
+#define pyunicap_device_check_PROTO pyunicap_device_check_PROTO42,1416
+#define pyunicap_API_POINTERS pyunicap_API_POINTERS44,1482
+#define __HIDDEN__ __HIDDEN__48,1572
+__HIDDEN__ pyunicap_device_new_from_handle_RETURN UnicapDevice_new_from_handle pyunicap_device_new_from_handle_PROTO;pyunicap_device_new_from_handle_PROTO51,1647
+__HIDDEN__ pyunicap_device_get_handle_RETURN      UnicapDevice_get_handle      pyunicap_device_get_handle_PROTO;pyunicap_device_get_handle_PROTO52,1765
+__HIDDEN__ pyunicap_device_check_RETURN           UnicapDevice_Check           pyunicap_device_check_PROTO;pyunicap_device_check_PROTO53,1878
+static void **pyunicap_API;pyunicap_API56,1993
+#define UnicapDevice_new_from_handle UnicapDevice_new_from_handle58,2022
+#define UnicapDevice_get_handle UnicapDevice_get_handle60,2199
+#define UnicapDeviceType UnicapDeviceType62,2356
+#define UnicapDevice_Check UnicapDevice_Check64,2443
+import_unicap(void)import_unicap70,2651
+
+unicapdevice.c,3582
+#define UNICAP_MODULEUNICAP_MODULE27,912
+static void new_frame_callback( unicap_event_t event, unicap_handle_t handle, unicap_data_buffer_t *buffer, UnicapDevice *self )new_frame_callback35,1039
+static void UnicapDevice_dealloc( UnicapDevice *self )UnicapDevice_dealloc86,2375
+static PyObject *UnicapDevice_new( PyTypeObject *type, PyObject *args, PyObject *kwds )UnicapDevice_new103,2755
+PyObject *UnicapDevice_new_from_handle( unicap_handle_t handle )UnicapDevice_new_from_handle122,3147
+static int conv_identifier( PyObject *object, char **target ){conv_identifier144,3686
+static int UnicapDevice_init( UnicapDevice *self, PyObject *args, PyObject *kwds )UnicapDevice_init162,4212
+int UnicapDevice_Check( PyObject *obj )UnicapDevice_Check197,5011
+static PyMemberDef UnicapDevice_members[] =UnicapDevice_members203,5124
+static const char enumerate_formats__doc__[] = "\enumerate_formats__doc__209,5282
+static PyObject *UnicapDevice_enumerate_formats( UnicapDevice *self )UnicapDevice_enumerate_formats222,5962
+unicap_handle_t UnicapDevice_get_handle( PyObject *_self )UnicapDevice_get_handle246,6421
+static const char set_format__doc__[] = "\set_format__doc__253,6579
+static PyObject *UnicapDevice_set_format( UnicapDevice *self, PyObject *args, PyObject *kwds )UnicapDevice_set_format259,6793
+static const char get_format__doc__[] = "\get_format__doc__290,7625
+static PyObject *UnicapDevice_get_format( UnicapDevice *self, PyObject *args, PyObject *kwds )UnicapDevice_get_format293,7720
+static const char start_capture__doc__[] = "\start_capture__doc__309,8125
+static PyObject *UnicapDevice_start_capture( UnicapDevice *self, PyObject *args, PyObject *kwds )UnicapDevice_start_capture312,8199
+static const char stop_capture__doc__[] = "\stop_capture__doc__339,8976
+static PyObject *UnicapDevice_stop_capture( UnicapDevice *self, PyObject *args, PyObject *kwds )UnicapDevice_stop_capture343,9049
+static const char wait_buffer__doc__[] = "\wait_buffer__doc__360,9483
+static PyObject *UnicapDevice_wait_buffer( UnicapDevice *self, PyObject *args, PyObject *kwds )UnicapDevice_wait_buffer366,9710
+static const char enumerate_properties__doc__[] = "\enumerate_properties__doc__409,10713
+static PyObject *UnicapDevice_enumerate_properties( UnicapDevice *self )UnicapDevice_enumerate_properties435,11991
+static const char get_property__doc__[] = "\get_property__doc__463,12517
+static PyObject *UnicapDevice_get_property( UnicapDevice *self, PyObject *args, PyObject *kwds )UnicapDevice_get_property469,12773
+static const char set_property__doc__[] = "\set_property__doc__505,13663
+static PyObject *UnicapDevice_set_property( UnicapDevice *self, PyObject *args, PyObject *kwds )UnicapDevice_set_property511,13842
+static const char set_callback__doc__[] = "\set_callback__doc__557,14976
+static PyObject *UnicapDevice_set_callback( UnicapDevice *self, PyObject *args, PyObject *kwds )UnicapDevice_set_callback572,15561
+static const char record_video__doc__[] = "\record_video__doc__619,17065
+static PyObject *UnicapDevice_record_video( UnicapDevice *self, PyObject *args, PyObject *kwds )UnicapDevice_record_video634,17495
+static const char stop_record__doc__[] = "\stop_record__doc__727,19808
+static PyObject *UnicapDevice_stop_record( UnicapDevice *self, PyObject *args, PyObject *kwds )UnicapDevice_stop_record730,19887
+static PyMethodDef UnicapDevice_methods[] = UnicapDevice_methods751,20317
+PyTypeObject UnicapDeviceType = UnicapDeviceType769,21594
+void initunicapdevice(PyObject *m)initunicapdevice813,23423
+
+unicapdevice.h,851
+#define __UNICAPDEVICE_H____UNICAPDEVICE_H__20,794
+#define __HIDDEN__ __HIDDEN__28,924
+   CALLBACK_NEW_FRAME = 0,CALLBACK_NEW_FRAME31,988
+   CALLBACK_DEVICE_REMOVED = 1,CALLBACK_DEVICE_REMOVED32,1015
+   MAX_CALLBACKMAX_CALLBACK33,1047
+   PyObject *device_id;device_id40,1103
+   unicap_handle_t handle;handle41,1127
+   ucil_video_file_object_t *vobj;vobj42,1154
+   int wait_buffer;wait_buffer43,1189
+   PyObject *buffer;buffer44,1209
+   sem_t sem;sem45,1230
+   sem_t lock;lock46,1244
+   PyObject *callbacks[MAX_CALLBACK];callbacks48,1260
+   PyObject *callback_data[MAX_CALLBACK];callback_data49,1298
+   PyThreadState *mainThreadState;mainThreadState51,1341
+   PyInterpreterState *mainInterpreterState;mainInterpreterState52,1376
+   PyThreadState *myThreadState;myThreadState53,1421
+}UnicapDevice;UnicapDevice54,1454
+
+unicapimagebuffer.c,3047
+PyTypeObject UnicapImageBufferType;UnicapImageBufferType29,952
+struct fourcc_bpp_mapfourcc_bpp_map32,990
+      unsigned int fourcc;fourcc34,1014
+      int bpp;bpp35,1041
+struct fourcc_bpp_map fourcc_bpp_map[] =fourcc_bpp_map38,1060
+static int _pyunicap_ucil_get_bpp_from_fourcc( unsigned int fourcc )_pyunicap_ucil_get_bpp_from_fourcc60,1781
+static void UnicapImageBuffer_dealloc( UnicapImageBuffer *self )UnicapImageBuffer_dealloc79,2070
+static PyObject *UnicapImageBuffer_new( PyTypeObject *type, PyObject *args, PyObject *kwargs)UnicapImageBuffer_new90,2348
+static const char wrap_gpointer__doc__[] = "\wrap_gpointer__doc__110,2843
+static PyObject *UnicapImageBuffer_wrap_gpointer( PyTypeObject *type, PyObject *args, PyObject *kwargs)UnicapImageBuffer_wrap_gpointer119,3494
+PyObject *UnicapImageBuffer_new_from_buffer( const unicap_data_buffer_t *data_buffer )UnicapImageBuffer_new_from_buffer153,4585
+static const char copy__doc__[] = " \copy__doc__171,5266
+static PyObject *UnicapImageBuffer_copy( UnicapImageBuffer *self, PyObject *args, PyObject *kwds )UnicapImageBuffer_copy178,5401
+static PyObject *UnicapImageBuffer_repr( UnicapImageBuffer *self )UnicapImageBuffer_repr231,7103
+static PyMemberDef UnicapImageBuffer_members[] = UnicapImageBuffer_members252,7626
+static const char convert__doc__[] = "\convert__doc__259,7902
+static PyObject *UnicapImageBuffer_convert( UnicapImageBuffer *self, PyObject *args, PyObject *kwds )UnicapImageBuffer_convert264,8098
+static const char tostring__doc__[] = "Returns a binary string representation of image data";tostring__doc__309,9597
+static PyObject *UnicapImageBuffer_tostring( UnicapImageBuffer *self, PyObject *args, PyObject *kwds )UnicapImageBuffer_tostring310,9691
+static const char draw_line__doc__[] = "\draw_line__doc__319,9932
+static PyObject *UnicapImageBuffer_draw_line( UnicapImageBuffer *self, PyObject *args, PyObject *kwds )UnicapImageBuffer_draw_line328,10281
+static const char draw_rect__doc__[] = "\draw_rect__doc__363,11184
+static PyObject *UnicapImageBuffer_draw_rect( UnicapImageBuffer *self, PyObject *args, PyObject *kwds )UnicapImageBuffer_draw_rect373,11595
+static const char draw_circle__doc__[] = "\draw_circle__doc__410,12616
+static PyObject *UnicapImageBuffer_draw_circle( UnicapImageBuffer *self, PyObject *args, PyObject *kwds )UnicapImageBuffer_draw_circle419,12948
+static const char set_font__doc__[]="\set_font__doc__452,13829
+static PyObject *UnicapImageBuffer_set_font( UnicapImageBuffer *self, PyObject *args, PyObject *kwds )UnicapImageBuffer_set_font459,14027
+static const char draw_text__doc__[] = "\draw_text__doc__482,14637
+static PyObject *UnicapImageBuffer_draw_text( UnicapImageBuffer *self, PyObject *args, PyObject *kwds )UnicapImageBuffer_draw_text491,14959
+static PyMethodDef UnicapImageBuffer_methods[] = UnicapImageBuffer_methods529,15941
+PyTypeObject UnicapImageBufferType = UnicapImageBufferType544,16862
+void initunicapimagebuffer( PyObject *m )initunicapimagebuffer587,18634
+
+unicapimagebuffer.h,319
+#define __UNICAPIMAGEBUFFER_H____UNICAPIMAGEBUFFER_H__20,799
+   PyObject *gobject_module;gobject_module29,925
+   PyObject *format;format30,954
+   unicap_data_buffer_t buffer;buffer31,975
+   ucil_font_object_t *fobj;fobj32,1007
+   int free_data;free_data33,1036
+}UnicapImageBuffer;UnicapImageBuffer34,1054
+
+unicapgtkmodule.c,108
+static PyMethodDef UnicapgtkMethods[] = UnicapgtkMethods31,1087
+initunicapgtk(void)initunicapgtk38,1180
+
+unicapgtkmodule.h,59
+#define __UNICAPGTK_MODULE_H____UNICAPGTK_MODULE_H__2,31
+
+utils.c,556
+int parse_video_format( unicap_format_t *format, PyObject *obj )parse_video_format26,880
+PyObject *build_video_format( const unicap_format_t *format )build_video_format106,2650
+static PyObject *build_property_flags_list( unsigned long long flags )build_property_flags_list155,3956
+PyObject *build_property( const unicap_property_t *property )build_property193,4818
+int parse_property( unicap_property_t *property, PyObject *obj )parse_property291,7237
+int conv_device_identifier( PyObject *object, char **target )conv_device_identifier352,8270
+
+utils.h,77
+#define __UTILS_H____UTILS_H__20,787
+#define __HIDDEN__ __HIDDEN__27,894
+
+pyunicapgtk_device_property.h,81
+#define __PYUNICAPGTK_DEVICE_PROPERTY_H____PYUNICAPGTK_DEVICE_PROPERTY_H__2,42
+
+pyunicapgtk_device_selection.h,83
+#define __PYUNICAPGTK_DEVICE_SELECTION_H____PYUNICAPGTK_DEVICE_SELECTION_H__2,43
+
+pyunicapgtk_property_dialog.h,81
+#define __PYUNICAPGTK_PROPERTY_DIALOG_H____PYUNICAPGTK_PROPERTY_DIALOG_H__2,42
+
+pyunicapgtk_video_display.h,77
+#define __PYUNICAPGTK_VIDEO_DISPLAY_H____PYUNICAPGTK_VIDEO_DISPLAY_H__2,40

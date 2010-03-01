@@ -19,6 +19,7 @@
  */
 
 
+#include <config.h>
 #include <stdio.h>
 #include <string.h>
 #include <signal.h>
@@ -51,13 +52,6 @@ static void sighandler(int sig )
 }
 
 
-
-/* // this is libusb implementation specific... */
-/* struct usb_dev_handle { */
-/*       int fd;       */
-/* }; */
-/* typedef struct usb_dev_handle usb_dev_handle; */
-
 struct buffer_done_context
 {
    sem_t sema;
@@ -69,6 +63,30 @@ struct buffer_done_context
    unicap_handle_t unicap_handle;
    unicap_event_callback_t event_callback;
 };
+
+struct timeout_thread_context
+{
+   volatile euvccam_handle_t handle;
+   struct timeval timeout;
+   volatile int quit;
+};
+
+static void *timeout_thread( struct timeout_thread_context *context )
+{
+   while (!context->quit){
+      struct timeval tv;
+      
+      gettimeofday (&tv, NULL);
+      if ((context->timeout.tv_sec + 2) < tv.tv_sec){
+	 TRACE ("capture timeout\n");
+	 pthread_kill (context->handle->capture_thread, SIGUSR1);
+      }
+
+      sleep( 1 );
+   }
+   
+   return NULL;
+}
 
 
 static void *buffer_done_thread( struct buffer_done_context *context )
@@ -136,6 +154,10 @@ static void *capture_thread( euvccam_handle_t handle )
 
    struct usbdevfs_urb *urbs[NUM_URBS];
 
+   pthread_t capture_timeout_thread_id = 0;
+   struct timeout_thread_context timeout_context;
+   
+
    if( handle->current_format->usb_buffer_size == 0 ){
       TRACE( "Invalid video format!\n" );
       abort();
@@ -166,6 +188,13 @@ static void *capture_thread( euvccam_handle_t handle )
    
    if( pthread_create( &buffer_done_thread_id, NULL, (void*(*)(void*))buffer_done_thread, &context ) != 0 ){
       sem_destroy( &context.sema );
+      return NULL;
+   }
+
+   gettimeofday( &timeout_context.timeout, NULL );
+   timeout_context.handle = handle;
+   timeout_context.quit = 0;
+   if( pthread_create ( &capture_timeout_thread_id, NULL, (void*(*)(void*))timeout_thread, &timeout_context) != 0 ){
       return NULL;
    }
 
@@ -221,10 +250,11 @@ static void *capture_thread( euvccam_handle_t handle )
       int corrupt_frame = 0;
 
       ret = reap_urb(handle->dev.fd, &urb);
+      gettimeofday (&timeout_context.timeout, NULL);
       if( ret < 0 ){
 	 switch( errno ){
 	 case ENODEV:
-	    perror( "reap: " );
+	    TRACE( "NODEV\n" );
 	    if( !handle->removed){
 	       handle->removed = 1;
 	    }
@@ -301,10 +331,14 @@ static void *capture_thread( euvccam_handle_t handle )
       }
    }
 
+   TRACE( "Capture thread exit\n" );
+
    context.quit = 1;
+   timeout_context.quit = 1;
    sem_post( &context.sema );
    pthread_join( buffer_done_thread_id, NULL );
    sem_destroy( &context.sema );
+   pthread_join( capture_timeout_thread_id, NULL );
 
    if( context.conv_buffer ){
       free( context.conv_buffer->data );
@@ -371,6 +405,7 @@ unicap_status_t euvccam_capture_start_capture( euvccam_handle_t handle )
 unicap_status_t euvccam_capture_stop_capture( euvccam_handle_t handle )
 {
    if( handle->capture_running ){
+      TRACE( "Stop capture\n" );
       /* // send signal to interrupt blocking ioctls */
       pthread_kill( handle->capture_thread, SIGUSR1 );
       handle->capture_thread_quit = 1;

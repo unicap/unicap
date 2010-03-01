@@ -60,10 +60,10 @@ distclean:
 	clean
 
 dist:
-	rm -rf /tmp/pyunicap-$(VERSION)
-	mkdir /tmp/pyunicap-$(VERSION)
+	rm -rf /tmp/python-unicap-$(VERSION)
+	mkdir /tmp/python-unicap-$(VERSION)
 	list='$(SUBDIRS)'; for d in $$list; do        \
 		make -C $$d _dist; \
 	done 
-	cp $(DISTFILES) /tmp/pyunicap-$(VERSION)/
-	tar -C /tmp -c -z -f pyunicap-$(VERSION).tar.gz pyunicap-$(VERSION)
+	cp $(DISTFILES) /tmp/python-unicap-$(VERSION)/
+	tar -C /tmp -c -z -f python-unicap-$(VERSION).tar.gz python-unicap-$(VERSION)

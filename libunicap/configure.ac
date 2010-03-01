@@ -208,6 +208,18 @@ AC_ARG_ENABLE(debug-dcam,
 	      }, 
 	      AC_DEFINE( DCAM_DEBUG, 0, [Define to enable debug output] ) )
 
+AC_ARG_ENABLE(debug-euvccam, 
+		     AS_HELP_STRING( [--enable-debug-euvccam],
+				     [Enable debug output] ), 
+	      {
+		if test "x$enableval" != "xno"; then
+		   AC_DEFINE( EUVCCAM_DEBUG, 1, [Define to enable debug output] )
+		else
+		   AC_DEFINE( EUVCCAM_DEBUG, 0, [Define to enable debug output] )
+		fi
+	      }, 
+	      AC_DEFINE( EUVCCAM_DEBUG, 0, [Define to enable debug output] ) )
+
 AC_ARG_ENABLE(debug-v4l, 
 		     AS_HELP_STRING( [--enable-debug-v4l],
 				     [Enable debug output] ), 

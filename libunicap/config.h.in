@@ -25,6 +25,9 @@
 /* Define to enable static cpi */
 #undef ENABLE_STATIC_CPI
 
+/* Define to enable debug output */
+#undef EUVCCAM_DEBUG
+
 /* Gettext Package */
 #undef GETTEXT_PACKAGE
 

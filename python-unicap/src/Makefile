@@ -53,8 +53,8 @@ clean:
 	python setup.py clean
 
 _dist:
-	mkdir -p /tmp/pyunicap-$(VERSION)/src
-	cp $(DISTCFILES) /tmp/pyunicap-$(VERSION)/src
-	cp $(OVERRIDEFILES) /tmp/pyunicap-$(VERSION)/src
-	cp $(DEFSFILES) /tmp/pyunicap-$(VERSION)/src
-	cp $(DISTFILES) /tmp/pyunicap-$(VERSION)/src
+	mkdir -p /tmp/python-unicap-$(VERSION)/src
+	cp $(DISTCFILES) /tmp/python-unicap-$(VERSION)/src
+	cp $(OVERRIDEFILES) /tmp/python-unicap-$(VERSION)/src
+	cp $(DEFSFILES) /tmp/python-unicap-$(VERSION)/src
+	cp $(DISTFILES) /tmp/python-unicap-$(VERSION)/src

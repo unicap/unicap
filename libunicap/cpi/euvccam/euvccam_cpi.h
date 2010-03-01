@@ -21,6 +21,7 @@
 #ifndef   	EUVCCAM_CPI_H_
 # define   	EUVCCAM_CPI_H_
 
+#include <config.h>
 #include <unicap.h>
 #include <pthread.h>
 #include <unicap_cpi.h>
@@ -28,9 +29,13 @@
 #include "queue.h"
 #include "debayer.h"
 
+#if EUVCCAM_DEBUG
+#define DEBUG
+#endif
+#include "debug.h"
+
 #include "euvccam_usb.h"
 
-#include "debug.h"
 
 struct euvccam_handle
 {

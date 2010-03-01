@@ -30,10 +30,10 @@
 
 #include <unicap.h>
 
-
+#include "euvccam_cpi.h"
 #include "euvccam_usb.h"
 
-#include "debug.h"
+
 
 #ifdef DEBUG
 #include <execinfo.h>

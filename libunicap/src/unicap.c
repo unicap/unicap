@@ -181,6 +181,7 @@ unicap_status_t unicap_set_filter_remote( int do_filter )
 
 static unicap_status_t _unicap_acquire_cpi_lock( int sem_id )
 {
+   printf ("+++++++++++++++++ acquire cpi lock\n" );
 #ifdef UNICAP_THREAD_LOCKING
    if( sem_id != -1 ){
       struct sembuf sops;
@@ -200,6 +201,7 @@ static unicap_status_t _unicap_acquire_cpi_lock( int sem_id )
 
 static unicap_status_t _unicap_release_cpi_lock( int sem_id )
 {
+   printf ("------------------ release cpi lock\n" );
 #ifdef UNICAP_THREAD_LOCKING
    if( sem_id != -1 )
    {
@@ -544,6 +546,7 @@ static unicap_status_t open_cpi( unicap_handle_t *unicap_handle, unicap_device_t
 	
    status = handle->cpi.cpi_open( &handle->cpi_data, device );
    if( !SUCCESS( status ) ){
+      _unicap_release_cpi_lock( handle->sem_id );
       free( handle );
       dlclose( dlhandle );
       return status;

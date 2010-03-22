@@ -4,7 +4,7 @@ libcpi_LTLIBRARIES=libeuvccam_cpi.la
 
 libcpidir = $(libdir)/unicap$(pkg_version)/cpi
 
-libeuvccam_cpi_la_LIBADD=-lpthread
+libeuvccam_cpi_la_LIBADD=-lpthread -L../../src/.libs/ -lunicap
 libeuvccam_cpi_la_CFLAGS=-msse2 -O2 -g
 libeuvccam_cpi_la_LDFLAGS=-module -avoid-version
 

@@ -1,3 +1,9 @@
+libunicap (0.9.9) karmic; urgency=low
+
+  * added euvccam cpi
+
+ -- Arne Caspari <arne@unicap-imaging.org>  Wed, 24 Mar 2010 14:19:49 +0100
+
 libunicap (0.9.8) karmic; urgency=low
 
   * initial PPA package

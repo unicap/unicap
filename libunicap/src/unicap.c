@@ -148,6 +148,7 @@ static void store_device_cache( unicap_device_t *device, unicap_handle_t handle 
    
    for( i = 0; i < UNICAP_MAX_DEVICES; i++ ){
       if( g_device_cache[i].handle == NULL ){
+	 TRACE ("Storing in cache: %s\n", device->identifier);
 	 memcpy( &g_device_cache[i].device, device, sizeof( unicap_device_t ) );
 	 g_device_cache[i].handle = unicap_clone_handle( handle );
 	 break;

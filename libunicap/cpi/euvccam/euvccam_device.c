@@ -52,6 +52,8 @@
 #define CT_TIS_BINNING                    0x2a
 #define CT_TIS_SOFTWARE_TRIGGER           0x2b
 #define CT_TIS_SENSOR_RESET               0x2c
+#define CT_TIS_FIRMWARE_REVISION          0x2d
+#define CT_TIS_GPOUT                      0x2e
 
 
 #define PU_GAIN_CONTROL                         0x04
@@ -777,6 +779,53 @@ unicap_status_t euvccam_device_get_pixel_clock( euvccam_handle_t handle, unicap_
 				  (char*)&val, 4);
 
    property->value = (double)val / 1000000.0;
+   
+   return status;
+}
+
+unicap_status_t euvccam_device_set_gpout( euvccam_handle_t handle, unicap_property_t *property )
+{
+   unicap_status_t status = STATUS_SUCCESS;
+   unsigned char val = (property->flags & UNICAP_FLAGS_ON_OFF)?1:0;
+   
+   printf( "%lld %d\n", property->flags, val );
+
+   status = euvccam_usb_ctrl_msg( handle->dev.fd, 
+				  EP0_OUT | USB_TYPE_CLASS | USB_RECIP_INTERFACE, 
+				  SET_CUR, 
+				  CT_TIS_GPOUT << 8, 
+				  CAMERA_TERMINAL << 8, 
+				  (char*)&val, 1);
+
+
+   return status;
+}
+
+unicap_status_t euvccam_device_get_gpout( euvccam_handle_t handle, unicap_property_t *property )
+{
+   unicap_status_t status = STATUS_SUCCESS;
+   unsigned char val;
+
+   
+   status = euvccam_usb_ctrl_msg( handle->dev.fd, 
+				  EP0_IN | USB_TYPE_CLASS | USB_RECIP_INTERFACE, 
+				  GET_CUR, 
+				  CT_TIS_GPOUT << 8, 
+				  CAMERA_TERMINAL << 8, 
+				  (char*)&val, 1);
+
+   property->flags = UNICAP_FLAGS_MANUAL | ( val ? UNICAP_FLAGS_ON_OFF : 0);
+   
+   return status;
+}
+
+unicap_status_t euvccam_device_enumerate_gpout( euvccam_handle_t handle, unicap_property_t *property )
+{
+   unicap_status_t status = STATUS_NO_MATCH;
+
+   if( SUCCESS( euvccam_device_get_gpout( handle, property ) ) ){
+      status = STATUS_SUCCESS;
+   }
    
    return status;
 }

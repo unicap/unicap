@@ -87,6 +87,10 @@ unicap_status_t euvccam_device_set_reset_mt9v024( euvccam_handle_t handle, unica
 unicap_status_t euvccam_device_get_reset_mt9v024( euvccam_handle_t handle, unicap_property_t *property );
 unicap_status_t euvccam_device_write_iic( euvccam_handle_t handle, unicap_property_t *property );
 unicap_status_t euvccam_device_read_iic( euvccam_handle_t handle, unicap_property_t *property );
+unicap_status_t euvccam_device_enumerate_gpout( euvccam_handle_t handle, unicap_property_t *property );
+unicap_status_t euvccam_device_get_gpout( euvccam_handle_t handle, unicap_property_t *property );
+unicap_status_t euvccam_device_set_gpout( euvccam_handle_t handle, unicap_property_t *property );
+
 
 
 #endif//__EUVCCAM_DEVICE_H__

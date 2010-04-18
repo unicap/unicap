@@ -46,6 +46,7 @@ struct fourcc_bpp_map fourcc_bpp_map[] =
    { UCIL_FOURCC('R','G','B', 0 ),  8 },
    { UCIL_FOURCC('R','G','B','3'), 24 },
    { UCIL_FOURCC('R','G','B','4'), 32 },
+   { UCIL_FOURCC('B','G','R','4'), 32 },
    { UCIL_FOURCC('R','G','B','A'), 32 },
    { UCIL_FOURCC('R','G','G','B'), 16 }, 
    { UCIL_FOURCC('U','Y','V','Y'), 16 },
@@ -89,23 +90,56 @@ static void UnicapImageBuffer_dealloc( UnicapImageBuffer *self )
 
 static PyObject *UnicapImageBuffer_new( PyTypeObject *type, PyObject *args, PyObject *kwargs)
 {
-   static char* kwlist[] = { NULL };
+   static char* kwlist[] = { "format", NULL };
    UnicapImageBuffer *self;
+   int width = -1;
+   int height = -1;
+   char *strfourcc = NULL;
+
+   if( !PyArg_ParseTupleAndKeywords( args, kwargs, 
+				     "|(iis)", kwlist, 
+				     &width, &height, &strfourcc  ) ){
+      return NULL;
+   }
 
    self = (UnicapImageBuffer *)type->tp_alloc( type, 0 );
    if( self != NULL ){
-      self->format = PyDict_New();
       unicap_void_format( &self->buffer.format );
-      if( !self->format ){
-	 Py_XDECREF( self );
-	 return NULL;
+      
+      if ((width!=-1) && (height!=-1) && (strfourcc!=NULL)){
+	 self->buffer.format.fourcc = ((unsigned int)strfourcc[0]) | (((unsigned int)strfourcc[1])<<8) | (((unsigned int)strfourcc[2])<<16) | (((unsigned int)strfourcc[3])<<24);
+	 self->buffer.format.bpp = _pyunicap_ucil_get_bpp_from_fourcc (self->buffer.format.fourcc);
+	 if ( self->buffer.format.bpp == -1 ){
+	    PyErr_SetString( PyExc_ValueError, "Unknown fourcc" );
+	    return NULL;
+	 }
+	    
+	 self->buffer.format.size.width = width;
+	 self->buffer.format.size.height = height;
+	 
+	 
+	 self->format = build_video_format( &self->buffer.format );
+	 /* unicap_copy_format( &self->buffer.format, &format ); */
+	 /* self->buffer.buffer_size = data_buffer->buffer_size; */
+	 self->buffer.data = malloc( self->buffer.buffer_size );
+	 /* memcpy( self->buffer.data, data_buffer->data, self->buffer.buffer_size ); */
+	 self->fobj = NULL;
+	 self->free_data = TRUE;
+      } else {
+	 self->format = PyDict_New();
+	 if( !self->format ){
+	    Py_XDECREF( self );
+	    return NULL;
+	 }
+	 self->fobj = NULL;
+	 self->free_data = TRUE;
       }
-      self->fobj = NULL;
-      self->free_data = TRUE;
    }
    
    return (PyObject*) self;
 }
+
+
 
 static const char wrap_gpointer__doc__[] = "\
 wrap_gpointer(ptr)\n\
@@ -123,7 +157,7 @@ static PyObject *UnicapImageBuffer_wrap_gpointer( PyTypeObject *type, PyObject *
    PyObject *gpointer = NULL;
 
    if (!PyArg_ParseTupleAndKeywords(args, kwargs,
-				    "O:unicapgtk.VideoDisplay.__init__",
+				    "O:unicapgtk.ImageBuffer.__init__",
 				    kwlist, &gpointer ))
       return NULL;
 
@@ -141,12 +175,31 @@ static PyObject *UnicapImageBuffer_wrap_gpointer( PyTypeObject *type, PyObject *
    if( self != NULL ){
       memcpy( &self->buffer, data_buffer, sizeof( unicap_data_buffer_t ) );
       self->format = build_video_format( &data_buffer->format );
+      self->time = ((double)data_buffer->fill_time.tv_sec) + ((double)data_buffer->fill_time.tv_usec / 1000000.0 );
       self->free_data = FALSE;
    }
       
    Py_XDECREF( gobject_module );
    
    return (PyObject*) self;
+}
+
+PyObject *UnicapImageBuffer_new_from_buffer_no_copy( const unicap_data_buffer_t *data_buffer )
+{
+   UnicapImageBuffer *self;
+   self = (UnicapImageBuffer *)UnicapImageBufferType.tp_alloc( (PyTypeObject*)&UnicapImageBufferType, 0 );
+   if( self != NULL )
+   {
+      self->format = build_video_format( &data_buffer->format );
+      self->time = ((double)data_buffer->fill_time.tv_sec) + ((double)data_buffer->fill_time.tv_usec / 1000000.0 );
+      unicap_copy_format( &self->buffer.format, &data_buffer->format );
+      self->buffer.buffer_size = data_buffer->buffer_size;
+      self->buffer.data = data_buffer->data;
+      self->fobj = NULL;
+      self->free_data = FALSE;
+   }
+
+   return (PyObject *)self;
 }
 
 PyObject *UnicapImageBuffer_new_from_buffer( const unicap_data_buffer_t *data_buffer )
@@ -156,6 +209,7 @@ PyObject *UnicapImageBuffer_new_from_buffer( const unicap_data_buffer_t *data_bu
    if( self != NULL )
    {
       self->format = build_video_format( &data_buffer->format );
+      self->time = ((double)data_buffer->fill_time.tv_sec) + ((double)data_buffer->fill_time.tv_usec / 1000000.0 );
       unicap_copy_format( &self->buffer.format, &data_buffer->format );
       self->buffer.buffer_size = data_buffer->buffer_size;
       self->buffer.data = malloc( self->buffer.buffer_size );
@@ -165,6 +219,73 @@ PyObject *UnicapImageBuffer_new_from_buffer( const unicap_data_buffer_t *data_bu
    }
 
    return (PyObject *)self;
+}
+
+static const char load_file__doc__[] = " \
+load_file(path)\n\
+\n\
+Returns: A new allocated image buffer\
+";
+static PyObject *UnicapImageBuffer_load_file(PyTypeObject *type, PyObject *args, PyObject *kwargs)
+{
+   static char* kwlist[] = { "path", NULL };
+   char *path = NULL;
+   
+   if (!PyArg_ParseTupleAndKeywords(args, kwargs,
+				    "s:unicapgtk.ImageBuffer.weave",
+				    kwlist, &path ))
+      return NULL;
+   
+   unicap_data_buffer_t *destbuf;
+   PyObject *obj;
+   
+   destbuf = ucil_read_file_alloc( path );
+   obj = UnicapImageBuffer_new_from_buffer( destbuf );
+   free( destbuf->data );
+   free( destbuf );
+   
+   return (PyObject*)obj;
+}
+
+static const char weave__doc__[] = " \
+weave(odd,even)\n\
+\n\
+Returns: A new allocated image buffer\
+";
+static PyObject *UnicapImageBuffer_weave(PyTypeObject *type, PyObject *args, PyObject *kwargs)
+{
+   static char* kwlist[] = { "odd", "even", NULL };
+   PyObject *_odd;
+   PyObject *_even;
+   UnicapImageBuffer *odd;
+   UnicapImageBuffer *even;
+   PyObject *copy;
+   
+   if (!PyArg_ParseTupleAndKeywords(args, kwargs,
+				    "OO:unicapgtk.ImageBuffer.weave",
+				    kwlist, &_odd, &_even ))
+      return NULL;
+   
+   if (!PyObject_TypeCheck( _odd, &UnicapImageBufferType )){
+      PyErr_SetString( PyExc_ValueError, "'odd' must be a unicap.ImageBuffer" );
+      return NULL;
+   }
+   if (!PyObject_TypeCheck( _even, &UnicapImageBufferType )){
+      PyErr_SetString( PyExc_ValueError, "'even' must be a unicap.ImageBuffer" );
+      return NULL;
+   }
+      
+   odd = (UnicapImageBuffer*)_odd;
+   even = (UnicapImageBuffer*)_even;
+   
+   unicap_data_buffer_t *destbuf;
+   
+   destbuf = ucil_weave_alloc( &odd->buffer, &even->buffer );
+   copy = UnicapImageBuffer_new_from_buffer( destbuf );
+   free( destbuf->data );
+   free( destbuf );
+   
+   return (PyObject*)copy;
 }
 
 static const char copy__doc__[] = " \
@@ -185,6 +306,7 @@ static PyObject *UnicapImageBuffer_copy( UnicapImageBuffer *self, PyObject *args
 	 Py_XDECREF( copy );
 	 return NULL;
       }
+      copy->time = self->time;
       unicap_copy_format( &copy->buffer.format, &self->buffer.format );
       copy->buffer.buffer_size = self->buffer.buffer_size;
       copy->buffer.data = malloc( self->buffer.buffer_size );
@@ -207,6 +329,8 @@ static PyObject *UnicapImageBuffer_copy( UnicapImageBuffer *self, PyObject *args
    return (PyObject*) copy;
    
 }
+
+
 
 
 
@@ -251,6 +375,7 @@ static PyObject *UnicapImageBuffer_repr( UnicapImageBuffer *self )
 static PyMemberDef UnicapImageBuffer_members[] = 
 {
    { "format", T_OBJECT_EX, offsetof( UnicapImageBuffer, format ), 0, "Format" },
+   { "time", T_DOUBLE, offsetof( UnicapImageBuffer, time ), 0, "time" },
 /*    { "buffer", T_STRING, offsetof( UnicapImageBuffer, buffer ) + offsetof( unicap_data_buffer_t, data ), 0, "Buffer" }, */
    { NULL }
 };
@@ -525,9 +650,216 @@ static PyObject *UnicapImageBuffer_draw_text( UnicapImageBuffer *self, PyObject 
 }
 
 
+static const char copy_region__doc__[] = " \
+copy_region(rect)\n\
+Creates a new image buffer with a copy of a region.\n\
+\n\
+rect: A (x,y,width,height)-Tuple describing the region to copy\
+\n\
+Returns: A new allocated image buffer\
+";
+
+static PyObject *UnicapImageBuffer_copy_region( UnicapImageBuffer *self, PyObject *args, PyObject *kwds )
+{
+   PyObject *copy;
+   static char *kwlist[] = { "rect", NULL };
+   unicap_rect_t rect;
+   unicap_data_buffer_t *destbuf;
+   
+   if( !PyArg_ParseTupleAndKeywords( args, kwds, 
+				     "(iiii)", kwlist, 
+				     &rect.x, &rect.y, &rect.width, &rect.height ) ){
+      return NULL;
+   }
+
+   destbuf = ucil_copy_region_alloc( &self->buffer, &rect );
+   copy = UnicapImageBuffer_new_from_buffer( destbuf );
+   free( destbuf->data );
+   free( destbuf );
+   
+   return (PyObject*) copy;
+   
+}
+
+static const char copy_field__doc__[] = " \
+copy_field()\n\
+Creates a new image buffer with a copy of a field ( odd or even lines ) of this buffer.\n\
+\n\
+Returns: A new allocated image buffer\
+";
+
+static PyObject *UnicapImageBuffer_copy_field( UnicapImageBuffer *self, PyObject *args, PyObject *kwds )
+{
+   PyObject *copy;
+   static char *kwlist[] = { "type", NULL };
+   int field_type;
+   unicap_data_buffer_t *destbuf;
+   
+   if( !PyArg_ParseTupleAndKeywords( args, kwds, 
+				     "i", kwlist, 
+				     &field_type ) ){
+      return NULL;
+   }
+
+   destbuf = ucil_copy_field_alloc( &self->buffer, field_type );
+   copy = UnicapImageBuffer_new_from_buffer( destbuf );
+   free( destbuf->data );
+   free( destbuf );
+   
+   return (PyObject*) copy;
+   
+}
+
+static const char copy_color_plane__doc__[] = " \
+copy_color_plane()\n\
+Creates a new image buffer with a copy of a color plane from this buffer.\n\
+\n\
+Returns: A new allocated image buffer\
+";
+
+static PyObject *UnicapImageBuffer_copy_color_plane( UnicapImageBuffer *self, PyObject *args, PyObject *kwds )
+{
+   PyObject *copy;
+   static char *kwlist[] = { "plane", NULL };
+   int plane;
+   unicap_data_buffer_t *destbuf;
+   
+   if( !PyArg_ParseTupleAndKeywords( args, kwds, 
+				     "i", kwlist, 
+				     &plane ) ){
+      return NULL;
+   }
+
+   destbuf = ucil_copy_color_plane_alloc( &self->buffer, plane );
+   copy = UnicapImageBuffer_new_from_buffer( destbuf );
+   free( destbuf->data );
+   free( destbuf );
+   
+   return (PyObject*) copy;
+   
+}
+
+static const char save__doc__[] = " \
+save(path)\n\
+\n\
+";
+
+static PyObject *UnicapImageBuffer_save( UnicapImageBuffer *self, PyObject *args, PyObject *kwds )
+{
+   static char *kwlist[] = { "path", NULL };
+   char *path = NULL;
+   
+   if( !PyArg_ParseTupleAndKeywords( args, kwds, 
+				     "s", kwlist, 
+				     &path ) ){
+      return NULL;
+   }
+
+   ucil_write_file( path, NULL, &self->buffer );
+   
+   Py_INCREF( Py_None );
+   return( Py_None );   
+}
+
+static const char get_pixel__doc__[] = " \
+get_pixel((x,y))\n\
+\n\
+";
+static PyObject *UnicapImageBuffer_get_pixel( UnicapImageBuffer *self, PyObject *args, PyObject *kwds )
+{
+   static char *kwlist[] = { "pos", NULL };
+   int x,y;
+   
+   if( !PyArg_ParseTupleAndKeywords( args, kwds, 
+				     "(ii)", kwlist, 
+				     &x, &y ) ){
+      return NULL;
+   }
+
+   ucil_color_t color;
+   
+   ucil_get_pixel( &self->buffer, &color, x, y );
+   
+   PyObject *obj = NULL;
+   switch (color.colorspace){
+   case UCIL_COLORSPACE_Y8:
+      obj = PyTuple_Pack(1, PyInt_FromLong(color.y8.y));
+      break;
+   case UCIL_COLORSPACE_RGB24:
+      obj = PyTuple_Pack(3, PyInt_FromLong(color.rgb24.r), PyInt_FromLong(color.rgb24.g), PyInt_FromLong(color.rgb24.b));
+      break;
+   case UCIL_COLORSPACE_RGB32:
+      obj = PyTuple_Pack(4, PyInt_FromLong(color.rgb32.r), PyInt_FromLong(color.rgb32.g), PyInt_FromLong(color.rgb32.b), PyInt_FromLong(color.rgb32.a));
+      break;
+      
+   case UCIL_COLORSPACE_YUV:
+      obj = PyTuple_Pack(3, PyInt_FromLong(color.yuv.y), PyInt_FromLong(color.yuv.u), PyInt_FromLong(color.yuv.v));
+      break;
+   default:
+      break;
+   }
+   
+   return obj;
+   
+}
+
+static const char set_pixel__doc__[] = " \
+set_pixel((x,y), color)\n\
+\n\
+";
+static PyObject *UnicapImageBuffer_set_pixel( UnicapImageBuffer *self, PyObject *args, PyObject *kwds )
+{
+   static char *kwlist[] = { "pos", "color", NULL };
+   int x,y;
+   PyObject *colobj;
+   
+   if( !PyArg_ParseTupleAndKeywords( args, kwds, 
+				     "(ii)O", kwlist, 
+				     &x, &y, &colobj ) ){
+      return NULL;
+   }
+   
+   ucil_color_t color;
+   color.colorspace = ucil_get_colorspace_from_fourcc( self->buffer.format.fourcc );
+   if( color.colorspace == UCIL_COLORSPACE_UNKNOWN )
+      return NULL;
+   
+   switch( color.colorspace ){
+   case UCIL_COLORSPACE_Y8:
+      color.y8.y = PyInt_AsLong( PyTuple_GetItem( colobj, 0 ));
+      break;
+   case UCIL_COLORSPACE_RGB24:
+      color.rgb24.r = PyInt_AsLong( PyTuple_GetItem( colobj, 0));
+      color.rgb24.g = PyInt_AsLong( PyTuple_GetItem( colobj, 1));
+      color.rgb24.b = PyInt_AsLong( PyTuple_GetItem( colobj, 2));
+      break;
+   case UCIL_COLORSPACE_RGB32:
+      color.rgb32.r = PyInt_AsLong( PyTuple_GetItem( colobj, 0));
+      color.rgb32.g = PyInt_AsLong( PyTuple_GetItem( colobj, 1));
+      color.rgb32.b = PyInt_AsLong( PyTuple_GetItem( colobj, 2));
+      color.rgb32.a = PyInt_AsLong( PyTuple_GetItem( colobj, 3));
+      break;
+   case UCIL_COLORSPACE_YUV:
+      color.yuv.y = PyInt_AsLong( PyTuple_GetItem( colobj, 0 ));
+      color.yuv.u = PyInt_AsLong( PyTuple_GetItem( colobj, 1 ));
+      color.yuv.v = PyInt_AsLong( PyTuple_GetItem( colobj, 2 ));
+      break;
+   default:
+      return NULL;
+   }
+   
+   ucil_set_pixel( &self->buffer, &color, x, y);
+   
+   Py_INCREF( Py_None );
+   return( Py_None );   
+}
+
+
 static PyMethodDef UnicapImageBuffer_methods[] = 
 {
    { "wrap_gpointer", (PyCFunction)UnicapImageBuffer_wrap_gpointer, METH_VARARGS | METH_CLASS, wrap_gpointer__doc__ },
+   { "load_file", (PyCFunction)UnicapImageBuffer_load_file, METH_VARARGS | METH_CLASS, load_file__doc__ },   
+   { "weave", (PyCFunction)UnicapImageBuffer_weave, METH_VARARGS | METH_CLASS, weave__doc__ },
    { "copy", (PyCFunction)UnicapImageBuffer_copy, METH_VARARGS, copy__doc__ },
    { "convert", (PyCFunction)UnicapImageBuffer_convert, METH_VARARGS, convert__doc__ },   
    { "tostring", (PyCFunction)UnicapImageBuffer_tostring, METH_NOARGS, tostring__doc__ },
@@ -536,6 +868,13 @@ static PyMethodDef UnicapImageBuffer_methods[] =
    { "draw_circle", (PyCFunction)UnicapImageBuffer_draw_circle, METH_VARARGS, draw_circle__doc__ },
    { "set_font", (PyCFunction)UnicapImageBuffer_set_font, METH_VARARGS, set_font__doc__ },
    { "draw_text", (PyCFunction)UnicapImageBuffer_draw_text, METH_VARARGS, draw_text__doc__ },
+   { "copy_region", (PyCFunction)UnicapImageBuffer_copy_region, METH_VARARGS, copy_region__doc__ },
+   { "copy_field", (PyCFunction)UnicapImageBuffer_copy_field, METH_VARARGS, copy_field__doc__ },
+   { "copy_color_plane", (PyCFunction)UnicapImageBuffer_copy_color_plane, METH_VARARGS, copy_color_plane__doc__ },
+   { "save", (PyCFunction)UnicapImageBuffer_save, METH_VARARGS, save__doc__ },
+   { "get_pixel", (PyCFunction)UnicapImageBuffer_get_pixel, METH_VARARGS, get_pixel__doc__ },
+   { "set_pixel", (PyCFunction)UnicapImageBuffer_set_pixel, METH_VARARGS, set_pixel__doc__ },
+   
    { NULL }
 };
 

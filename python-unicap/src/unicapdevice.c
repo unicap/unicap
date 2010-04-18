@@ -34,10 +34,10 @@
 
 static void new_frame_callback( unicap_event_t event, unicap_handle_t handle, unicap_data_buffer_t *buffer, UnicapDevice *self )
 {
-   PyObject *pybuffer = NULL;
    
    if( self->wait_buffer )
    {
+      PyObject *pybuffer = NULL;
       self->buffer = UnicapImageBuffer_new_from_buffer( buffer );
       pybuffer = self->buffer;
       if( !self->buffer )
@@ -52,11 +52,9 @@ static void new_frame_callback( unicap_event_t event, unicap_handle_t handle, un
    if( self->callbacks[CALLBACK_NEW_FRAME] ){
       PyObject *arglist;
       PyObject *result;
-
-      if( !pybuffer )
-      {
-	 pybuffer = UnicapImageBuffer_new_from_buffer( buffer );
-      }
+      PyObject *pybuffer = NULL;
+      
+      pybuffer = UnicapImageBuffer_new_from_buffer_no_copy( buffer );
 
       PyEval_AcquireThread(self->myThreadState);
       if( self->callback_data[ CALLBACK_NEW_FRAME ] ){
@@ -225,8 +223,9 @@ static PyObject *UnicapDevice_enumerate_formats( UnicapDevice *self )
    
    unicap_format_t format;
    int i;
-   
-   
+
+   list = PyList_New(0);
+
    for( i = 0; SUCCESS( unicap_enumerate_formats( self->handle, NULL, &format, i ) ); i++ )
    {
       PyObject *obj = NULL;
@@ -235,9 +234,10 @@ static PyObject *UnicapDevice_enumerate_formats( UnicapDevice *self )
       
       if( obj )
       {
-	 list = PyList_New(0);
 	 PyList_Append( list, obj );
-      }   
+      } else{
+	 printf( "Failed to build video format\n" );
+      }
    }
    
    return list;
@@ -571,7 +571,7 @@ Valid events are:\n\
 0: New frame event \n\
      def callback(buffer,{data})\n\
      \n\
-     buffer: newly allocated unicap.ImageBuffer object\n\
+     buffer: an unicap.ImageBuffer object\n\
      data: User parameter ( if any )\n\
 ";
 static PyObject *UnicapDevice_set_callback( UnicapDevice *self, PyObject *args, PyObject *kwds )

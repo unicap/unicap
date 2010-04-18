@@ -184,7 +184,7 @@ static int read_png(FILE *fp, unsigned int sig_read, unicap_data_buffer_t *buffe
 }
 
 
-/* write a png file */
+//write a png file
 /* int write_png(char *file_name, unicap_data_buffer_t *buffer) */
 /* { */
 /*    FILE *fp; */
@@ -192,10 +192,10 @@ static int read_png(FILE *fp, unsigned int sig_read, unicap_data_buffer_t *buffe
 /*    png_infop info_ptr; */
 /*    png_colorp palette; */
 
-/*    if( ( buffer.fourcc != UCIL_FOURCC( 'R', 'G', 'B', 0 ) ) && */
-/*        ( buffer.fourcc != UCIL_FOURCC( 'R', 'G', 'B', '3' ) ) && */
-/*        ( buffer.fourcc != UCIL_FOURCC( 'R', 'G', 'B', '4' ) ) && */
-/*        ( buffer.fourcc != UCIL_FOURCC( 'R', 'G', 'B', 'A' ) ) ) */
+/*    if( ( buffer->format.fourcc != UCIL_FOURCC( 'R', 'G', 'B', 0 ) ) && */
+/*        ( buffer->format.fourcc != UCIL_FOURCC( 'R', 'G', 'B', '3' ) ) && */
+/*        ( buffer->format.fourcc != UCIL_FOURCC( 'R', 'G', 'B', '4' ) ) && */
+/*        ( buffer->format.fourcc != UCIL_FOURCC( 'R', 'G', 'B', 'A' ) ) ) */
 /*    { */
 /*       g_warning( "write_png: unsupported color format!" ); */
 /*       return -1; */

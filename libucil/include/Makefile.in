@@ -231,7 +231,7 @@ top_srcdir = @top_srcdir@
 ucil_major_version = @ucil_major_version@
 ucil_micro_version = @ucil_micro_version@
 ucil_minor_version = @ucil_minor_version@
-pkginclude_HEADERS = ucil.h ucil_version.h ucil_png.h ucil_alsa.h
+pkginclude_HEADERS = ucil.h ucil_version.h ucil_png.h ucil_alsa.h ucil_private.h
 EXTRA_DIST = debug.h
 all: all-am
 

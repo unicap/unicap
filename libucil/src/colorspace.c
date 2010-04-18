@@ -54,6 +54,8 @@
 //52474241-0000-0010-8000-00aa00389b71
 #define GUID_RGB32 { 0x52, 0x47, 0x42, 0x41, 0x00, 0x00, 0x00, 0x10, \
                      0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71 } 
+#define GUID_BGR32 { 0x41, 0x42, 0x47, 0x52, 0x00, 0x00, 0x00, 0x10, \
+                     0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71 } 
 
 //55595659-0000-0010-8000-00aa00389b71
 #define GUID_UYVY  { 0x55, 0x59, 0x56, 0x59, 0x00, 0x00, 0x00, 0x10, \
@@ -96,6 +98,7 @@ static void uyvy2yuy2( __u8 *dest, __u8 *source, int width, int height );
 static void uyvy2yuv( __u8 *dest, __u8 *source, int width, int height );
 static void uyvy2rgb24( __u8 *dest, __u8 *source, int width, int height );
 static void yuyv2rgb24( __u8 *dest, __u8 *source, int width, int height );
+static void yuyv2bgr32( __u8 *dest, __u8 *source, int width, int height );
 static void uyvy2rgb32( __u8 *dest, __u8 *source, int width, int height );
 static void uyvy2bgr24( __u8 *dest, __u8 *source, int width, int height );
 static void y4112rgb24( __u8 *dest, __u8 *source, int width, int height );
@@ -118,14 +121,20 @@ static void rgb322uyvy( __u8 *dest, __u8 *source, int width, int height );
 static void rgb242yuyv( __u8 *dest, __u8 *source, int width, int height );
 static void rgb24toyuv420p( __u8 *dest, __u8 *source, int width, int height );
 static void bgr24toyuv420p( __u8 *dest, __u8 *source, int width, int height );
+
 static void bgr24torgb24( __u8 *dest, __u8 *source, int width, int height );
 static void rgb32torgb24( __u8 *dest, __u8 *source, int width, int height );
+static void bgr24tobgr32( __u8 *dest, __u8 *source, int width, int height );
+
 static void yuy2toyuyv( __u8 *dest, __u8 *source, int width, int height );
 static void by8touyvy( __u8 *dest, __u8* source, int width, int height );
 static void by8torgb24( __u8 *dest, __u8* source, int width, int height );
 static void by8torgb32( __u8 *dest, __u8* source, int width, int height );
 static void by8tobgr24( __u8 *dest, __u8* source, int width, int height );
 static void by8touyvy( __u8 *dest, __u8* source, int width, int height );
+
+static void by8toby8p( __u8 *dest, __u8* source, int width, int height );
+
 
 static void y16touyvy( __u8 *dest, __u8* _source, int width, int height, int shift );
 static void y16toyuy2( __u8 *dest, __u8* _source, int width, int height, int shift );
@@ -630,6 +639,7 @@ static xfm_info_t conversions[] =
 
       flags: 0
    },
+
    // yuyv -> rgb24
    { 
       src_fourcc: FOURCC('Y','U','Y','V'), 
@@ -678,7 +688,7 @@ static xfm_info_t conversions[] =
 
       flags: 0
    },
-   // uyvy -> rgb24
+   // yuyv -> rgb24
    { 
       src_fourcc: FOURCC('Y','U','Y','V'), 
       src_guid: GUID_UYVY, 
@@ -694,6 +704,42 @@ static xfm_info_t conversions[] =
 
       flags: 0
    },
+
+
+   // yuyv -> rgb24
+   { 
+      src_fourcc: FOURCC('Y','U','Y','V'), 
+      src_guid: GUID_YUY2, 
+      src_bpp: 16, 
+      
+      dest_fourcc: FOURCC('B','G','R','4'), 
+      dest_guid: GUID_BGR32, 
+      dest_bpp: 32,
+      
+      priority: 5, 
+
+      func: (xfm_func_t) yuyv2bgr32,
+
+      flags: 0
+   },
+   // yuyv -> rgb24
+   { 
+      src_fourcc: FOURCC('Y','U','Y','2'), 
+      src_guid: GUID_YUY2, 
+      src_bpp: 16, 
+      
+      dest_fourcc: FOURCC('B','G','R','4'), 
+      dest_guid: GUID_BGR32, 
+      dest_bpp: 32,
+      
+      priority: 5, 
+
+      func: (xfm_func_t) yuyv2bgr32,
+
+      flags: 0
+   },
+
+
    // yuyv -> y800
    { 
       src_fourcc: FOURCC('Y','U','Y','V'), 
@@ -726,6 +772,8 @@ static xfm_info_t conversions[] =
 
       flags: 0
    },
+
+
 
 
    { 
@@ -1230,6 +1278,22 @@ static xfm_info_t conversions[] =
    },
 
    { 
+      src_fourcc: FOURCC('B','G','R','3'), 
+      src_guid: GUID_RGB24, 
+      src_bpp: 24,
+      
+      dest_fourcc: FOURCC('B','G','R','4'), 
+      dest_guid: GUID_RGB32, 
+      dest_bpp: 32, 
+      
+      priority: 5, 
+
+      func: (xfm_func_t) bgr24tobgr32,
+
+      flags: 0
+   },
+
+   { 
       src_fourcc: FOURCC('R','G','B',0), 
       src_guid: GUID_RGB24, 
       src_bpp: 24,
@@ -1351,6 +1415,38 @@ static xfm_info_t conversions[] =
 
       flags: 0
    },
+
+   { 
+      src_fourcc: FOURCC('B','Y','8',' '), 
+      src_guid: {0}, 
+      src_bpp: 8,
+      
+      dest_fourcc: FOURCC('B','Y','8','P'), 
+      dest_guid: {0}, 
+      dest_bpp: 8, 
+      
+      priority: 5, 
+
+      func: (xfm_func_t) by8toby8p,
+
+      flags: 0
+   },
+   { 
+      src_fourcc: FOURCC('B','A','8','1'), 
+      src_guid: {0}, 
+      src_bpp: 8,
+      
+      dest_fourcc: FOURCC('B','Y','8','P'), 
+      dest_guid: {0}, 
+      dest_bpp: 8, 
+      
+      priority: 5, 
+
+      func: (xfm_func_t) by8toby8p,
+
+      flags: 0
+   },
+
 
    // rgb32 -> uyvy
    {
@@ -2159,6 +2255,51 @@ static void yuyv2rgb24( __u8 *dest, __u8 *source, int width, int height )
       *dest++ = (__u8) ( ib > 255 ? 255 : ( ib < 0 ? 0 : ib ) );
    }
 }
+
+static void yuyv2bgr32( __u8 *dest, __u8 *source, int width, int height )
+{
+   __u8 *source_end = source + (width * height * 2);
+
+   while( source < source_end )
+   {
+      __u8 y1, y2, u, v;
+      int c1, c2, d, dg, db, e, er, eg;
+      int ir, ig, ib;
+		
+      y1 = *source++;
+      u = *source++;
+      y2 = *source++;
+      v = *source++;
+      
+      c1 = (y1-16)*298;
+      c2 = (y2-16)*298;
+      d = u-128;
+      dg = 100 * d;
+      db = 516 * d;
+      e = v-128;
+      er = 409 * e;
+      eg = 208 * e;
+
+      ir = (c1 + er + 128)>>8;
+      ig = (c1 - dg - eg + 128 )>>8;
+      ib = (c1 + db)>>8;
+      
+      *dest++ = (__u8) ( ib > 255 ? 255 : ( ib < 0 ? 0 : ib ) );
+      *dest++ = (__u8) ( ig > 255 ? 255 : ( ig < 0 ? 0 : ig ) );
+      *dest++ = (__u8) ( ir > 255 ? 255 : ( ir < 0 ? 0 : ir ) );
+      *dest++ = 0; // Alpha
+		
+      ir = (c2 + er + 128)>>8;
+      ig = (c2 - dg - eg + 128 )>>8;
+      ib = (c2 + db)>>8;
+
+      *dest++ = (__u8) ( ib > 255 ? 255 : ( ib < 0 ? 0 : ib ) );
+      *dest++ = (__u8) ( ig > 255 ? 255 : ( ig < 0 ? 0 : ig ) );
+      *dest++ = (__u8) ( ir > 255 ? 255 : ( ir < 0 ? 0 : ir ) );
+      *dest++ = 0; // Alpha
+   }
+}
+
 
 
 /* static void uyvy2rgb24( __u8 *dest, __u8 *source, int width, int height ) */
@@ -3042,6 +3183,30 @@ static void rgb32torgb24( __u8 *dest, __u8 *source, int width, int height )
    }
 }
 
+
+
+static void bgr24tobgr32( __u8 *dest, __u8 *source, int width, int height )
+{
+   int size = width * height;
+   int i;
+   
+
+   for( i = 0; i < size; i++ )
+   {
+      unsigned char r,g,b;
+      
+      b = *source++;
+      g = *source++;
+      r = *source++;
+      
+      *dest++ = b;
+      *dest++ = g;
+      *dest++ = r;
+      *dest++ = 0;
+   }
+}
+
+
 static void yuy2toyuyv( __u8 *dest, __u8 *source, int width, int height )
 {
    memcpy( dest, source, width * height * 2 );
@@ -3154,6 +3319,27 @@ static void by8torgb24( __u8 *dest, __u8* source, int width, int height )
    }
    
 }
+
+static void by8toby8p( __u8 *dest, __u8* source, int width, int height )
+{
+   int i,j;
+
+   __u8 *destr = dest;
+   __u8 *destg = dest + width*height/4;
+   __u8 *destb = destg + width*height/2;
+
+   for( j = 0; j < height; j+=2 ){
+      for( i = 0; i < width; i++ ){
+	 *destg++ = *source++;
+	 *destb++ = *source++;
+      }
+      for( i = 0; i < width; i++ ){
+	 *destr++ = *source++;
+	 *destg++ = *source++;
+      }      
+   }
+}
+
 
 static void by8tobgr24( __u8 *dest, __u8* source, int width, int height )
 {

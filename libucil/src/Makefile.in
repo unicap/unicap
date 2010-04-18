@@ -73,8 +73,8 @@ am__libucil_la_SOURCES_DIST = ucil.c ../include/ucil.h draw.c \
 	yuvops.c ../include/yuvops.h rgbops.c ../include/rgbops.h \
 	font.c video_file.c ../include/video_file.h ucil_rawavi.c \
 	../include/ucil_rawavi.h ../include/avi.h ucil_audio.c \
-	../include/ucil_audio.h ucil_avc_avi.c \
-	../include/ucil_avc_avi.h ucil_theora.c \
+	../include/ucil_audio.h ucil_ppm.c ../include/ucil_ppm.h \
+	ucil_avc_avi.c ../include/ucil_avc_avi.h ucil_theora.c \
 	../include/ucil_theora.h ucil_alsa.c ../include/ucil_alsa.h \
 	ucil_png.c ../include/ucil_png.h
 @HAVE_AVCODEC_TRUE@am__objects_1 = ucil_avc_avi.lo
@@ -83,7 +83,7 @@ am__libucil_la_SOURCES_DIST = ucil.c ../include/ucil.h draw.c \
 @HAVE_PNG_TRUE@am__objects_4 = ucil_png.lo
 am_libucil_la_OBJECTS = ucil.lo draw.lo colorspace.lo yuvops.lo \
 	rgbops.lo font.lo video_file.lo ucil_rawavi.lo ucil_audio.lo \
-	$(am__objects_1) $(am__objects_2) $(am__objects_3) \
+	ucil_ppm.lo $(am__objects_1) $(am__objects_2) $(am__objects_3) \
 	$(am__objects_4)
 libucil_la_OBJECTS = $(am_libucil_la_OBJECTS)
 libucil_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -290,6 +290,7 @@ libucil_la_SOURCES = \
 		video_file.c ../include/video_file.h \
 		ucil_rawavi.c ../include/ucil_rawavi.h ../include/avi.h\
 		ucil_audio.c ../include/ucil_audio.h \
+		ucil_ppm.c ../include/ucil_ppm.h \
 		$(libucil_avcodec_sources) \
 		$(libucil_avcavi_sources) \
 		$(libucil_theora_sources) \
@@ -379,6 +380,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ucil_audio.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ucil_avc_avi.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ucil_png.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ucil_ppm.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ucil_rawavi.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ucil_theora.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/video_file.Plo@am__quote@

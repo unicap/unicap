@@ -100,3 +100,52 @@ void ucil_fill_rgb32( unicap_data_buffer_t *buffer,
       buffer->data[offset++] = color->rgb32.a;
    }
 }
+
+void ucil_copy_color_plane_by8( unicap_data_buffer_t *destbuf, 
+				unicap_data_buffer_t *srcbuf, 
+				ucil_color_plane_t plane )
+{
+   int i,j;
+   __u8 *dest = destbuf->data;
+   __u8 *src = srcbuf->data;
+   
+   switch( plane ){
+   case UCIL_COLOR_PLANE_RED:
+      for( j = 0; j < srcbuf->format.size.height; j+=2 ){
+	 src += srcbuf->format.size.width; // Skip 'blue' rows
+	 for( i = 1; i < srcbuf->format.size.width; i+=2 ){
+	    *dest++ = *src;
+	    src+=2;
+	 }
+      }
+      break;
+      
+   case UCIL_COLOR_PLANE_GREEN:
+      for( j = 0; j < srcbuf->format.size.height; j+=2 ){
+	 for( i = 0; i < srcbuf->format.size.width; i+=2 ){
+	    // GB row
+	    *dest++ = *src; 
+	    src+=2;
+	 }
+	 for( i = 1; i < srcbuf->format.size.width; i+=2 ){
+	    // RG row
+	    *dest++ = *src;
+	    src+=2;
+	 }
+      }
+      break;
+   case UCIL_COLOR_PLANE_BLUE:
+      for( j = 0; j < srcbuf->format.size.height; j+=2 ){
+	 for( i = 0; i < srcbuf->format.size.width; i+=2 ){
+	    // GB row
+	    *dest++ = *src;
+	    src+=2;
+	 }
+	 src += srcbuf->format.size.width; // Skip 'red' rows
+      }
+      break;
+   default:
+      break;
+   }
+
+}

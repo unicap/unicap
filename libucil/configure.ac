@@ -11,9 +11,9 @@ AM_CONFIG_HEADER(config.h)
 #   4. If any interfaces have been added, removed, or changed since the last update, increment current, and set revision to 0.
 #   5. If any interfaces have been added since the last public release, then increment age.
 #   6. If any interfaces have been removed since the last public release, then set age to 0. 
-lt_major=3
-lt_revision=11
-lt_age=1
+lt_major=4
+lt_revision=0
+lt_age=2
 
 ucil_major_version=0
 ucil_minor_version=9

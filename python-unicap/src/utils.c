@@ -112,16 +112,20 @@ PyObject *build_video_format( const unicap_format_t *format )
 		      (unsigned char )(format->fourcc >> 24) & 0xff };
       
    // name: string, fourcc: 4 char string, bpp: int, size: (int,int), min_size: (int,int), max_size: (int,int), sizes: [(int,int)]
-   obj = Py_BuildValue( "{s:s,s:s#,s:i,s:(ii),s:(ii),s:(ii)}", 
-			"identifier", format->identifier, 
+   obj = Py_BuildValue( "{s:s#,s:i,s:(ii)}", 
 			"fourcc", fourcc, 4, 
 			"bpp", format->bpp, 
-			"size", format->size.width, format->size.height, 
-			"min_size", format->min_size.width, format->min_size.height, 
-			"max_size", format->max_size.width, format->max_size.height );
+			"size", format->size.width, format->size.height );
+   if (strlen( format->identifier ))
+      PyDict_SetItemString( obj, "identifier", PyString_FromString (format->identifier) );
+   if ((format->min_size.width != -1 ) && ( format->min_size.width != -1 ) )
+      PyDict_SetItemString( obj, "min_size", PyTuple_Pack( 2, PyInt_FromLong( format->min_size.width ), PyInt_FromLong( format->min_size.height ) ) );
+   if ((format->max_size.width != -1 ) && ( format->max_size.width != -1 ) )
+      PyDict_SetItemString( obj, "max_size", PyTuple_Pack( 2, PyInt_FromLong( format->max_size.width ), PyInt_FromLong( format->max_size.height ) ) );
+   
+      
 
-   if( format->size_count )
-   {
+   if( format->size_count ){
       PyObject *list;
       int i;
 
@@ -132,8 +136,7 @@ PyObject *build_video_format( const unicap_format_t *format )
 	 return NULL;
       }
 
-      for( i = 0; i < format->size_count; i++ )
-      {
+      for( i = 0; i < format->size_count; i++ ){
 	 PyObject *tmp;
 	 
 	 tmp = Py_BuildValue( "(ii)", format->sizes[i].width, format->sizes[i].height );
@@ -389,7 +392,7 @@ int conv_device_identifier( PyObject *object, char **target )
       }
    } else if( UnicapDevice_Check( object ) ){
       PyObject *strobj;
-      strobj = PyObject_GetAttr( object, "identifier" );
+      strobj = PyObject_GetAttrString( object, "identifier" );
       if( strobj ){
 	 identifier = PyString_AsString( strobj );
       }

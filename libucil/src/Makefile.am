@@ -43,6 +43,7 @@ libucil_la_SOURCES =   \
 		video_file.c ../include/video_file.h \
 		ucil_rawavi.c ../include/ucil_rawavi.h ../include/avi.h\
 		ucil_audio.c ../include/ucil_audio.h \
+		ucil_ppm.c ../include/ucil_ppm.h \
 		$(libucil_avcodec_sources) \
 		$(libucil_avcavi_sources) \
 		$(libucil_theora_sources) \

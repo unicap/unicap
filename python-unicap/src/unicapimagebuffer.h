@@ -28,6 +28,7 @@ typedef struct
    PyObject_HEAD
    PyObject *gobject_module;
    PyObject *format;
+   double time;
    unicap_data_buffer_t buffer;
    ucil_font_object_t *fobj;
    int free_data;
@@ -38,5 +39,6 @@ extern PyTypeObject UnicapImageBufferType;
 void initunicapimagebuffer( PyObject *m );
 
 PyObject *UnicapImageBuffer_new_from_buffer( const unicap_data_buffer_t *data_buffer );
+PyObject *UnicapImageBuffer_new_from_buffer_no_copy( const unicap_data_buffer_t *data_buffer );
 
 #endif//__UNICAPIMAGEBUFFER_H__

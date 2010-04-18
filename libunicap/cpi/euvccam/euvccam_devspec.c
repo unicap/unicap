@@ -460,6 +460,28 @@ static euvccam_property_t properties_8206[] =
       set_func: euvccam_device_write_iic,
       enumerate_func: NULL,
    },
+
+   {
+      {
+	identifier: N_("GP Out"),
+	category: N_("device"),
+	unit: "",
+	relations: NULL,
+	relations_count: 0,
+	{value: 0},
+	{range: { min: 0, max: 0 } },
+	stepping: 0.0,
+	type: UNICAP_PROPERTY_TYPE_FLAGS,
+	flags: UNICAP_FLAGS_MANUAL,
+	flags_mask: UNICAP_FLAGS_MANUAL | UNICAP_FLAGS_ON_OFF,
+	property_data: NULL,
+	property_data_size: 0
+      },
+      
+      get_func: euvccam_device_get_gpout,
+      set_func: euvccam_device_set_gpout,
+      enumerate_func: euvccam_device_enumerate_gpout,
+   },
 };
 
 static euvccam_property_t properties_8202_color[] =
@@ -927,38 +949,38 @@ static struct euvccam_video_format_description formats_8201[] =
 };
 
 
-static double format_8202_framerates[] = {   60, 30, 25, 15, 7.5, 5};
-static int    format_8202_framerate_map[] = { 6,  0,  1,  2,   3, 4};
+static double format_8202_framerates[] = {   87, 60, 30, 25, 15, 7.5, 5};
+static int    format_8202_framerate_map[] = { 7, 6,  0,  1,  2,   3, 4};
 
 
 static struct euvccam_video_format_description formats_8202_color[] =
 {
-/*    { */
-/*       1, */
-/*       2, */
-/*       { identifier: "Y800 104x104", */
-/* 	size: {0,0,104,104}, */
-/* 	min_size: { 0,0,104,104 }, */
-/* 	max_size: { 0,0,104,104 }, */
-/* 	h_stepping: 0, */
-/* 	v_stepping: 0, */
-/* 	sizes: NULL, */
-/* 	size_count: 0, */
-/* 	bpp: 8, */
-/* 	buffer_size: 104 * 104, */
-/* 	fourcc: FOURCC( 'Y', '8', '0', '0' ), */
-/* 	flags: 0, */
-/* 	buffer_types: UNICAP_BUFFER_TYPE_SYSTEM | UNICAP_BUFFER_TYPE_USER, */
-/* 	system_buffer_count: EUVCCAM_SYSTEM_BUFFER_COUNT, */
-/* 	buffer_type: 0 */
-/*       }, */
-/*       N_ELEMENTS( format_8202_framerates ), */
-/*       format_8202_framerates, */
-/*       format_8202_framerate_map, */
-/*       104 * 104, */
-/*       NULL, */
-/*       EUVCCAM_FORMAT_IS_PARTIAL_SCAN, */
-/*    }, */
+   {
+      1,
+      2,
+      { identifier: "Y800 104x104",
+	size: {0,0,104,104},
+	min_size: { 0,0,104,104 },
+	max_size: { 0,0,756,480 },
+	h_stepping: 16,
+	v_stepping: 16,
+	sizes: NULL,
+	size_count: 0,
+	bpp: 8,
+	buffer_size: 104 * 104,
+	fourcc: FOURCC( 'Y', '8', '0', '0' ),
+	flags: 0,
+	buffer_types: UNICAP_BUFFER_TYPE_SYSTEM | UNICAP_BUFFER_TYPE_USER,
+	system_buffer_count: EUVCCAM_SYSTEM_BUFFER_COUNT,
+	buffer_type: 0
+      },
+      N_ELEMENTS( format_8202_framerates ),
+      format_8202_framerates,
+      format_8202_framerate_map,
+      756 * 480,
+      NULL,
+      EUVCCAM_FORMAT_IS_PARTIAL_SCAN,
+   },
    {
       1,
       2,
@@ -1008,6 +1030,31 @@ static struct euvccam_video_format_description formats_8202_color[] =
       format_8202_framerate_map,
       744 * 480, 
       euvccam_colorproc_by8_rgb24_nn,
+   },
+   {
+      1,
+      3,
+      { identifier: "Y800 320x240",
+	size: {0,0,320,240},
+	min_size: { 0,0,320,240 },
+	max_size: { 0,0,320,240 },
+	h_stepping: 0,
+	v_stepping: 0, 
+	sizes: NULL,
+	size_count: 0,
+	bpp: 8,
+	buffer_size: 320 * 240,
+	fourcc: FOURCC( 'Y', '8', '0', '0' ),
+	flags: 0, 
+	buffer_types: UNICAP_BUFFER_TYPE_SYSTEM | UNICAP_BUFFER_TYPE_USER, 
+	system_buffer_count: EUVCCAM_SYSTEM_BUFFER_COUNT,
+	buffer_type: 0
+      },
+      N_ELEMENTS( format_8202_framerates ), 
+      format_8202_framerates,
+      format_8202_framerate_map,
+      320 * 240, 
+      NULL, 
    },
    {
       1,
@@ -1612,7 +1659,7 @@ static struct euvccam_video_format_description formats_8207_color[] =
       1,
       { identifier: "RGB24 2592x1944",
 	size: {0,0,2592,1944},
-	min_size: { 0,0,2592,1944 },
+	min_size: { 0,0,16,16 },
 	max_size: { 0,0,2592,1944 },
 	h_stepping: 0,
 	v_stepping: 0, 
@@ -1690,7 +1737,7 @@ static struct euvccam_video_format_description formats_8207_color[] =
       1,
       { identifier: "Y800 2592x1944",
 	size: {0,0,2592,1944},
-	min_size: { 0,0,2592,1944 },
+	min_size: { 0,0,16,16 },
 	max_size: { 0,0,2592,1944 },
 	h_stepping: 0,
 	v_stepping: 0, 

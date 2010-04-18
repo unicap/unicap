@@ -31,4 +31,10 @@ void ucil_fill_rgb32( unicap_data_buffer_t *buffer,
 		      ucil_color_t *color );
 
 
+void ucil_copy_color_plane_by8( unicap_data_buffer_t *destbuf, 
+				unicap_data_buffer_t *srcbuf, 
+				ucil_color_plane_t plane );
+
+
+
 #endif 	    /* !RGBOPS_H_ */

@@ -43,6 +43,25 @@ typedef enum
    UCIL_INTERP_BILINEAR
 } ucil_interpolation_type_t;
 
+typedef enum
+{
+   UCIL_FIELD_EVEN,
+   UCIL_FIELD_ODD,
+} ucil_field_type_t;
+
+typedef enum
+{
+   UCIL_COLOR_PLANE_RED,
+   UCIL_COLOR_PLANE_GREEN, 
+   UCIL_COLOR_PLANE_BLUE,
+   UCIL_COLOR_PLANE_ALPHA,
+   UCIL_COLOR_PLANE_Y,
+   UCIL_COLOR_PLANE_U,
+   UCIL_COLOR_PLANE_V,
+} ucil_color_plane_t;
+
+
+
 struct _ucil_rgb24
 {
       unsigned char r;
@@ -399,6 +418,41 @@ void ucil_composite( unicap_data_buffer_t *dest,
 		     double scalex, 
 		     double scaley, 
 		     ucil_interpolation_type_t interp );
+
+
+/**
+ * ucil_copy_region: Copy a region
+ * @dest: target buffer
+ * @src: source buffer
+ * @rect: A rectangle describing the designated area
+ *
+ * Copy a region of a data buffer
+ */
+unicap_status_t ucil_copy_region( unicap_data_buffer_t *dest, unicap_data_buffer_t *src, unicap_rect_t *rect );
+
+/**
+ * ucil_copy_region_alloc: Copy a region
+ * @src: source buffer
+ * @rect: A rectangle describing the designated area
+ *
+ * Allocate a new data buffer and copy a region of a data buffer into it
+ */
+unicap_data_buffer_t *ucil_copy_region_alloc( unicap_data_buffer_t *srcbuf, unicap_rect_t *rect );
+
+unicap_status_t ucil_copy_field( unicap_data_buffer_t *destbuf, unicap_data_buffer_t *srcbuf, ucil_field_type_t type );
+unicap_data_buffer_t *ucil_copy_field_alloc( unicap_data_buffer_t *srcbuf, ucil_field_type_t type );
+
+unicap_status_t ucil_copy_color_plane( unicap_data_buffer_t *destbuf, unicap_data_buffer_t *srcbuf, ucil_color_plane_t plane );
+unicap_data_buffer_t *ucil_copy_color_plane_alloc( unicap_data_buffer_t *srcbuf, ucil_color_plane_t plane );
+
+unicap_status_t *ucil_weave( unicap_data_buffer_t *destbuf, unicap_data_buffer_t *odd, unicap_data_buffer_t *even );
+unicap_data_buffer_t *ucil_weave_alloc( unicap_data_buffer_t *odd, unicap_data_buffer_t *even );
+
+
+
+unicap_data_buffer_t *ucil_read_file_alloc( const char* path );
+unicap_status_t ucil_write_file( const char* path, const char *format, unicap_data_buffer_t *buffer );
+
 
 
 /*

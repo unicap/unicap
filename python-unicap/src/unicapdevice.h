@@ -48,9 +48,6 @@ typedef struct
    PyObject *callbacks[MAX_CALLBACK];
    PyObject *callback_data[MAX_CALLBACK];
 
-   PyThreadState *mainThreadState;
-   PyInterpreterState *mainInterpreterState;
-   PyThreadState *myThreadState;
 }UnicapDevice;
 
 extern PyTypeObject UnicapDeviceType;

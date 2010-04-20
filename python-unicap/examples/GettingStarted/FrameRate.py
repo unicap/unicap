@@ -69,7 +69,6 @@ rates = [ 0.1, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0 ]
 
 
 for r in rates:
-    print 'Setze Belichtungszeit: %f  ==> %f' % ( r, 1.0/r )
     prop['value'] = r
     dev.set_property( prop )
     

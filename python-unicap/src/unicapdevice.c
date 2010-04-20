@@ -53,10 +53,11 @@ static void new_frame_callback( unicap_event_t event, unicap_handle_t handle, un
       PyObject *arglist;
       PyObject *result;
       PyObject *pybuffer = NULL;
+      PyGILState_STATE gstate;
       
+      gstate = PyGILState_Ensure();
       pybuffer = UnicapImageBuffer_new_from_buffer_no_copy( buffer );
 
-      PyEval_AcquireThread(self->myThreadState);
       if( self->callback_data[ CALLBACK_NEW_FRAME ] ){
 	 arglist = Py_BuildValue( "(OO)", pybuffer, self->callback_data[CALLBACK_NEW_FRAME] );
       } else {
@@ -67,9 +68,9 @@ static void new_frame_callback( unicap_event_t event, unicap_handle_t handle, un
 /*       if( result == NULL ) */
 /* 	 PyErr_Clear(); */
 
-      PyEval_ReleaseThread(self->myThreadState);
       Py_XDECREF( result );
       Py_XDECREF( pybuffer );
+      PyGILState_Release( gstate );
    }
 
    if( self->vobj )
@@ -224,6 +225,8 @@ static PyObject *UnicapDevice_enumerate_formats( UnicapDevice *self )
    unicap_format_t format;
    int i;
 
+   Py_BEGIN_ALLOW_THREADS;
+
    list = PyList_New(0);
 
    for( i = 0; SUCCESS( unicap_enumerate_formats( self->handle, NULL, &format, i ) ); i++ )
@@ -240,6 +243,8 @@ static PyObject *UnicapDevice_enumerate_formats( UnicapDevice *self )
       }
    }
    
+   Py_END_ALLOW_THREADS;
+
    return list;
 }      
 
@@ -260,17 +265,20 @@ static PyObject *UnicapDevice_set_format( UnicapDevice *self, PyObject *args, Py
 {
    unicap_format_t format_spec, format;
    PyObject *fmt_obj;
+   PyThreadState *save;
 
    if( !PyArg_ParseTuple( args, "O", &fmt_obj ) )
    {
       return NULL;
    }
    
+   save = PyEval_SaveThread();
    parse_video_format( &format_spec, fmt_obj );
    Py_XDECREF( fmt_obj );
    format_spec.buffer_size = -1;
    if( !SUCCESS( unicap_enumerate_formats( self->handle, &format_spec, &format, 0 ) ) )
    {
+      PyEval_RestoreThread(save);
       PyErr_SetString( UnicapException, "Failed to enumerate video formats" );
       return NULL;
    }
@@ -279,10 +287,12 @@ static PyObject *UnicapDevice_set_format( UnicapDevice *self, PyObject *args, Py
    
    if( !SUCCESS( unicap_set_format( self->handle, &format ) ) )
    {
+      PyEval_RestoreThread(save);
       PyErr_SetString( UnicapException, "Failed to set video format on device" );
       return NULL;
    }
    
+   PyEval_RestoreThread(save);
    Py_INCREF( Py_None );
    return( Py_None );
 }
@@ -294,13 +304,18 @@ static PyObject *UnicapDevice_get_format( UnicapDevice *self, PyObject *args, Py
 {
    PyObject *result = NULL;
    unicap_format_t format;
+   PyThreadState *save;
+
+   save = PyEval_SaveThread();
    
    if( !SUCCESS( unicap_get_format( self->handle, &format ) ) )
    {
+      PyEval_RestoreThread(save);
       PyErr_SetString( UnicapException, "Failed to get video format from device" );
       return NULL;
    }
    
+   PyEval_RestoreThread(save);
    result = build_video_format( &format );
    
    return result;
@@ -313,13 +328,18 @@ static PyObject *UnicapDevice_start_capture( UnicapDevice *self, PyObject *args,
 {
    PyObject *result = NULL;
    unicap_format_t format;
+   PyThreadState *save;
+
+   save = PyEval_SaveThread();
 
    unicap_get_format( self->handle, &format );
    format.buffer_type =  UNICAP_BUFFER_TYPE_SYSTEM;
    unicap_set_format( self->handle, &format );
 
+   
    if( !SUCCESS( unicap_register_callback( self->handle, UNICAP_EVENT_NEW_FRAME, (unicap_callback_t)new_frame_callback, self ) ) )
    {
+      PyEval_RestoreThread(save);
       PyErr_SetString( UnicapException, "Failed to register callback function" );
       return NULL;
    }
@@ -327,10 +347,12 @@ static PyObject *UnicapDevice_start_capture( UnicapDevice *self, PyObject *args,
 
    if( !SUCCESS( unicap_start_capture( self->handle ) ) )
    {
+      PyEval_RestoreThread(save);
       PyErr_SetString( UnicapException, "Failed to start video capture" );
       return NULL;
    }
 
+   PyEval_RestoreThread(save);
    Py_INCREF( Py_None );
    result = Py_None;
    return result;
@@ -343,15 +365,20 @@ Stops video capturing.\
 static PyObject *UnicapDevice_stop_capture( UnicapDevice *self, PyObject *args, PyObject *kwds )
 {
    PyObject *result = NULL;
+   PyThreadState *save;
+
+   save = PyEval_SaveThread();
    
    if( !SUCCESS( unicap_stop_capture( self->handle ) ) )
    {
+      PyEval_RestoreThread(save);
       PyErr_SetString( UnicapException, "Failed to stop video capture" );
       return NULL;
    }
 
    unicap_unregister_callback( self->handle, UNICAP_EVENT_NEW_FRAME );
    
+   PyEval_RestoreThread(save);
    Py_INCREF( Py_None );
    result = Py_None;
    return result;
@@ -389,11 +416,13 @@ static PyObject *UnicapDevice_wait_buffer( UnicapDevice *self, PyObject *args, P
       ts.tv_sec++;
    }
    
+   Py_BEGIN_ALLOW_THREADS;
    self->wait_buffer = 1;
    while( ( sem_timedwait( &self->sem, &ts ) ) == -1 && errno == EINTR )
    {
       continue;
    }
+   Py_END_ALLOW_THREADS;
    
    result = self->buffer;
    self->buffer = NULL;
@@ -437,9 +466,12 @@ static PyObject *UnicapDevice_enumerate_properties( UnicapDevice *self )
    int i;
    PyObject *obj;
    unicap_property_t property;
+   PyThreadState *save;
    
    obj = PyList_New(0);
    
+   save = PyEval_SaveThread();
+
    for( i = 0; SUCCESS( unicap_enumerate_properties( self->handle, NULL, &property, i ) ); i++ )
    {
       PyObject *tmp;
@@ -453,9 +485,11 @@ static PyObject *UnicapDevice_enumerate_properties( UnicapDevice *self )
       }
    }
    
+   PyEval_RestoreThread(save);
    return obj;
    
   err:
+   PyEval_RestoreThread(save);
    Py_XDECREF( obj );
    return NULL;
 }
@@ -473,6 +507,7 @@ static PyObject *UnicapDevice_get_property( UnicapDevice *self, PyObject *args, 
    PyObject *obj;   
    PyObject *dict = NULL;
    static char *kwlist[] = { "identifier", "data", NULL };
+   PyThreadState *save;
 
    if( !PyArg_ParseTupleAndKeywords( args, kwds, "O&|O", kwlist, conv_identifier, &ppty_id, &dict ) )
    {
@@ -483,6 +518,7 @@ static PyObject *UnicapDevice_get_property( UnicapDevice *self, PyObject *args, 
    strcpy( prop_spec.identifier, ppty_id );
 
 
+   save = PyEval_SaveThread();
    if( !SUCCESS( unicap_enumerate_properties( self->handle, &prop_spec, &property, 0 ) ) )
    {
       PyErr_SetString( UnicapException, "Failed to enumerate property" );
@@ -500,10 +536,12 @@ static PyObject *UnicapDevice_get_property( UnicapDevice *self, PyObject *args, 
    }
 
    obj = build_property( &property );
+   PyEval_RestoreThread(save);
    
    return obj;
    
   err:
+   PyEval_RestoreThread(save);
    return NULL;
    
 }
@@ -520,42 +558,50 @@ static PyObject *UnicapDevice_set_property( UnicapDevice *self, PyObject *args, 
    PyObject *obj;
    PyObject *tmp = NULL;
    const char *identifier = NULL;
+   PyThreadState *save;
    
    if( !PyArg_ParseTuple( args, "O", &obj ) )
-      goto err;
+      return NULL;
 
    tmp = PyDict_GetItemString( obj, "identifier" );
    if( !tmp )
-      goto err;
+      return NULL;
 
    identifier = PyString_AsString( tmp );
    if( !identifier )
-      goto err;
+      return NULL;
+
+   save = PyEval_SaveThread();
    
    unicap_void_property( &prop_spec );
    strcpy( prop_spec.identifier, identifier );
    if( !SUCCESS( unicap_enumerate_properties( self->handle, &prop_spec, &property, 0 ) ) )
    {
+      PyEval_RestoreThread(save);
       PyErr_SetString( UnicapException, "Failed to enumerate property" );
       goto err;
    }
    
    if( parse_property( &property, obj ) != 0 )
    {
+      PyEval_RestoreThread(save);
       PyErr_SetString( UnicapException, "Failed to parse property" );
       goto err;
    }
    
    if( !SUCCESS( unicap_set_property( self->handle, &property ) ) )
    {
+      PyEval_RestoreThread(save);
       PyErr_SetString( UnicapException, "Failed to set property" );
       goto err;
    }
 
+   PyEval_RestoreThread(save);
    Py_INCREF( Py_None );
    return( Py_None );
 
   err:
+   PyEval_RestoreThread(save);
    return NULL;   
 }
 
@@ -590,13 +636,6 @@ static PyObject *UnicapDevice_set_callback( UnicapDevice *self, PyObject *args, 
       return NULL;
    }
    
-   if( self->myThreadState == NULL )      {
-      self->mainThreadState = PyThreadState_Get();
-      self->mainInterpreterState = self->mainThreadState->interp;
-      self->myThreadState = PyThreadState_New(self->mainInterpreterState);
-   }
-      
-
    if( func == Py_None ) {
       Py_XDECREF(self->callbacks[which]);
       Py_XDECREF(self->callback_data[which]);
@@ -713,7 +752,9 @@ static PyObject *UnicapDevice_record_video( UnicapDevice *self, PyObject *args, 
       }
       
 
+      Py_BEGIN_ALLOW_THREADS;
       unicap_get_format( self->handle, &format );
+      Py_END_ALLOW_THREADS;
       sem_wait( &self->lock );
       self->vobj = ucil_create_video_filev( filename, &format, codec, i, gparams );
       sem_post( &self->lock );

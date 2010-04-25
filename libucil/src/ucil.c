@@ -235,25 +235,6 @@ ucil_colorspace_t ucil_get_colorspace_from_fourcc( unsigned int fourcc )
    return cs;
 }
 
-unicap_status_t ucil_copy_region( unicap_data_buffer_t *destbuf, unicap_data_buffer_t *srcbuf, unicap_rect_t *rect )
-{
-   int sy, dy;
-
-   if ( (destbuf->format.fourcc != srcbuf->format.fourcc) ||
-	((rect->y + rect->height) > srcbuf->format.size.height) ||
-	((rect->x + rect->width) > srcbuf->format.size.width) )
-      return STATUS_INVALID_PARAMETER;
-   
-   
-   for (sy = rect->y, dy=0; sy < (rect->y + rect->height); sy++, dy++ ){
-      memcpy (destbuf->data + (dy * destbuf->format.size.width * destbuf->format.bpp / 8), 
-	      srcbuf->data + ( (sy * srcbuf->format.size.width * srcbuf->format.bpp / 8) + rect->x * srcbuf->format.bpp / 8), 
-	      rect->width * srcbuf->format.bpp / 8 );
-   }
-   
-   return STATUS_SUCCESS;
-}
-
 __HIDDEN__ unicap_data_buffer_t *ucil_allocate_buffer( int width, int height, unsigned int fourcc, int bpp )
 {
    unicap_data_buffer_t *buffer;
@@ -269,6 +250,30 @@ __HIDDEN__ unicap_data_buffer_t *ucil_allocate_buffer( int width, int height, un
    
    return buffer;
 }
+
+
+unicap_status_t ucil_copy_region( unicap_data_buffer_t *destbuf, unicap_data_buffer_t *srcbuf, unicap_rect_t *rect )
+{
+   int sy, dy;
+
+   if ( (destbuf->format.fourcc != srcbuf->format.fourcc) ||
+	((rect->y + rect->height) > srcbuf->format.size.height) ||
+	((rect->x + rect->width) > srcbuf->format.size.width) )
+      return STATUS_INVALID_PARAMETER;
+
+   memcpy( &destbuf->capture_start_time, &srcbuf->capture_start_time, sizeof( struct timeval ) );
+   memcpy( &destbuf->duration, &srcbuf->duration, sizeof( struct timeval ) );
+   memcpy( &destbuf->fill_time, &srcbuf->fill_time, sizeof( struct timeval ) );
+   
+   for (sy = rect->y, dy=0; sy < (rect->y + rect->height); sy++, dy++ ){
+      memcpy (destbuf->data + (dy * destbuf->format.size.width * destbuf->format.bpp / 8), 
+	      srcbuf->data + ( (sy * srcbuf->format.size.width * srcbuf->format.bpp / 8) + rect->x * srcbuf->format.bpp / 8), 
+	      rect->width * srcbuf->format.bpp / 8 );
+   }
+   
+   return STATUS_SUCCESS;
+}
+
 
 unicap_data_buffer_t *ucil_copy_region_alloc( unicap_data_buffer_t *srcbuf, unicap_rect_t *rect )
 {
@@ -288,6 +293,10 @@ unicap_status_t ucil_copy_field( unicap_data_buffer_t *destbuf, unicap_data_buff
       return STATUS_INVALID_PARAMETER;
    }
    
+   memcpy( &destbuf->capture_start_time, &srcbuf->capture_start_time, sizeof( struct timeval ) );
+   memcpy( &destbuf->duration, &srcbuf->duration, sizeof( struct timeval ) );
+   memcpy( &destbuf->fill_time, &srcbuf->fill_time, sizeof( struct timeval ) );
+
    int offset = 0;
    int rowstride = srcbuf->format.size.width * srcbuf->format.bpp / 8;
    
@@ -315,6 +324,10 @@ unicap_data_buffer_t *ucil_copy_field_alloc( unicap_data_buffer_t *srcbuf, ucil_
 unicap_status_t ucil_copy_color_plane( unicap_data_buffer_t *destbuf, unicap_data_buffer_t *srcbuf, ucil_color_plane_t plane )
 {
    unicap_status_t status = STATUS_SUCCESS;
+
+   memcpy( &destbuf->capture_start_time, &srcbuf->capture_start_time, sizeof( struct timeval ) );
+   memcpy( &destbuf->duration, &srcbuf->duration, sizeof( struct timeval ) );
+   memcpy( &destbuf->fill_time, &srcbuf->fill_time, sizeof( struct timeval ) );
 
    switch( srcbuf->format.fourcc ){
    case UCIL_FOURCC( 'B', 'Y', '8', ' '):
@@ -371,6 +384,10 @@ unicap_status_t *ucil_weave( unicap_data_buffer_t *destbuf, unicap_data_buffer_t
    
    int rowstride = destbuf->format.size.width * destbuf->format.bpp / 8;   
    int y;
+
+   memcpy( &destbuf->capture_start_time, &even->capture_start_time, sizeof( struct timeval ) );
+   memcpy( &destbuf->duration, &even->duration, sizeof( struct timeval ) );
+   memcpy( &destbuf->fill_time, &even->fill_time, sizeof( struct timeval ) );
 
    for( y = 0; y < destbuf->format.size.height/2; y++ ){
       memcpy(destbuf->data + y*2*rowstride, even->data + y*rowstride, rowstride);

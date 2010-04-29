@@ -454,6 +454,7 @@ AC_CONFIG_FILES([ cpi/euvccam/Makefile ])
 AC_CONFIG_FILES([ cpi/thing/Makefile ])
 AC_CONFIG_FILES([ cpi/Makefile cpi/include/Makefile ])
 AC_CONFIG_FILES([ doc/libunicap/Makefile doc/Makefile ])
+AC_CONFIG_FILES([ data/Makefile ])
 AC_OUTPUT
 
 if test x$VID21394_VISCA = xyes; then

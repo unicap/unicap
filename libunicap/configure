@@ -15199,6 +15199,8 @@ ac_config_files="$ac_config_files cpi/Makefile cpi/include/Makefile"
 
 ac_config_files="$ac_config_files doc/libunicap/Makefile doc/Makefile"
 
+ac_config_files="$ac_config_files data/Makefile"
+
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -16236,6 +16238,7 @@ do
     "cpi/include/Makefile") CONFIG_FILES="$CONFIG_FILES cpi/include/Makefile" ;;
     "doc/libunicap/Makefile") CONFIG_FILES="$CONFIG_FILES doc/libunicap/Makefile" ;;
     "doc/Makefile") CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;
+    "data/Makefile") CONFIG_FILES="$CONFIG_FILES data/Makefile" ;;
     "po/stamp-it") CONFIG_COMMANDS="$CONFIG_COMMANDS po/stamp-it" ;;
 
   *) as_fn_error "invalid argument: \`$ac_config_target'" "$LINENO" 5;;

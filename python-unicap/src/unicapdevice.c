@@ -284,6 +284,8 @@ static PyObject *UnicapDevice_set_format( UnicapDevice *self, PyObject *args, Py
    }
 
    format.buffer_type =  UNICAP_BUFFER_TYPE_SYSTEM;
+   format.size.width = format_spec.size.width;
+   format.size.height = format_spec.size.height;
    
    if( !SUCCESS( unicap_set_format( self->handle, &format ) ) )
    {

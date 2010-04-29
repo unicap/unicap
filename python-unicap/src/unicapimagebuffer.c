@@ -175,7 +175,7 @@ static PyObject *UnicapImageBuffer_wrap_gpointer( PyTypeObject *type, PyObject *
    if( self != NULL ){
       memcpy( &self->buffer, data_buffer, sizeof( unicap_data_buffer_t ) );
       self->format = build_video_format( &data_buffer->format );
-      self->time = ((double)data_buffer->fill_time.tv_sec) + ((double)data_buffer->fill_time.tv_usec / 1000000.0 );
+      self->time = ((double)data_buffer->fill_time.tv_sec) + ((double)data_buffer->fill_time.tv_usec / (double)1000000.0 );
       self->free_data = FALSE;
    }
       
@@ -191,7 +191,7 @@ PyObject *UnicapImageBuffer_new_from_buffer_no_copy( const unicap_data_buffer_t 
    if( self != NULL )
    {
       self->format = build_video_format( &data_buffer->format );
-      self->time = ((double)data_buffer->fill_time.tv_sec) + ((double)data_buffer->fill_time.tv_usec / 1000000.0 );
+      self->time = ((double)data_buffer->fill_time.tv_sec) + ((double)data_buffer->fill_time.tv_usec / (double)1000000.0 );
       unicap_copy_format( &self->buffer.format, &data_buffer->format );
       self->buffer.buffer_size = data_buffer->buffer_size;
       self->buffer.data = data_buffer->data;

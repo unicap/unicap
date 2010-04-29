@@ -911,7 +911,7 @@ static void *ucil_theora_encode_thread( ucil_theora_video_file_object_t *vobj )
       }
 #endif
 
-      last_data_buffer = (unicap_data_buffer_t *)vobj->last_frame->data;
+      last_data_buffer = (unicap_data_buffer_t *)vobj->last_frame;
       if( vobj->downsize > 1 || vobj->requires_resizing_frames )
       {
 	 yuv.y = ds_y_buffer;

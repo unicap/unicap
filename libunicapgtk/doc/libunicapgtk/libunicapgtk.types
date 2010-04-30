@@ -1,0 +1,8 @@
+#include <gtk/gtk.h>
+#include <unicapgtk.h>
+
+unicapgtk_video_display_get_type
+unicapgtk_device_property_get_type
+unicapgtk_property_dialog_get_type
+unicapgtk_device_selection_get_type
+unicapgtk_video_format_selection_get_type

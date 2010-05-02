@@ -561,7 +561,7 @@ unicap_status_t ucil_rawavi_encode_frame( ucil_rawavi_video_file_object_t *vobj,
       memcpy( &dst_buffer->fill_time, &buffer->fill_time, sizeof( struct timeval ) );
       buffer->flags &= ~UNICAP_FLAGS_BUFFER_LOCKED;
       sem_wait( &vobj->lock );
-      g_queue_push_tail( vobj->full_queue, buffer );
+      g_queue_push_tail( vobj->full_queue, dst_buffer );
       sem_post( &vobj->lock );
    }
    

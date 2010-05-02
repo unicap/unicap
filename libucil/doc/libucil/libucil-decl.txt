@@ -1,0 +1,776 @@
+<TYPEDEF>
+<NAME>ucil_avcavi_video_file_object_t</NAME>
+typedef struct _ucil_avcavi_video_file_object ucil_avcavi_video_file_object_t;
+</TYPEDEF>
+<FUNCTION>
+<NAME>ucil_avcavi_create_video_file</NAME>
+<RETURNS>ucil_avcavi_video_file_object_t *</RETURNS>
+ const char *path, unicap_format_t *format, const char *codec, va_list ap
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_avcavi_create_video_filev</NAME>
+<RETURNS>ucil_avcavi_video_file_object_t *</RETURNS>
+ const char *path, unicap_format_t *format, const char *codec, guint n_parameters, GParameter *parameters
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_avcavi_close_video_file</NAME>
+<RETURNS>unicap_status_t </RETURNS>
+ ucil_avcavi_video_file_object_t *vobj
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_avcavi_encode_frame</NAME>
+<RETURNS>unicap_status_t </RETURNS>
+ ucil_avcavi_video_file_object_t *vobj, unicap_data_buffer_t *buffer
+</FUNCTION>
+<MACRO>
+<NAME>UCIL_FOURCC</NAME>
+#define UCIL_FOURCC(a,b,c,d) (unsigned int)((((unsigned int)d)<<24)+(((unsigned int)c)<<16)+(((unsigned int)b)<<8)+a)
+</MACRO>
+<ENUM>
+<NAME>ucil_colorspace_t</NAME>
+typedef enum
+{
+   UCIL_COLORSPACE_RGB24, 
+   UCIL_COLORSPACE_RGB32, 
+   UCIL_COLORSPACE_Y8, 
+   UCIL_COLORSPACE_YUV, 
+   
+   UCIL_COLORSPACE_UNKNOWN = 0xfffff
+} ucil_colorspace_t;
+</ENUM>
+<ENUM>
+<NAME>ucil_interpolation_type_t</NAME>
+typedef enum
+{
+   UCIL_INTERP_NEAREST, 
+   UCIL_INTERP_BILINEAR
+} ucil_interpolation_type_t;
+</ENUM>
+<ENUM>
+<NAME>ucil_field_type_t</NAME>
+typedef enum
+{
+   UCIL_FIELD_EVEN,
+   UCIL_FIELD_ODD,
+} ucil_field_type_t;
+</ENUM>
+<ENUM>
+<NAME>ucil_color_plane_t</NAME>
+typedef enum
+{
+   UCIL_COLOR_PLANE_RED,
+   UCIL_COLOR_PLANE_GREEN, 
+   UCIL_COLOR_PLANE_BLUE,
+   UCIL_COLOR_PLANE_ALPHA,
+   UCIL_COLOR_PLANE_Y,
+   UCIL_COLOR_PLANE_U,
+   UCIL_COLOR_PLANE_V,
+} ucil_color_plane_t;
+</ENUM>
+<STRUCT>
+<NAME>ucil_rgb24</NAME>
+struct _ucil_rgb24
+{
+      unsigned char r;
+      unsigned char g;
+      unsigned char b;
+};
+</STRUCT>
+<TYPEDEF>
+<NAME>ucil_rgb24_t</NAME>
+typedef struct _ucil_rgb24 ucil_rgb24_t;
+</TYPEDEF>
+<STRUCT>
+<NAME>ucil_rgb32</NAME>
+struct _ucil_rgb32
+{
+      unsigned char r;
+      unsigned char g;
+      unsigned char b;
+      unsigned char a;
+};
+</STRUCT>
+<TYPEDEF>
+<NAME>ucil_rgb32_t</NAME>
+typedef struct _ucil_rgb32 ucil_rgb32_t;
+</TYPEDEF>
+<STRUCT>
+<NAME>ucil_yuv</NAME>
+struct _ucil_yuv
+{
+      unsigned char y;
+      unsigned char u;
+      unsigned char v;
+};
+</STRUCT>
+<TYPEDEF>
+<NAME>ucil_yuv_t</NAME>
+typedef struct _ucil_yuv ucil_yuv_t;
+</TYPEDEF>
+<STRUCT>
+<NAME>ucil_y8</NAME>
+struct _ucil_y8
+{
+      unsigned char y;
+};
+</STRUCT>
+<TYPEDEF>
+<NAME>ucil_y8_t</NAME>
+typedef struct _ucil_y8 ucil_y8_t;
+</TYPEDEF>
+<STRUCT>
+<NAME>ucil_color</NAME>
+struct _ucil_color
+{
+      ucil_colorspace_t colorspace;
+      
+      union
+      {
+	    ucil_yuv_t yuv;
+	    ucil_rgb24_t rgb24;
+	    ucil_rgb32_t rgb32;
+	    ucil_y8_t y8;
+      };
+};
+</STRUCT>
+<TYPEDEF>
+<NAME>ucil_color_t</NAME>
+typedef struct _ucil_color ucil_color_t;
+</TYPEDEF>
+<STRUCT>
+<NAME>ucil_convolution_mask</NAME>
+struct _ucil_convolution_mask
+{
+      ucil_colorspace_t colorspace;
+      
+      ucil_color_t *mask;
+      int size;
+};
+</STRUCT>
+<TYPEDEF>
+<NAME>ucil_convolution_mask_t</NAME>
+typedef struct _ucil_convolution_mask ucil_convolution_mask_t;
+</TYPEDEF>
+<STRUCT>
+<NAME>ucil_font_object</NAME>
+struct _ucil_font_object
+{
+      void *context;
+      void *layout;
+};
+</STRUCT>
+<TYPEDEF>
+<NAME>ucil_font_object_t</NAME>
+typedef struct _ucil_font_object ucil_font_object_t;
+</TYPEDEF>
+<STRUCT>
+<NAME>ucil_video_file_object</NAME>
+struct _ucil_video_file_object
+{
+   /* <private> */
+   int ucil_codec_id;
+   void *codec_data;
+};
+</STRUCT>
+<TYPEDEF>
+<NAME>ucil_video_file_object_t</NAME>
+typedef struct _ucil_video_file_object ucil_video_file_object_t;
+</TYPEDEF>
+<USER_FUNCTION>
+<NAME>ucil_processing_info_func_t</NAME>
+<RETURNS>void </RETURNS>
+void *data, double pos
+</USER_FUNCTION>
+<FUNCTION>
+<NAME>ucil_check_version</NAME>
+<RETURNS>unicap_status_t </RETURNS>
+ unsigned int major, unsigned int minor, unsigned int micro
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_set_pixel</NAME>
+<RETURNS>void </RETURNS>
+ unicap_data_buffer_t *data_buffer, ucil_color_t *color, int x, int y
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_set_pixel_alpha</NAME>
+<RETURNS>void </RETURNS>
+ unicap_data_buffer_t *data_buffer, ucil_color_t *color, int alpha, int x, int y
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_draw_line</NAME>
+<RETURNS>void </RETURNS>
+ unicap_data_buffer_t *data_buffer, ucil_color_t *color, int x1, int y1, int x2, int y2
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_draw_rect</NAME>
+<RETURNS>void </RETURNS>
+ unicap_data_buffer_t *data_buffer, ucil_color_t *color, int x1, int y1, int x2, int y2
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_fill</NAME>
+<RETURNS>void </RETURNS>
+ unicap_data_buffer_t *data_buffer, ucil_color_t *color
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_draw_box</NAME>
+<RETURNS>void </RETURNS>
+ unicap_data_buffer_t *data_buffer, ucil_color_t *color, int x1, int y1, int x2, int y2
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_draw_circle</NAME>
+<RETURNS>void </RETURNS>
+ unicap_data_buffer_t *dest, ucil_color_t *color, int cx, int cy, int r
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_create_font_object</NAME>
+<RETURNS>ucil_font_object_t *</RETURNS>
+ int size, const char *font
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_draw_text</NAME>
+<RETURNS>void </RETURNS>
+ unicap_data_buffer_t *dest, ucil_color_t *color, ucil_font_object_t *fobj, const char *text, int x, int y
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_destroy_font_object</NAME>
+<RETURNS>void </RETURNS>
+ ucil_font_object_t *fobj
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_text_get_size</NAME>
+<RETURNS>void </RETURNS>
+ ucil_font_object_t *fobj, const char *text, int *width, int *height
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_get_pixel</NAME>
+<RETURNS>void </RETURNS>
+ unicap_data_buffer_t *data_buffer, ucil_color_t *color, int x, int y
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_convert_color</NAME>
+<RETURNS>void </RETURNS>
+ ucil_color_t *dest, ucil_color_t *src
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_convert_buffer</NAME>
+<RETURNS>unicap_status_t </RETURNS>
+ unicap_data_buffer_t *dest, unicap_data_buffer_t *src
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_conversion_supported</NAME>
+<RETURNS>int </RETURNS>
+ unsigned int dest_fourcc, unsigned int src_fourcc
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_get_colorspace_from_fourcc</NAME>
+<RETURNS>ucil_colorspace_t </RETURNS>
+ unsigned int fourcc
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_blend_alpha</NAME>
+<RETURNS>void </RETURNS>
+ unicap_data_buffer_t *dest, unicap_data_buffer_t *bg, unicap_data_buffer_t *fg, int alpha
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_convolution_mask</NAME>
+<RETURNS>void </RETURNS>
+ unicap_data_buffer_t *dest, unicap_data_buffer_t *src, ucil_convolution_mask_t *mask
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_create_convolution_mask</NAME>
+<RETURNS>ucil_convolution_mask_t *</RETURNS>
+ unsigned char *array, int size, ucil_colorspace_t cs, int mode
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_composite</NAME>
+<RETURNS>void </RETURNS>
+ unicap_data_buffer_t *dest,unicap_data_buffer_t *img,int xpos,int ypos,double scalex,double scaley,ucil_interpolation_type_t interp
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_copy_region</NAME>
+<RETURNS>unicap_status_t </RETURNS>
+ unicap_data_buffer_t *dest, unicap_data_buffer_t *src, unicap_rect_t *rect
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_copy_region_alloc</NAME>
+<RETURNS>unicap_data_buffer_t *</RETURNS>
+ unicap_data_buffer_t *srcbuf, unicap_rect_t *rect
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_copy_field</NAME>
+<RETURNS>unicap_status_t </RETURNS>
+ unicap_data_buffer_t *destbuf, unicap_data_buffer_t *srcbuf, ucil_field_type_t type
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_copy_field_alloc</NAME>
+<RETURNS>unicap_data_buffer_t *</RETURNS>
+ unicap_data_buffer_t *srcbuf, ucil_field_type_t type
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_copy_color_plane</NAME>
+<RETURNS>unicap_status_t </RETURNS>
+ unicap_data_buffer_t *destbuf, unicap_data_buffer_t *srcbuf, ucil_color_plane_t plane
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_copy_color_plane_alloc</NAME>
+<RETURNS>unicap_data_buffer_t *</RETURNS>
+ unicap_data_buffer_t *srcbuf, ucil_color_plane_t plane
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_weave</NAME>
+<RETURNS>unicap_status_t *</RETURNS>
+ unicap_data_buffer_t *destbuf, unicap_data_buffer_t *odd, unicap_data_buffer_t *even
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_weave_alloc</NAME>
+<RETURNS>unicap_data_buffer_t *</RETURNS>
+ unicap_data_buffer_t *odd, unicap_data_buffer_t *even
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_read_file_alloc</NAME>
+<RETURNS>unicap_data_buffer_t *</RETURNS>
+ const char* path
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_write_file</NAME>
+<RETURNS>unicap_status_t </RETURNS>
+ const char* path, const char *format, unicap_data_buffer_t *buffer
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_create_video_file</NAME>
+<RETURNS>ucil_video_file_object_t *</RETURNS>
+ const char *path, unicap_format_t *format, const char *codec, ...
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_create_video_filev</NAME>
+<RETURNS>ucil_video_file_object_t *</RETURNS>
+ const char *path, unicap_format_t *format, const char *codec,guint n_parameters, GParameter *parameters
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_encode_frame</NAME>
+<RETURNS>unicap_status_t </RETURNS>
+ ucil_video_file_object_t *vobj, unicap_data_buffer_t *buffer
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_close_video_file</NAME>
+<RETURNS>unicap_status_t </RETURNS>
+ ucil_video_file_object_t *vobj
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_open_video_file</NAME>
+<RETURNS>unicap_status_t </RETURNS>
+ unicap_handle_t *unicap_handle, char *filename
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_get_video_file_extension</NAME>
+<RETURNS>const char *</RETURNS>
+ const char *codec
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_combine_av_file</NAME>
+<RETURNS>unicap_status_t </RETURNS>
+ const char *path, const char *codec,gboolean remove, ucil_processing_info_func_t procfunc, void *func_data, GError **error
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_audio_list_cards</NAME>
+<RETURNS>GList *</RETURNS>
+ void
+</FUNCTION>
+<MACRO>
+<NAME>XFM_IN_PLACE</NAME>
+#define XFM_IN_PLACE      0x1
+</MACRO>
+<MACRO>
+<NAME>XFM_PASSTHROUGH</NAME>
+#define XFM_PASSTHROUGH   0x2
+</MACRO>
+<MACRO>
+<NAME>XFM_NO_CONVERSION</NAME>
+#define XFM_NO_CONVERSION 0x4
+</MACRO>
+<MACRO>
+<NAME>FOURCC</NAME>
+#define FOURCC(a,b,c,d) (unsigned int)((((unsigned int)d)<<24)+ \
+                        (((unsigned int)c)<<16)+(((unsigned int)b)<<8)+a)
+</MACRO>
+<USER_FUNCTION>
+<NAME>xfm_func_t</NAME>
+<RETURNS>void </RETURNS>
+ unsigned char *dest_buffer, 
+			    unsigned char *src_buffer, 
+			    int width, int height, int shift 
+</USER_FUNCTION>
+<FUNCTION>
+<NAME>ucil_get_xfminfo_from_fourcc</NAME>
+<RETURNS>void </RETURNS>
+ unsigned int src_fourcc,unsigned int dest_fourcc,xfm_info_t *info
+</FUNCTION>
+<TYPEDEF>
+<NAME>ucil_rawavi_video_file_object_t</NAME>
+typedef struct _ucil_rawavi_video_file_object ucil_rawavi_video_file_object_t;
+</TYPEDEF>
+<FUNCTION>
+<NAME>ucil_rawavi_create_video_file</NAME>
+<RETURNS>ucil_rawavi_video_file_object_t *</RETURNS>
+ const char *path, unicap_format_t *format, const char *codec, va_list ap
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_rawavi_create_video_filev</NAME>
+<RETURNS>ucil_rawavi_video_file_object_t *</RETURNS>
+ const char *path, unicap_format_t *format, const char *codec, guint n_parameters, GParameter *parameters
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_rawavi_close_video_file</NAME>
+<RETURNS>unicap_status_t </RETURNS>
+ ucil_rawavi_video_file_object_t *vobj
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_rawavi_encode_frame</NAME>
+<RETURNS>unicap_status_t </RETURNS>
+ ucil_rawavi_video_file_object_t *vobj, unicap_data_buffer_t *buffer
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_alsa_init</NAME>
+<RETURNS>void  *</RETURNS>
+ char *dev, unsigned int rate
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_alsa_fill_audio_buffer</NAME>
+<RETURNS>long   </RETURNS>
+ void *_data
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_alsa_get_audio_buffer</NAME>
+<RETURNS>int    </RETURNS>
+ void *_data, short **buffer
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_alsa_close</NAME>
+<RETURNS>void   </RETURNS>
+ void *_data
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_alsa_list_cards</NAME>
+<RETURNS>GList *</RETURNS>
+ void
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_blend_uyvy_a</NAME>
+<RETURNS>void </RETURNS>
+ unicap_data_buffer_t *dest,unicap_data_buffer_t *img1,unicap_data_buffer_t *img2,int alpha
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_fill_uyvy</NAME>
+<RETURNS>void </RETURNS>
+ unicap_data_buffer_t *buffer,ucil_color_t *color
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_composite_UYVY_YUVA</NAME>
+<RETURNS>void </RETURNS>
+ unicap_data_buffer_t *dest,unicap_data_buffer_t *img,int xpos,int ypos,double scalex,double scaley,ucil_interpolation_type_t interp
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_composite_YUYV_YUVA</NAME>
+<RETURNS>void </RETURNS>
+ unicap_data_buffer_t *dest,unicap_data_buffer_t *img,int xpos,int ypos,double scalex,double scaley,ucil_interpolation_type_t interp
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_convolution_mask_uyvy</NAME>
+<RETURNS>void </RETURNS>
+ unicap_data_buffer_t *dest,unicap_data_buffer_t *src,ucil_convolution_mask_t *mask
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_load_png</NAME>
+<RETURNS>unicap_status_t </RETURNS>
+ char *filename, unicap_data_buffer_t *buffer
+</FUNCTION>
+<STRUCT>
+<NAME>avi_stream_header_t</NAME>
+typedef struct {
+      __u32 fccType;
+      __u32 fccHandler;
+      __u32 dwFlags;
+      __u16 wPriority;
+      __u16 wLanguage;
+      __u32 dwInitialFrames;
+      __u32 dwScale;
+      __u32 dwRate; /* dwRate / dwScale == samples/second */
+      __u32 dwStart;
+      __u32 dwLength; /* In units above... */
+      __u32 dwSuggestedBufferSize;
+      __u32 dwQuality;
+      __u32 dwSampleSize;
+      avi_rect_t rcFrame;
+} avi_stream_header_t;
+</STRUCT>
+<STRUCT>
+<NAME>avi_chunk_t</NAME>
+typedef struct {
+      __u32 dwFourCC;
+      __u32 dwSize;
+} avi_chunk_t;
+</STRUCT>
+<STRUCT>
+<NAME>avi_list_t</NAME>
+typedef struct {
+      __u32 dwList;
+      __u32 dwSize;
+      __u32 dwFourCC;
+} avi_list_t;
+</STRUCT>
+<STRUCT>
+<NAME>avi_buffer_t</NAME>
+typedef struct {
+      __u32 dwBufferSize;
+      __u32 dwPtr;
+      __u8 *bData;
+} avi_buffer_t;
+</STRUCT>
+<STRUCT>
+<NAME>avi_index_entry_t</NAME>
+typedef struct {
+    __u32 dwFourCC;
+    __u32 dwFlags;
+    __u32 dwChunkOffset;
+    __u32 dwChunkLength;
+} avi_index_entry_t;
+</STRUCT>
+<MACRO>
+<NAME>UCIL_MAJOR_VERSION</NAME>
+#define UCIL_MAJOR_VERSION 0
+</MACRO>
+<MACRO>
+<NAME>UCIL_MINOR_VERSION</NAME>
+#define UCIL_MINOR_VERSION 9
+</MACRO>
+<MACRO>
+<NAME>UCIL_MICRO_VERSION</NAME>
+#define UCIL_MICRO_VERSION 8
+</MACRO>
+<VARIABLE>
+<NAME>ucil_major_version</NAME>
+extern const unsigned int ucil_major_version;
+</VARIABLE>
+<VARIABLE>
+<NAME>ucil_minor_version</NAME>
+extern const unsigned int ucil_minor_version;
+</VARIABLE>
+<VARIABLE>
+<NAME>ucil_micro_version</NAME>
+extern const unsigned int ucil_micro_version;
+</VARIABLE>
+<STRUCT>
+<NAME>ucil_theora_video_file_object</NAME>
+struct _ucil_theora_video_file_object
+{
+   ogg_stream_state os;
+   theora_info ti;
+   theora_state th;
+   FILE *f;
+
+   int blocking_mode;
+
+   int downsize;
+
+   unicap_format_t format;
+      
+   int fill_frames;
+   unsigned long long frame_interval;
+   struct timeval last_frame_time;
+   struct timeval recording_start_time;
+   int frame_count;
+   ogg_packet op;
+
+   pthread_t encoder_thread;
+   int quit_thread;
+   GQueue *full_queue;
+   GQueue *empty_queue;
+   unicap_data_buffer_t *last_frame;
+
+   unicap_new_frame_callback_t encode_frame_cb;
+   void *encode_frame_cb_data;
+
+   vorbis_info      vi;
+   vorbis_dsp_state vd;
+   ogg_stream_state vo;
+   vorbis_block     vb;
+      
+      
+   int          audio;
+   void        *audio_data;
+   char         audio_card[64];
+   unsigned int audio_rate;
+   int          vorbis_bitrate;
+   unsigned int total_samples;
+   int          async_audio_encoding;
+   FILE        *audiof;
+
+   int nocopy;
+
+   sem_t sema;      
+   sem_t lock;
+   
+   int requires_resizing_frames;
+};
+</STRUCT>
+<TYPEDEF>
+<NAME>ucil_theora_video_file_object_t</NAME>
+typedef struct _ucil_theora_video_file_object ucil_theora_video_file_object_t;
+</TYPEDEF>
+<FUNCTION>
+<NAME>ucil_theora_create_video_file</NAME>
+<RETURNS>ucil_theora_video_file_object_t *</RETURNS>
+ const char *path, unicap_format_t *format, const char *codec, va_list ap
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_theora_create_video_filev</NAME>
+<RETURNS>ucil_theora_video_file_object_t *</RETURNS>
+ const char *path, unicap_format_t *format, const char *codec, guint n_parameters, GParameter *parameters
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_theora_encode_frame</NAME>
+<RETURNS>unicap_status_t </RETURNS>
+ ucil_theora_video_file_object_t *vobj, unicap_data_buffer_t *buffer
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_theora_close_video_file</NAME>
+<RETURNS>unicap_status_t </RETURNS>
+ ucil_theora_video_file_object_t *vobj
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_theora_combine_av_file</NAME>
+<RETURNS>gboolean </RETURNS>
+ const char *path, const char *codec, gboolean remove, ucil_processing_info_func_t procfunc, void *func_data, GError **error
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_convert_color</NAME>
+<RETURNS>void </RETURNS>
+ ucil_color_t *src, ucil_color_t *dest
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_set_pixel</NAME>
+<RETURNS>void </RETURNS>
+ unicap_data_buffer_t *data_buffer, ucil_color_t *color, int x, int y
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_draw_line</NAME>
+<RETURNS>void </RETURNS>
+ unicap_data_buffer_t *data_buffer, ucil_color_t *color, int x1, int y1, int x2, int y2
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_draw_rect</NAME>
+<RETURNS>void </RETURNS>
+ unicap_data_buffer_t *data_buffer, ucil_color_t *color, int x1, int y1, int x2, int y2
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_fill</NAME>
+<RETURNS>void </RETURNS>
+ unicap_data_buffer_t *data_buffer, ucil_color_t *color
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_draw_box</NAME>
+<RETURNS>void </RETURNS>
+ unicap_data_buffer_t *data_buffer, ucil_color_t *color, int x1, int y1, int x2, int y2
+</FUNCTION>
+<TYPEDEF>
+<NAME>video_codec_cpi</NAME>
+typedef struct video_codec_cpi video_codec_cpi;
+</TYPEDEF>
+<USER_FUNCTION>
+<NAME>ucil_cpi_register_module_t</NAME>
+<RETURNS>gboolean </RETURNS>
+ video_codec_cpi *vcp 
+</USER_FUNCTION>
+<USER_FUNCTION>
+<NAME>ucil_cpi_create_video_filev_t</NAME>
+<RETURNS>void *</RETURNS>
+ const char *path, unicap_format_t *format,
+							const char *codec,
+							guint n_parameters, GParameter *parameters 
+</USER_FUNCTION>
+<USER_FUNCTION>
+<NAME>ucil_cpi_create_video_file_t</NAME>
+<RETURNS>void *</RETURNS>
+ const char *path, unicap_format_t *format,
+							const char *codec, va_list ap 
+</USER_FUNCTION>
+<USER_FUNCTION>
+<NAME>ucil_cpi_encode_frame_t</NAME>
+<RETURNS>unicap_status_t </RETURNS>
+ void *vobj, unicap_data_buffer_t *buffer 
+</USER_FUNCTION>
+<USER_FUNCTION>
+<NAME>ucil_cpi_close_file_t</NAME>
+<RETURNS>unicap_status_t </RETURNS>
+ void *vobj 
+</USER_FUNCTION>
+<USER_FUNCTION>
+<NAME>ucil_cpi_video_file_t</NAME>
+<RETURNS>unicap_status_t </RETURNS>
+ unicap_handle_t *unicap_handle, char *filename 
+</USER_FUNCTION>
+<USER_FUNCTION>
+<NAME>ucil_cpi_combine_av_file_t</NAME>
+<RETURNS>gboolean </RETURNS>
+ const char *path, const char *codec,
+							gboolean remove, ucil_processing_info_func_t procfunc,
+							void *func_data, GError **error 
+</USER_FUNCTION>
+<USER_FUNCTION>
+<NAME>ucil_cpi_open_video_file_t</NAME>
+<RETURNS>unicap_status_t </RETURNS>
+ unicap_handle_t *unicap_handle, char *filename 
+</USER_FUNCTION>
+<MACRO>
+<NAME>TRACE</NAME>
+#define TRACE( x... ) {printf( "%s %s (%d) :", __FILE__, __FUNCTION__, __LINE__ ); printf( x );}
+</MACRO>
+<MACRO>
+<NAME>ASSERT</NAME>
+#define ASSERT( x ) {if(!x) { printf( "assertion failed: %s %s (%d)", __FILE__, __FUNCTION__, __LINE__ ); abort)_;} }
+</MACRO>
+<MACRO>
+<NAME>DBGOUT</NAME>
+#define DBGOUT( x... ) {printf(x);}
+</MACRO>
+<MACRO>
+<NAME>TRACE</NAME>
+#define TRACE( x... )
+</MACRO>
+<MACRO>
+<NAME>ASSERT</NAME>
+#define ASSERT( x )
+</MACRO>
+<MACRO>
+<NAME>DBGOUT</NAME>
+#define DBGOUT( x... )
+</MACRO>
+<MACRO>
+<NAME>ERROR</NAME>
+#define ERROR( x... ) fprintf( stderr, "% %s (%d) :", __FILE__, __FUNCTION__, __LINE__ ); printf( x )
+</MACRO>
+<FUNCTION>
+<NAME>ucil_blend_rgb24_a</NAME>
+<RETURNS>void </RETURNS>
+ unicap_data_buffer_t *dest,unicap_data_buffer_t *img1,unicap_data_buffer_t *img2,int alpha
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_blend_rgb32_a</NAME>
+<RETURNS>void </RETURNS>
+ unicap_data_buffer_t *dest,unicap_data_buffer_t *img1,unicap_data_buffer_t *img2,int alpha
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_fill_rgb24</NAME>
+<RETURNS>void </RETURNS>
+ unicap_data_buffer_t *buffer,ucil_color_t *color
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_fill_rgb32</NAME>
+<RETURNS>void </RETURNS>
+ unicap_data_buffer_t *buffer,ucil_color_t *color
+</FUNCTION>
+<FUNCTION>
+<NAME>ucil_copy_color_plane_by8</NAME>
+<RETURNS>void </RETURNS>
+ unicap_data_buffer_t *destbuf,unicap_data_buffer_t *srcbuf,ucil_color_plane_t plane
+</FUNCTION>

@@ -187,6 +187,56 @@ else
 fi
 AM_CONDITIONAL(HAVE_ALSA, test x$UCIL_ALSA == "xalsa" )
 
+AC_ARG_ENABLE(ucil-gstreamer, 
+		     AS_HELP_STRING( [--enable-ucil-gstreamer],
+				     [Enable GStreamer support] ), 
+	      {
+		if test "x$enableval" != "xno"; then
+		   USE_GSTREAMER=true
+		else
+		   USE_GSTREAMER=
+		fi
+	      }, 
+	      USE_GSTREAMER=true )
+
+UCIL_GSTREAMER=""
+if [[ $USE_GSTREAMER ]] ; then
+   PKG_CHECK_MODULES(GSTREAMER_PACKAGE, "gstreamer-0.10", HAVE_GSTREAMER=1, HAVE_GSTREAMER= )
+   GSTAPP_PRESENT=""
+   AC_CHECK_LIB( gstapp-0.10, gst_app_src_push_buffer, GSTAPP_PRESENT="yes",, `pkg-config --libs gstreamer-0.10` -lgstapp-0.10 )
+   if test "x$GSTAPP_PRESENT" = "xyes"; then
+     AC_DEFINE(HAVE_LIBGSTAPP, 1, [Define if gstapp lib is present])
+     GSTAPP_LIBS="-lgstapp-0.10"
+     AC_SUBST(GSTAPP_LIBS)
+   else
+     HAVE_GSTREAMER=
+   fi
+   
+   if [[ $HAVE_GSTREAMER ]]; then
+      UCIL_GSTREAMER="gstreamer"
+      UCIL_CODEC_NONE=""
+      AC_DEFINE( HAVE_GSTREAMER, 1, Define to use gstreamer )
+   else
+      AC_DEFINE( HAVE_GSTREAMER, 0, Define to use gstreamer )
+   fi
+else
+   AC_DEFINE( HAVE_GSTREAMER, 0, Define to use gstreamer )
+fi
+AM_CONDITIONAL(HAVE_GSTREAMER, test x$UCIL_GSTREAMER == "xgstreamer" )
+
+AC_ARG_ENABLE([gpl], 
+              AS_HELP_STRING( [--enable-gpl],
+	      		      [Allow external GPL licensed modules to be used] ),
+	      [ case "${enableval}" in
+	        yes) AC_DEFINE( ALLOW_GPL, 1, Define to allow external GPL licensed modules )
+		     gpl=true ;;
+
+		no) AC_DEFINE( ALLOW_GPL, 0, Define to allow external GPL licensed modules )
+		    gpl=false ;;
+		*) AC_MSG_ERROR([bad value ${enableval} for --enable-gpl]) ;;
+	      esac],[gpl=false])
+AM_CONDITIONAL([ALLOW_GPL], [text x$gpl = xtrue])
+
 
 
 AC_ARG_ENABLE(ucil-png, 
@@ -309,6 +359,6 @@ AC_MSG_RESULT([  See the file COPYING for the full license text. ])
 AC_MSG_RESULT([ ****************************************************** ])
 AC_MSG_RESULT([])
 AC_MSG_RESULT([  libucil:            $UCIL ])
-AC_MSG_RESULT([  UCIL modules: $UCIL_CODEC_NONE $UCIL_THEORA $UCIL_AVCODEC $UCIL_ALSA $UCIL_PNG ])
+AC_MSG_RESULT([  UCIL modules: $UCIL_CODEC_NONE $UCIL_THEORA $UCIL_AVCODEC $UCIL_ALSA $UCIL_PNG $UCIL_GSTREAMER ])
 AC_MSG_RESULT([])
 

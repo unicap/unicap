@@ -1,5 +1,8 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* Define to allow external GPL licensed modules */
+#undef ALLOW_GPL
+
 /* Define to 1 if the `closedir' function returns void instead of `int'. */
 #undef CLOSEDIR_VOID
 
@@ -53,6 +56,9 @@
 /* Define to 1 if you have the `gettimeofday' function. */
 #undef HAVE_GETTIMEOFDAY
 
+/* Define to use gstreamer */
+#undef HAVE_GSTREAMER
+
 /* Define if you have the iconv() function and it works. */
 #undef HAVE_ICONV
 
@@ -61,6 +67,9 @@
 
 /* Define if DL lib is present */
 #undef HAVE_LIBDL
+
+/* Define if gstapp lib is present */
+#undef HAVE_LIBGSTAPP
 
 /* Define if libm is present */
 #undef HAVE_LIBM
@@ -127,6 +136,9 @@
 /* Define to 1 if you have the <sys/ndir.h> header file, and it defines `DIR'.
    */
 #undef HAVE_SYS_NDIR_H
+
+/* Define to 1 if you have the <sys/param.h> header file. */
+#undef HAVE_SYS_PARAM_H
 
 /* Define to 1 if you have the <sys/stat.h> header file. */
 #undef HAVE_SYS_STAT_H

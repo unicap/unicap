@@ -25,6 +25,10 @@
 #include "ucil_theora.h"
 #endif
 
+#if HAVE_GSTREAMER
+#include "ucil_gstreamer.h"
+#endif
+
 #include "ucil.h"
 
 #include "ucil_rawavi.h"
@@ -34,15 +38,64 @@
 
 
 #define MAX_CODECS 8
-
-
 static gboolean ucil_video_is_initialized = FALSE;
 
+struct video_codec_cpi {
+   const gchar **                 codec_names;
+   const gchar *                  file_extension;
 
-static video_codec_cpi codecs[ MAX_CODECS ] = {
+   ucil_cpi_create_video_filev_t create_filev;
+   ucil_cpi_create_video_file_t  create_file;
+   ucil_cpi_encode_frame_t       encode_frame;
+   ucil_cpi_close_file_t         close_file;
+   ucil_cpi_open_video_file_t    open_file;
+   ucil_cpi_combine_av_file_t    combine_file;
+};
+
+typedef struct video_codec_cpi video_codec_cpi;
+typedef gboolean (*ucil_cpi_register_module_t)          ( video_codec_cpi *vcp );
+
+const gchar *gstreamer_avi_codecs[] = { "avi/raw", "avi/mpeg2", NULL };
+const gchar *gstreamer_ogg_codecs[] = { "ogg/theora", NULL };
+const gchar *theora_codecs[] = { "ogg/theora", NULL };
+const gchar *rawavi_codecs[] = { "avi/raw", NULL };
+
+static video_codec_cpi codecs[ ] = {
+#if HAVE_GSTREAMER
+   {
+      codec_names: 	gstreamer_avi_codecs,
+      file_extension: 	"avi",
+
+      create_filev: 	(ucil_cpi_create_video_filev_t) ucil_gstreamer_create_video_filev,
+      create_file: 	(ucil_cpi_create_video_file_t) ucil_gstreamer_create_video_file,
+
+      encode_frame: 	(ucil_cpi_encode_frame_t) ucil_gstreamer_encode_frame,
+
+      close_file: 	(ucil_cpi_close_file_t) ucil_gstreamer_close_video_file,
+
+      open_file:	NULL, 
+
+      combine_file:	NULL,
+   },
+   {
+      codec_names: 	gstreamer_ogg_codecs,
+      file_extension: 	"ogg",
+
+      create_filev: 	(ucil_cpi_create_video_filev_t) ucil_gstreamer_create_video_filev,
+      create_file: 	(ucil_cpi_create_video_file_t) ucil_gstreamer_create_video_file,
+
+      encode_frame: 	(ucil_cpi_encode_frame_t) ucil_gstreamer_encode_frame,
+
+      close_file: 	(ucil_cpi_close_file_t) ucil_gstreamer_close_video_file,
+
+      open_file:	NULL, 
+
+      combine_file:	NULL,
+   },
+#endif
 #if HAVE_THEORA
    {
-      codec_name: 	"ogg/theora",
+      codec_names: 	theora_codecs,
       file_extension: 	"ogg",
 
       create_filev: 	(ucil_cpi_create_video_filev_t) ucil_theora_create_video_filev,
@@ -57,25 +110,8 @@ static video_codec_cpi codecs[ MAX_CODECS ] = {
       combine_file:	ucil_theora_combine_av_file,
    },
 #endif
-#if HAVE_AVCODEC
    {
-      codec_name: 	"avcodec/",
-      file_extension: 	"mpeg",
-
-      create_filev: 	(ucil_cpi_create_video_filev_t) ucil_mpeg_create_video_filev,
-      create_file: 	(ucil_cpi_create_video_file_t) ucil_mpeg_create_video_file,
-
-      encode_frame: 	(ucil_cpi_encode_frame_t) ucil_mpeg_encode_frame,
-
-      close_file: 	(ucil_cpi_close_file_t) ucil_mpeg_close_video_file,
-
-      open_file:	NULL, 
-
-      combine_file:	NULL,
-   },
-#endif
-   {
-      codec_name: 	"avi/raw",
+      codec_names: 	rawavi_codecs,
       file_extension:	"avi",
 
       create_filev: 	(ucil_cpi_create_video_filev_t) ucil_rawavi_create_video_filev,
@@ -93,43 +129,6 @@ static video_codec_cpi codecs[ MAX_CODECS ] = {
 
 };
 
-/* static void load_vcp_modules( void ) */
-/* { */
-/*    if( !g_module_supported( ) ) */
-/*       return; */
-
-/*    gchar *dirpath; */
-/*    dirpath = g_strdup( PKGLIBDIR PKGVERSION G_DIR_SEPARATOR_S "vcp" ); */
-
-/*    GDir *dir; */
-/*    dir = g_dir_open( dirpath, 0, NULL ); */
-/*    if( !dir ) */
-/*       return; */
-   
-/*    const gchar *entry; */
-/*    gint id = 0; */
-/*    while( ( entry = g_dir_read_name( dir ) ) && ( id < MAX_CODECS ) ){ */
-/*       if( g_str_has_suffix( entry, G_MODULE_SUFFIX ) ){ */
-/* 	 gchar *path; */
-/* 	 GModule *module; */
-	 
-/* 	 path = g_build_path( dirpath, entry, NULL ); */
-/* 	 module = g_module_open( path, G_MODULE_BIND_LAZY | G_MODULE_BIND_LOCAL ); */
-/* 	 g_free( path ); */
-	 
-/* 	 if( module ){ */
-/* 	    ucil_cpi_register_module_t func; */
-/* 	    if( g_module_symbol( module, "register_module", &func ) ){ */
-/* 	       if( func( &codecs[i] ) ){ */
-/* 		  TRACE( "registered codec cpi: %s\n", entry ); */
-/* 		  i++; */
-/* 	       } */
-/* 	    } */
-/* 	 } */
-/*       } */
-/*    } */
-/* } */
-
 
 static enum ucil_codec_id get_codec_id( const char *codec )
 {
@@ -143,12 +142,13 @@ static enum ucil_codec_id get_codec_id( const char *codec )
 
    for (id = 0; id < sizeof(codecs) / sizeof(video_codec_cpi); id ++)
    {
-       if( !strncmp( codec, codecs[ id ].codec_name, strlen(codecs[ id ].codec_name) )
-		      && ( ( codecs[ id ].codec_name[ strlen(codecs[ id ].codec_name) - 1 ] == '/' )
-				     || ( strlen(codecs[id].codec_name) == strlen(codec) ) ) )
-   {
-	  return id;
-   }
+      gboolean found = FALSE;
+      int i;
+      
+      for( i = 0; codecs[id].codec_names[i] != NULL; i++ ){
+	 if( !strncmp( codec, codecs[id].codec_names[i], strlen( codecs[id].codec_names[i] ) ) )
+	    return id;
+      }      
    }
    
    return UCIL_CODEC_ID_INVALID;

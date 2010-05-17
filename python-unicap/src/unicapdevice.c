@@ -683,7 +683,6 @@ static PyObject *UnicapDevice_record_video( UnicapDevice *self, PyObject *args, 
    static char *kwlist[] = { "filename", "codec", "params", NULL };
    const char* filename;
    const char *codec;
-   unicap_format_t format;
    PyObject *params=NULL;
 
    if( !PyArg_ParseTupleAndKeywords( args, kwds, "ss|O", kwlist, &filename, &codec, &params ) )
@@ -754,6 +753,7 @@ static PyObject *UnicapDevice_record_video( UnicapDevice *self, PyObject *args, 
       }
       
 
+      unicap_format_t format;
       Py_BEGIN_ALLOW_THREADS;
       unicap_get_format( self->handle, &format );
       Py_END_ALLOW_THREADS;
@@ -763,9 +763,13 @@ static PyObject *UnicapDevice_record_video( UnicapDevice *self, PyObject *args, 
    }
    else
    {
+      unicap_format_t format;
+      Py_BEGIN_ALLOW_THREADS;
+      unicap_get_format( self->handle, &format );
+      Py_END_ALLOW_THREADS;
       sem_wait( &self->lock );
       self->vobj = ucil_create_video_file( filename, &format, codec, NULL );
-      sem_wait( &self->lock );
+      sem_post( &self->lock );
    }
 
    Py_INCREF( Py_None );

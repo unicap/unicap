@@ -20,9 +20,6 @@ enum ucil_codec_id
 };
 
 
-typedef struct video_codec_cpi video_codec_cpi;
-
-typedef gboolean (*ucil_cpi_register_module_t)          ( video_codec_cpi *vcp );
 
 typedef void * (*ucil_cpi_create_video_filev_t)       ( const char *path, unicap_format_t *format,
 							const char *codec,
@@ -45,22 +42,5 @@ typedef unicap_status_t (*ucil_cpi_open_video_file_t) ( unicap_handle_t *unicap_
 
 
 
-struct video_codec_cpi {
-	const char *                  codec_name;
-
-	const char *                  file_extension;
-
-	ucil_cpi_create_video_filev_t create_filev;
-
-	ucil_cpi_create_video_file_t  create_file;
-
-	ucil_cpi_encode_frame_t       encode_frame;
-
-	ucil_cpi_close_file_t         close_file;
-
-	ucil_cpi_open_video_file_t    open_file;
-
-	ucil_cpi_combine_av_file_t    combine_file;
-};
 
 #endif 	    /* !VIDEO_FILE_H_ */

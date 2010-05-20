@@ -21,6 +21,8 @@ struct _ucil_gstreamer_video_file_object
 
    gboolean base_time_set;
 
+   unicap_new_frame_callback_t encode_frame_cb;
+   void *encode_frame_cb_data;
 
    // Parameters
    gint fps_numerator;

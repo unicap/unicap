@@ -203,10 +203,10 @@ UCIL_GSTREAMER=""
 if [[ $USE_GSTREAMER ]] ; then
    PKG_CHECK_MODULES(GSTREAMER_PACKAGE, "gstreamer-0.10", HAVE_GSTREAMER=1, HAVE_GSTREAMER= )
    GSTAPP_PRESENT=""
-   AC_CHECK_LIB( gstapp-0.10, gst_app_src_push_buffer, GSTAPP_PRESENT="yes",, `pkg-config --libs gstreamer-0.10` -lgstapp-0.10 )
+   AC_CHECK_LIB( gstapp-0.10, gst_app_src_push_buffer, GSTAPP_PRESENT="yes",, `pkg-config --libs gstreamer-0.10` -lgstapp-0.10)
    if test "x$GSTAPP_PRESENT" = "xyes"; then
      AC_DEFINE(HAVE_LIBGSTAPP, 1, [Define if gstapp lib is present])
-     GSTAPP_LIBS="-lgstapp-0.10"
+     GSTAPP_LIBS="-lgstapp-0.10 -lgstvideo-0.10"
      AC_SUBST(GSTAPP_LIBS)
    else
      HAVE_GSTREAMER=

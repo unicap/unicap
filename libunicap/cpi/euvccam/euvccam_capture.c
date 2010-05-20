@@ -146,6 +146,7 @@ static void *capture_thread( euvccam_handle_t handle )
    int bytes_done = 0;
    int current_buffer = 0;
    int wait_transfer_done = 0;
+   int usb_buffer_size = 0;
 
    pthread_t buffer_done_thread_id = 0;
    struct buffer_done_context context;
@@ -157,12 +158,16 @@ static void *capture_thread( euvccam_handle_t handle )
    pthread_t capture_timeout_thread_id = 0;
    struct timeout_thread_context timeout_context;
    
+   
+   
 
    if( handle->current_format->usb_buffer_size == 0 ){
       TRACE( "Invalid video format!\n" );
       abort();
       return NULL;
    }
+
+   usb_buffer_size = handle->current_format->format.size.width * handle->current_format->format.size.height;
 
    signal( SIGUSR1, sighandler );
 
@@ -234,7 +239,7 @@ static void *capture_thread( euvccam_handle_t handle )
 
    for( i = 0; i < NUM_SYSTEM_BUFFERS; i++ ){
       unicap_copy_format( &system_buffers[i].format, &handle->current_format->format );
-      system_buffers[i].buffer_size = handle->current_format->usb_buffer_size;
+      system_buffers[i].buffer_size = /* handle->current_format-> */usb_buffer_size;
       system_buffers[i].data = malloc( system_buffers[i].buffer_size );
       system_buffers[i].type = UNICAP_FLAGS_BUFFER_TYPE_SYSTEM;
       system_buffers[i].flags = 0;
@@ -262,7 +267,7 @@ static void *capture_thread( euvccam_handle_t handle )
 	    
 	 default:
 	 case EAGAIN:
-	    perror( "reap: " );
+	    /* perror( "reap: " ); */
 	    usleep(1000);
 	    continue;
 	    break;
@@ -296,7 +301,7 @@ static void *capture_thread( euvccam_handle_t handle )
 	    bytes_done += urb->actual_length - 2;
 	    
 	 }else{
-	    if( ( bytes_done + urb->actual_length ) <= handle->current_format->usb_buffer_size ){
+	    if( ( bytes_done + urb->actual_length ) <= /* handle->current_format-> */usb_buffer_size ){
 	       memcpy( system_buffers[ current_buffer ].data + bytes_done, urb->buffer, urb->actual_length );
 	       bytes_done += urb->actual_length;
 	    }else{
@@ -305,13 +310,13 @@ static void *capture_thread( euvccam_handle_t handle )
 	       transfer_done = 1;
 	       if( !transfer_done )
 		  wait_transfer_done = 1;
-	       TRACE( "corrupt_frame: bytes = %d / %d \n", bytes_done + urb->actual_length, handle->current_format->usb_buffer_size );
+	       TRACE( "corrupt_frame: bytes = %d / %d \n", bytes_done + urb->actual_length, /* handle->current_format-> */usb_buffer_size );
 	       bytes_done = 0;
 	    }  
 	 }
 
 	 if( transfer_done ){
-	    if( !corrupt_frame && ( bytes_done == handle->current_format->usb_buffer_size ) ){
+	    if( !corrupt_frame && ( bytes_done == /* handle->current_format-> */usb_buffer_size ) ){
 	       context.buffer = &system_buffers[ current_buffer ];
 	       buffer_done( handle, &context );
 	       current_buffer = ( current_buffer + 1 ) % NUM_SYSTEM_BUFFERS;
@@ -320,7 +325,7 @@ static void *capture_thread( euvccam_handle_t handle )
 	       context.buffer = &system_buffers[ current_buffer ];
 	       buffer_done( handle, &context );
 	       current_buffer = ( current_buffer + 1 ) % NUM_SYSTEM_BUFFERS;
-	       TRACE( "corrupt_frame: bytes = %d / %d \n", bytes_done, handle->current_format->usb_buffer_size );
+	       TRACE( "corrupt_frame: bytes = %d / %d \n", bytes_done, /* handle->current_format-> */usb_buffer_size );
 #endif
 	    }
 	       

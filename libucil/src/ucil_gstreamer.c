@@ -191,10 +191,10 @@ static gboolean create_pipeline( ucil_gstreamer_video_file_object_t *vobj )
    colorspace = gst_element_factory_make( "ffmpegcolorspace", "colorspace" );
    if( vobj->fill_frames ){
       videorate = gst_element_factory_make( "videorate", "videorate" );
+      g_object_set( videorate, "skip-to-first", TRUE, NULL );
    } else {
       videorate = gst_element_factory_make( "identity", "videorate" );
    }
-   g_object_set( videorate, "skip-to-first", TRUE, NULL );
    vidqueue = gst_element_factory_make( "queue", "vidqueue" );
    g_object_set( vidqueue, "max-size-time", 10 * GST_SECOND, "max-size-bytes", 100000000, "max-size-buffers", 1000, NULL );
    outqueue = gst_element_factory_make( "queue", "outqueue" );
@@ -218,8 +218,6 @@ static gboolean create_pipeline( ucil_gstreamer_video_file_object_t *vobj )
 	 gst_bin_add_many( GST_BIN( pipeline ), audiosource, audioconvert, audioresample, audioencode, audioqueue, NULL );
       }
    }
-   
-
    
    caps = gst_caps_new_simple( gst_video_format_is_yuv(fmt) ? "video/x-raw-yuv" : "video/x-raw-rgb", 
 			       "format", GST_TYPE_FOURCC, vobj->format.fourcc,
@@ -298,14 +296,14 @@ static void parse_parameters( ucil_gstreamer_video_file_object_t *vobj, guint n_
       {
 	 vobj->bitrate = g_value_get_int( &parameters[i].value );
       }
-      /* else if( !strcmp( parameters[i].name, "encode_frame_cb" ) ) */
-      /* { */
-      /* 	 vobj->encode_frame_cb = (unicap_new_frame_callback_t)g_value_get_pointer( &parameters[i].value ); */
-      /* } */
-      /* else if( !strcmp( parameters[i].name, "encode_frame_cb_data" ) ) */
-      /* { */
-      /* 	 vobj->encode_frame_cb_data = (void*)g_value_get_pointer( &parameters[i].value ); */
-      /* } */
+      else if( !strcmp( parameters[i].name, "encode_frame_cb" ) )
+      {
+      	 vobj->encode_frame_cb = (unicap_new_frame_callback_t)g_value_get_pointer( &parameters[i].value );
+      }
+      else if( !strcmp( parameters[i].name, "encode_frame_cb_data" ) )
+      {
+      	 vobj->encode_frame_cb_data = (void*)g_value_get_pointer( &parameters[i].value );
+      }
       /* else if( !strcmp( parameters[i].name, "audio" ) ) */
       /* { */
       /* 	 vobj->audio = g_value_get_int( &parameters[i].value ); */
@@ -416,6 +414,10 @@ unicap_status_t ucil_gstreamer_encode_frame( ucil_gstreamer_video_file_object_t 
       vobj->base_time_set = TRUE;
    }
 
+   if( vobj->encode_frame_cb ){
+      vobj->encode_frame_cb( UNICAP_EVENT_NEW_FRAME, NULL, buffer, vobj->encode_frame_cb_data );
+   }
+
    buf = gst_buffer_new_and_alloc( buffer->buffer_size );
    memcpy( GST_BUFFER_DATA( buf ), buffer->data, buffer->buffer_size );
    GST_BUFFER_TIMESTAMP(buf) = GST_TIMEVAL_TO_TIME( buffer->fill_time );
@@ -423,6 +425,7 @@ unicap_status_t ucil_gstreamer_encode_frame( ucil_gstreamer_video_file_object_t 
    if( gst_app_src_push_buffer( GST_APP_SRC( vobj->appsrc ), buf ) != GST_FLOW_OK ){
       return STATUS_FAILURE;
    }
+   
    
    return STATUS_SUCCESS;
 }

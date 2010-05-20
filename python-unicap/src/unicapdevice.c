@@ -38,7 +38,11 @@ static void new_frame_callback( unicap_event_t event, unicap_handle_t handle, un
    if( self->wait_buffer )
    {
       PyObject *pybuffer = NULL;
+      PyGILState_STATE gstate;
+      
+      gstate = PyGILState_Ensure();
       self->buffer = UnicapImageBuffer_new_from_buffer( buffer );
+      PyGILState_Release( gstate );
       pybuffer = self->buffer;
       if( !self->buffer )
       {
@@ -272,9 +276,9 @@ static PyObject *UnicapDevice_set_format( UnicapDevice *self, PyObject *args, Py
       return NULL;
    }
    
-   save = PyEval_SaveThread();
    parse_video_format( &format_spec, fmt_obj );
-   Py_XDECREF( fmt_obj );
+   //Py_XDECREF( fmt_obj );
+   save = PyEval_SaveThread();
    format_spec.buffer_size = -1;
    if( !SUCCESS( unicap_enumerate_formats( self->handle, &format_spec, &format, 0 ) ) )
    {

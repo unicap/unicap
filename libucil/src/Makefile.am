@@ -11,7 +11,7 @@ lib_LTLIBRARIES = libucil.la
 libucil_la_LDFLAGS = -version-info @lt_major@:@lt_revision@:@lt_age@
 libucil_la_LIBADD =  @UNICAP_LIBS@ @GLIB_PACKAGE_LIBS@ @PANGO_PACKAGE_LIBS@ \
 		     @AVCODEC_PACKAGE_LIBS@ @THEORA_PACKAGE_LIBS@ @ALSA_PACKAGE_LIBS@ @PNG_PACKAGE_LIBS@ \
-		     @GSTREAMER_PACKAGE_LIBS@ @GSTAPP_LIBS@ -lgstvideo-0.10\
+		     @GSTREAMER_PACKAGE_LIBS@ @GSTAPP_LIBS@ \
 		     -lm
 
 if HAVE_AVCODEC

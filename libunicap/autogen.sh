@@ -28,7 +28,7 @@ echo Running autoreconf...
 autoreconf --force --install
 
 echo Running intltoolize
-intltoolize
+intltoolize --force
 
 # For the Debian package build
 test -d debian && {

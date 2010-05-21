@@ -248,6 +248,7 @@ static void destroy_vobj( ucil_gstreamer_video_file_object_t *vobj )
    gst_object_unref( vobj->pipeline );
    g_free( vobj->codec_name );
    g_free( vobj->filename );
+   g_free( vobj->audio_codec );
    g_free( vobj );
 }
 
@@ -267,15 +268,11 @@ static void parse_parameters( ucil_gstreamer_video_file_object_t *vobj, guint n_
 {
    int i;
    
-   for( i = 0; i < n_parameters; i++ )
-   {
-      if( !strcmp( parameters[i].name, "fill_frames" ) )
-      {
+   for( i = 0; i < n_parameters; i++ ){
+      if( !strcmp( parameters[i].name, "fill_frames" ) ){
 	 vobj->fill_frames = g_value_get_boolean( &parameters[i].value );
 	 /* TRACE( "fill_frames: %d\n", vobj->fill_frames ); */
-      }
-      else if( !strcmp( parameters[i].name, "fps" ) )
-      {
+      }else if( !strcmp( parameters[i].name, "fps" ) ){
 	 unsigned int num;
 	 double fps;
 	 
@@ -287,31 +284,20 @@ static void parse_parameters( ucil_gstreamer_video_file_object_t *vobj, guint n_
 
 	 // The current frame interval in us / frame is stored in the frame_interval variable 
 	 vobj->frame_interval = 1000000 / fps;
-      }
-      else if( !strcmp( parameters[i].name, "quality" ) )
-      {
+
+      }else if( !strcmp( parameters[i].name, "quality" ) ){
 	 vobj->quality = g_value_get_int( &parameters[i].value );
-      }
-      else if( !strcmp( parameters[i].name, "bitrate" ) )
-      {
+      }else if( !strcmp( parameters[i].name, "bitrate" ) ){
 	 vobj->bitrate = g_value_get_int( &parameters[i].value );
-      }
-      else if( !strcmp( parameters[i].name, "encode_frame_cb" ) )
-      {
+      }else if( !strcmp( parameters[i].name, "encode_frame_cb" ) ){
       	 vobj->encode_frame_cb = (unicap_new_frame_callback_t)g_value_get_pointer( &parameters[i].value );
-      }
-      else if( !strcmp( parameters[i].name, "encode_frame_cb_data" ) )
-      {
+      }else if( !strcmp( parameters[i].name, "encode_frame_cb_data" ) ){
       	 vobj->encode_frame_cb_data = (void*)g_value_get_pointer( &parameters[i].value );
+      }else if( !strcmp( parameters[i].name, "audio" ) ){
+      	 vobj->record_audio = g_value_get_int( &parameters[i].value ) ? TRUE : FALSE;
+      	 if( vobj->record_audio )
+      	    vobj->fill_frames = 1;
       }
-      /* else if( !strcmp( parameters[i].name, "audio" ) ) */
-      /* { */
-      /* 	 vobj->audio = g_value_get_int( &parameters[i].value ); */
-      /* 	 if( vobj->audio ) */
-      /* 	 { */
-      /* 	    vobj->fill_frames = 1; */
-      /* 	 } */
-      /* } */
       /* else if( !strcmp( parameters[i].name, "audio_card" ) ) */
       /* { */
       /* 	 strncpy( vobj->audio_card, g_value_get_string( &parameters[i].value ), sizeof( vobj->audio_card ) ); */
@@ -381,6 +367,7 @@ ucil_gstreamer_video_file_object_t *ucil_gstreamer_create_video_filev( const cha
       
    vobj->codec_name = g_strdup( codec );
    vobj->filename = g_strdup( path );
+   vobj->audio_codec = g_strdup( "mp3" );
    
    vobj->fps_numerator = 30;
    vobj->fps_denominator = 1;

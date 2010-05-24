@@ -77,7 +77,7 @@ static int read_png(FILE *fp, unsigned int sig_read, unicap_data_buffer_t *buffe
    if (info_ptr == NULL)
    {
       fclose(fp);
-      png_destroy_read_struct(&png_ptr, png_infopp_NULL, png_infopp_NULL);
+      png_destroy_read_struct(&png_ptr, NULL, NULL);
       return( -1 );
    }
 
@@ -89,7 +89,7 @@ static int read_png(FILE *fp, unsigned int sig_read, unicap_data_buffer_t *buffe
    if (setjmp(png_jmpbuf(png_ptr)))
    {
       /* Free all of the memory associated with the png_ptr and info_ptr */
-      png_destroy_read_struct(&png_ptr, &info_ptr, png_infopp_NULL);
+      png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
       fclose(fp);
       /* If we get here, we had a problem reading the file */
       return( -1 );
@@ -109,7 +109,7 @@ static int read_png(FILE *fp, unsigned int sig_read, unicap_data_buffer_t *buffe
     * adjustment), then you can read the entire image (including
     * pixels) into the info structure with this call:
     */
-   png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, png_voidp_NULL);
+   png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
 
    /* At this point you have read the entire image */
    
@@ -174,7 +174,7 @@ static int read_png(FILE *fp, unsigned int sig_read, unicap_data_buffer_t *buffe
    }
 
    /* clean up after the read, and free any memory allocated - REQUIRED */
-   png_destroy_read_struct(&png_ptr, &info_ptr, png_infopp_NULL);
+   png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 
    /* close the file */
    fclose(fp);

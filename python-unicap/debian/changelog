@@ -1,0 +1,17 @@
+python-unicap (0.2.2) unstable; urgency=low
+
+  * updated to 0.2.2
+
+ -- Arne Caspari <arne@unicap-imaging.org>  Wed, 26 May 2010 22:04:51 +0200
+
+python-unicap (0.2.1) karmic; urgency=low
+
+  * fix missing .dirs and .install files
+
+ -- Arne Caspari <arne@unicap-imaging.org>  Sun, 28 Feb 2010 13:10:26 +0100
+
+python-unicap (0.2) karmic; urgency=low
+
+  * Initial release. 
+
+ -- Arne Caspari <arne@unicap-imaging.org>  Sun, 28 Feb 2010 12:40:40 +0100

@@ -1,4 +1,4 @@
-VERSION = 0.2
+VERSION = 0.2.2
 CODEGEN ?= pygobject-codegen-2.0
 PYTHON ?= python
 PREFIX ?= /usr

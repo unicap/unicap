@@ -12,12 +12,12 @@ AM_CONFIG_HEADER(config.h)
 #   5. If any interfaces have been added since the last public release, then increment age.
 #   6. If any interfaces have been removed since the last public release, then set age to 0. 
 lt_major=3
-lt_revision=12
+lt_revision=13
 lt_age=1
 
 unicap_major_version=0
 unicap_minor_version=9
-unicap_micro_version=9
+unicap_micro_version=10
 unicap_prerelease=
 dist_version=$unicap_major_version.$unicap_minor_version.$unicap_micro_version$unicap_prerelease
 

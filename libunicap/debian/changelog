@@ -1,3 +1,9 @@
+libunicap (0.9.10) unstable; urgency=low
+
+  * updated to 0.9.10
+
+ -- Arne Caspari <arne@unicap-imaging.org>  Wed, 26 May 2010 21:54:23 +0200
+
 libunicap (0.9.9) karmic; urgency=low
 
   * added euvccam cpi

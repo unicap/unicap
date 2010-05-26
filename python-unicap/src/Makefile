@@ -1,3 +1,4 @@
+CODEGEN ?= pygobject-codegen-2.0
 PYGTK_DEFSDIR=`pkg-config --variable=defsdir pygtk-2.0`
 
 OVERRIDEFILES=	pyunicapgtk_video_display.override pyunicapgtk_property_dialog.override \

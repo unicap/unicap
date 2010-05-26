@@ -55,8 +55,9 @@ struct video_codec_cpi {
 typedef struct video_codec_cpi video_codec_cpi;
 typedef gboolean (*ucil_cpi_register_module_t)          ( video_codec_cpi *vcp );
 
-const gchar *gstreamer_avi_codecs[] = { "avi/raw", "avi/mpeg2", NULL };
-const gchar *gstreamer_ogg_codecs[] = { "ogg/theora", NULL };
+const gchar *gstreamer_avi_codecs[] = { "avi/raw", "avi/mpeg2", "avi/vp8", NULL };
+const gchar *gstreamer_ogg_codecs[] = { "ogg/theora", "ogg/vp8", NULL };
+const gchar *gstreamer_mkv_codecs[] = { "mkv/vp8", NULL };
 const gchar *theora_codecs[] = { "ogg/theora", NULL };
 const gchar *rawavi_codecs[] = { "avi/raw", NULL };
 
@@ -80,6 +81,21 @@ static video_codec_cpi codecs[ ] = {
    {
       codec_names: 	gstreamer_ogg_codecs,
       file_extension: 	"ogg",
+
+      create_filev: 	(ucil_cpi_create_video_filev_t) ucil_gstreamer_create_video_filev,
+      create_file: 	(ucil_cpi_create_video_file_t) ucil_gstreamer_create_video_file,
+
+      encode_frame: 	(ucil_cpi_encode_frame_t) ucil_gstreamer_encode_frame,
+
+      close_file: 	(ucil_cpi_close_file_t) ucil_gstreamer_close_video_file,
+
+      open_file:	NULL, 
+
+      combine_file:	NULL,
+   },
+   {
+      codec_names: 	gstreamer_mkv_codecs,
+      file_extension: 	"mkv",
 
       create_filev: 	(ucil_cpi_create_video_filev_t) ucil_gstreamer_create_video_filev,
       create_file: 	(ucil_cpi_create_video_file_t) ucil_gstreamer_create_video_file,
@@ -219,19 +235,16 @@ ucil_video_file_object_t *ucil_create_video_file( const char *path, unicap_forma
    vobj->ucil_codec_id = codec_id;
 
    cpi = &codecs[ codec_id ];
-   if ( !cpi->create_file )
-      {
+   if ( !cpi->create_file )      {
       TRACE( "Unsupported codec ID: %s\n", codec );
       vobj->codec_data = NULL;
-      }
-   else
-      {
-	 va_list ap;
-	 
-	 va_start( ap, codec );
+   }else{
+      va_list ap;
+      
+      va_start( ap, codec );
       vobj->codec_data = cpi->create_file( path, format, codec, ap );
-	 va_end( ap );
-      }
+      va_end( ap );
+   }
 
    if( !vobj->codec_data )
    {

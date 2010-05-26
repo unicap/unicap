@@ -16,7 +16,6 @@ struct _element_map
    parse_parameters_func_t parameters_func;
 };
 
-
 static gchar *mpeg2encoders[] = { 
 #if ALLOW_GPL
    "ffenc_mpeg2video", 
@@ -29,6 +28,7 @@ static gchar *x264encoders[] = {
    NULL };
 static gchar *rawencoders[] = { "identity", NULL };
 static gchar *theoraencoders[] = { "theoraenc", NULL };
+static gchar *vp8encoders[] = { "vp8enc", NULL };
    
 
 static gboolean is_initialized = FALSE;
@@ -52,6 +52,10 @@ struct _element_map videnc_map[] = {
       theoraencoders,
    },
    {
+      "vp8",
+      vp8encoders,
+   },
+   {
       NULL, 
       NULL
    }   
@@ -59,6 +63,7 @@ struct _element_map videnc_map[] = {
 
 static char *avimuxers[] = { "avimux", "ffmux_avi", NULL };
 static char *oggmuxers[] = { "oggmux", NULL  };
+static char *mkvmuxers[] = { "matroskamux", "ffmux_matroska", NULL  };
 struct _element_map muxer_map[] = {
    {
       "avi", 
@@ -69,17 +74,27 @@ struct _element_map muxer_map[] = {
       oggmuxers,
    },
    {
+      "mkv",
+      mkvmuxers,
+   },
+   {
       NULL,
       NULL
    }
 };    
 
-static char* mp3encoders[] = { "mad", "lame", NULL };
+static char* mp3encoders[] = { "lame", NULL };
+static char *vorbisencoders[] = { "vorbisenc", NULL };
+   
 
 struct _element_map audioenc_map[] = {
    {
       "mp3", 
       mp3encoders,
+   },
+   {
+      "vorbis", 
+      vorbisencoders, 
    },
    {
       NULL,
@@ -209,12 +224,13 @@ static gboolean create_pipeline( ucil_gstreamer_video_file_object_t *vobj )
       audiosource = gst_element_factory_make( "gconfaudiosrc", "audiosource" );
       if( !audiosource )
 	 audiosource = gst_element_factory_make( "autoaudiosrc", "audiosource" );
-      
+
       if( audiosource ){
 	 audioconvert = gst_element_factory_make( "audioconvert", "audioconvert" );
 	 audioresample = gst_element_factory_make( "audioresample", "audioresample" );
 	 audioqueue = gst_element_factory_make( "queue", "audioqueue" );
 	 audioencode = create_audio_encoder( vobj->audio_codec );
+	 
 	 gst_bin_add_many( GST_BIN( pipeline ), audiosource, audioconvert, audioresample, audioencode, audioqueue, NULL );
       }
    }
@@ -230,9 +246,10 @@ static gboolean create_pipeline( ucil_gstreamer_video_file_object_t *vobj )
    gst_app_src_set_caps( GST_APP_SRC( source ), caps );
    gst_caps_unref( caps );
 
-   gst_element_link_many( source, colorspace, videorate, encoder, vidqueue, muxer, outqueue, sink, NULL );
+   gst_element_link_many( source, colorspace, videorate, encoder, vidqueue, muxer, NULL );
    if( audiosource )
       gst_element_link_many( audiosource, audioconvert, audioresample, audioencode, muxer, NULL );
+   gst_element_link_many( muxer, outqueue, sink, NULL );
 
    vobj->pipeline = pipeline;
    vobj->appsrc = source;
@@ -297,6 +314,9 @@ static void parse_parameters( ucil_gstreamer_video_file_object_t *vobj, guint n_
       	 vobj->record_audio = g_value_get_int( &parameters[i].value ) ? TRUE : FALSE;
       	 if( vobj->record_audio )
       	    vobj->fill_frames = 1;
+      }else if( !strcmp( parameters[i].name, "audio_codec" ) ){
+	 g_free( vobj->audio_codec );
+	 vobj->audio_codec = g_strdup( g_value_get_string( &parameters[i].value ) );
       }
       /* else if( !strcmp( parameters[i].name, "audio_card" ) ) */
       /* { */

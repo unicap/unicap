@@ -19,6 +19,7 @@
 #include <Python.h>
 #include <structmember.h>
 #include <unicap.h>
+#include <glib.h>
 
 #define UNICAP_MODULE
 #include "unicapmodule.h"
@@ -83,6 +84,8 @@ initunicap(void)
    {
       return;
    }
+
+   g_type_init();
 
    UnicapException = PyErr_NewException( "unciap.Exception", NULL, NULL );
    Py_INCREF( UnicapException );

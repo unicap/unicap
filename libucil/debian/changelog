@@ -1,3 +1,9 @@
+libucil (0.9.9) unstable; urgency=low
+
+  * updated to 0.9.9
+
+ -- Arne Caspari <arne@unicap-imaging.org>  Wed, 26 May 2010 22:03:57 +0200
+
 libucil (0.9.8.1) karmic; urgency=low
 
   * fix: old references to ucutils removed

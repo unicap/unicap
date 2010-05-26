@@ -105,7 +105,7 @@ _wrap_unicapgtk_device_selection_set_label_fmt(PyGObject *self, PyObject *args, 
     static char *kwlist[] = { "fmt", NULL };
     char *fmt;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs,"s:UnicapgtkDeviceSelection.set_label_fmt", kwlist, &fmt))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs,"s:Unicapgtk.DeviceSelection.set_label_fmt", kwlist, &fmt))
         return NULL;
     
     unicapgtk_device_selection_set_label_fmt(UNICAPGTK_DEVICE_SELECTION(self->obj), fmt);

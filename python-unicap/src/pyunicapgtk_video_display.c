@@ -161,7 +161,7 @@ _wrap_unicapgtk_video_display_set_pause(PyGObject *self, PyObject *args, PyObjec
     static char *kwlist[] = { "state", NULL };
     int state;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs,"i:UnicapgtkVideoDisplay.set_pause", kwlist, &state))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs,"i:Unicapgtk.VideoDisplay.set_pause", kwlist, &state))
         return NULL;
     
     unicapgtk_video_display_set_pause(UNICAPGTK_VIDEO_DISPLAY(self->obj), state);
@@ -234,7 +234,7 @@ _wrap_unicapgtk_video_display_set_size(PyGObject *self, PyObject *args, PyObject
     static char *kwlist[] = { "width", "height", NULL };
     int width, height;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs,"ii:UnicapgtkVideoDisplay.set_size", kwlist, &width, &height))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs,"ii:Unicapgtk.VideoDisplay.set_size", kwlist, &width, &height))
         return NULL;
     
     unicapgtk_video_display_set_size(UNICAPGTK_VIDEO_DISPLAY(self->obj), width, height);
@@ -249,7 +249,7 @@ _wrap_unicapgtk_video_display_set_scale_to_fit(PyGObject *self, PyObject *args, 
     static char *kwlist[] = { "scale", NULL };
     int scale;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs,"i:UnicapgtkVideoDisplay.set_scale_to_fit", kwlist, &scale))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs,"i:Unicapgtk.VideoDisplay.set_scale_to_fit", kwlist, &scale))
         return NULL;
     
     unicapgtk_video_display_set_scale_to_fit(UNICAPGTK_VIDEO_DISPLAY(self->obj), scale);

@@ -31,6 +31,8 @@
 
 #include "utils.h"
 
+PyTypeObject UnicapDeviceType;
+
 
 static void new_frame_callback( unicap_event_t event, unicap_handle_t handle, unicap_data_buffer_t *buffer, UnicapDevice *self )
 {
@@ -197,9 +199,9 @@ static int UnicapDevice_init( UnicapDevice *self, PyObject *args, PyObject *kwds
    return 0;
 }
 
-int UnicapDevice_Check( PyObject *obj )
+int UnicapDevice_Check_impl( PyObject *obj )
 {
-   return( PyObject_IsInstance( obj, &UnicapDeviceType ) == 1);
+   return( PyObject_TypeCheck( obj, &UnicapDeviceType ) == 1);
 }
    
 

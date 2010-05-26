@@ -105,7 +105,7 @@ _wrap_unicapgtk_device_property_set_label(PyGObject *self, PyObject *args, PyObj
     static char *kwlist[] = { "label", NULL };
     PyGObject *label;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs,"O!:UnicapgtkDeviceProperty.set_label", kwlist, &PyGtkWidget_Type, &label))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs,"O!:Unicapgtk.DeviceProperty.set_label", kwlist, &PyGtkWidget_Type, &label))
         return NULL;
     
     unicapgtk_device_property_set_label(UNICAPGTK_DEVICE_PROPERTY(self->obj), GTK_WIDGET(label->obj));

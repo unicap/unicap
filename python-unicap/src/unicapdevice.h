@@ -50,7 +50,6 @@ typedef struct
 
 }UnicapDevice;
 
-extern PyTypeObject UnicapDeviceType;
 
 void initunicapdevice(PyObject *m);
 

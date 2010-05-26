@@ -50,7 +50,7 @@ extern "C" {
 
 __HIDDEN__ pyunicap_device_new_from_handle_RETURN UnicapDevice_new_from_handle pyunicap_device_new_from_handle_PROTO;
 __HIDDEN__ pyunicap_device_get_handle_RETURN      UnicapDevice_get_handle      pyunicap_device_get_handle_PROTO;
-__HIDDEN__ pyunicap_device_check_RETURN           UnicapDevice_Check           pyunicap_device_check_PROTO;
+__HIDDEN__ pyunicap_device_check_RETURN           UnicapDevice_Check_impl      pyunicap_device_check_PROTO;
 
 #else
 static void **pyunicap_API;

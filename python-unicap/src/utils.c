@@ -22,6 +22,9 @@
 
 #include "utils.h"
 #include "unicapmodule.h"
+#include "unicapdevice.h"
+
+
 
 int parse_video_format( unicap_format_t *format, PyObject *obj )
 {
@@ -382,6 +385,12 @@ int parse_property( unicap_property_t *property, PyObject *obj )
 int conv_device_identifier( PyObject *object, char **target )
 {
    char *identifier = NULL;
+   
+   if( import_unicap() < 0 ){
+      PyErr_SetString( PyExc_RuntimeError, "Could not import unicap module" );
+      return 0;
+   }
+
    if( PyString_Check( object ) ){
       identifier = PyString_AsString( object );
    } else if( PyDict_Check( object ) ){
@@ -394,7 +403,7 @@ int conv_device_identifier( PyObject *object, char **target )
       PyObject *strobj;
       strobj = PyObject_GetAttrString( object, "identifier" );
       if( strobj ){
-	 identifier = PyString_AsString( strobj );
+      	 identifier = PyString_AsString( strobj );
       }
    } else {
       PyErr_SetString( PyExc_TypeError, "expected string or Dict object" );

@@ -12,7 +12,7 @@ libucil_la_LDFLAGS = -version-info @lt_major@:@lt_revision@:@lt_age@
 libucil_la_LIBADD =  @UNICAP_LIBS@ @GLIB_PACKAGE_LIBS@ @PANGO_PACKAGE_LIBS@ \
 		     @AVCODEC_PACKAGE_LIBS@ @THEORA_PACKAGE_LIBS@ @ALSA_PACKAGE_LIBS@ @PNG_PACKAGE_LIBS@ \
 		     @GSTREAMER_PACKAGE_LIBS@ @GSTAPP_LIBS@ \
-		     -lm
+		     -lm -lgthread-2.0
 
 if HAVE_AVCODEC
 libucil_avcavi_sources=ucil_avc_avi.c ../include/ucil_avc_avi.h

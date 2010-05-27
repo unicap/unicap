@@ -17,7 +17,7 @@ lt_age=1
 
 unicap_major_version=0
 unicap_minor_version=9
-unicap_micro_version=10
+unicap_micro_version=11
 unicap_prerelease=
 dist_version=$unicap_major_version.$unicap_minor_version.$unicap_micro_version$unicap_prerelease
 

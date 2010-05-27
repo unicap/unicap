@@ -1,10 +1,14 @@
 INCLUDES = -I../include -I../../include -I../../ -I../../common
 
+if ENABLE_STATIC_CPI
+noinst_LTLIBRARIES=libeuvccam_cpi.la
+libeuvccam_cpi_la_LIBADD=-lpthread 
+else
 libcpi_LTLIBRARIES=libeuvccam_cpi.la
-
+libeuvccam_cpi_la_LIBADD=-lpthread -L../../src/.libs/ -lunicap
+endif
 libcpidir = $(libdir)/unicap$(pkg_version)/cpi
 
-libeuvccam_cpi_la_LIBADD=-lpthread -L../../src/.libs/ -lunicap
 libeuvccam_cpi_la_CFLAGS=-msse2 -O2 -g
 libeuvccam_cpi_la_LDFLAGS=-module -avoid-version
 

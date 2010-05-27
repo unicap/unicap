@@ -1,4 +1,4 @@
-SUBDIRS=include common src doc po cpi data
+SUBDIRS=include common doc po cpi src data
 
 MAINTAINERCLEANFILES = Makefile.in
 

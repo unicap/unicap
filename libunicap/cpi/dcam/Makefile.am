@@ -3,8 +3,10 @@ INCLUDES = -I../include -I../../include -I../../ -I../../common @LIBRAW1394_PACK
 
 if ENABLE_STATIC_CPI
 noinst_LTLIBRARIES = libdcam.la
+libdcam_la_LIBADD = @LIBRAW1394_PACKAGE_LIBS@ @PTHREAD_LIBS@ -L../../common -lucutils
 else
 libcpi_LTLIBRARIES = libdcam.la
+libdcam_la_LIBADD = @LIBRAW1394_PACKAGE_LIBS@ @PTHREAD_LIBS@ -L../../src/.libs/ -lunicap -L../../common -lucutils
 endif
 
 libcpidir = $(libdir)/unicap$(pkg_version)/cpi
@@ -27,5 +29,4 @@ libdcam_la_SOURCES =  \
 	dcam_property.c dcam_property.h dcam_property_table.h \
 	dcam_v_modes.c dcam_v_modes.h 
 
-libdcam_la_LIBADD = @LIBRAW1394_PACKAGE_LIBS@ @PTHREAD_LIBS@  -L../../src/.libs/ -lunicap -L../../common -lucutils
 

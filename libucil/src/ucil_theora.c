@@ -1524,6 +1524,12 @@ ucil_theora_video_file_object_t *ucil_theora_create_video_filev( const char *pat
 	 return NULL;
       }
       vobj->audio_data = ucil_alsa_init( vobj->audio_card, vobj->audio_rate );
+      if( !vobj->audio_data )
+      {
+	 /* the error message has been already emitted */
+	 free( vobj );
+	 return NULL;
+      }
       
       vorbis_info_init( &vobj->vi );
       if( vorbis_encode_init( &vobj->vi, 2, vobj->audio_rate, -1, vobj->vorbis_bitrate, -1 ) )
@@ -1540,6 +1546,12 @@ ucil_theora_video_file_object_t *ucil_theora_create_video_filev( const char *pat
    else if( vobj->audio )
    {
       vobj->audio_data = ucil_alsa_init( vobj->audio_card, vobj->audio_rate );
+      if( !vobj->audio_data )
+      {
+	 /* the error message has been already emitted */
+	 free( vobj );
+	 return NULL;
+      }
    }
    
 #endif

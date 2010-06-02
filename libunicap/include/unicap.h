@@ -395,7 +395,7 @@ typedef void (*unicap_new_device_callback_t)( unicap_event_t event, unicap_devic
 UNICAP_BEGIN_DECLS
 
 /**
- * unicap_check_version
+ * unicap_check_version:
  * @major: major version to check against
  * @minor: minor version to check against
  * @micro: micro version to check against

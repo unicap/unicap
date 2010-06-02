@@ -518,7 +518,7 @@ static void fill_frames( ucil_theora_video_file_object_t *vobj, unicap_data_buff
       {
 	 unicap_data_buffer_t *last_data_buffer;
 	 
-	 last_data_buffer = (unicap_data_buffer_t *)vobj->last_frame;
+	 last_data_buffer = vobj->last_frame;
 	 if( vobj->downsize > 1 || vobj->requires_resizing_frames )
 	 {
 	    yuv->y = ds_y_buffer;
@@ -690,7 +690,7 @@ static void *ucil_theora_encode_thread( ucil_theora_video_file_object_t *vobj )
 	       double streampos;
 	       struct timeval streamtime;
 	       
-	       last_data_buffer = (unicap_data_buffer_t *)vobj->last_frame->data;
+	       last_data_buffer = (unicap_data_buffer_t *)vobj->last_frame;
 	       if( vobj->downsize > 1 || vobj->requires_resizing_frames )
 	       {
 		  yuv.y = ds_y_buffer;
@@ -807,7 +807,7 @@ static void *ucil_theora_encode_thread( ucil_theora_video_file_object_t *vobj )
 	 {
 	    unicap_data_buffer_t *last_data_buffer;
 	    
-	    last_data_buffer = (unicap_data_buffer_t *)vobj->last_frame->data;
+	    last_data_buffer = (unicap_data_buffer_t *)vobj->last_frame;
 	    last_data_buffer->flags &= ~UNICAP_FLAGS_BUFFER_LOCKED;
 	    sem_wait( &vobj->lock );
 	    g_queue_push_head( vobj->empty_queue, vobj->last_frame );

@@ -17,6 +17,9 @@ unicap
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### ENUM unicap_buffer_type_t ##### -->
 <para>
 
@@ -83,7 +86,7 @@ unicap
 @buffer_size: 
 @type: 
 @flags: 
-@reserved: 
+@private: 
 
 <!-- ##### ENUM unicap_property_flags_t ##### -->
 <para>

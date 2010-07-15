@@ -61,6 +61,9 @@ typedef enum
    UNICAP_FLAGS_BUFFER_LOCKED          = 1 << 16,
 } unicap_buffer_flags_t;
 
+typedef struct unicap_data_buffer_private unicap_data_buffer_private_t;
+
+
 /**
  * unicap_device_t:
  * @identifier: unique textual ID of a device 
@@ -180,6 +183,7 @@ struct _unicap_format_t
 
 typedef struct _unicap_format_t unicap_format_t;
 
+
 /**
  * unicap_data_buffer_t:
  * @format: a #unicap_format_t describing the layout of the data
@@ -197,20 +201,21 @@ typedef struct _unicap_format_t unicap_format_t;
  */
 struct _unicap_data_buffer_t
 {
-      unicap_format_t format;
+   unicap_format_t format;
       
-      int frame_number;
-      struct timeval fill_time;
-      struct timeval duration;
-      struct timeval capture_start_time;
+   int frame_number;
+   struct timeval fill_time;
+   struct timeval duration;
+   struct timeval capture_start_time;
       
-      unsigned char *data;
-      size_t buffer_size;	
+   unsigned char *data;
+   size_t buffer_size;	
 
-      unicap_buffer_type_t type;
+   unicap_buffer_type_t type;
 
-      unicap_buffer_flags_t flags;
-      unsigned int reserved[7];		
+   unicap_buffer_flags_t flags;
+   
+   unicap_data_buffer_private_t *private;
 };
 
 typedef struct _unicap_data_buffer_t unicap_data_buffer_t;
@@ -807,7 +812,17 @@ void unicap_cache_init( void );
 
 int unicap_get_ref_count( unicap_handle_t handle );
 
+typedef void (*unicap_data_buffer_free_func_t)( unicap_data_buffer_t *buffer, void *ptr );
 
+
+unicap_data_buffer_t *unicap_data_buffer_new( unicap_format_t *format );
+void unicap_data_buffer_init( unicap_data_buffer_t *buffer, unicap_format_t *format, unicap_data_buffer_free_func_t free_func, void *free_func_data );
+void unicap_data_buffer_free( unicap_data_buffer_t *buffer );
+unicap_status_t unicap_data_buffer_ref( unicap_data_buffer_t *buffer );
+unicap_status_t unicap_data_buffer_unref( unicap_data_buffer_t *buffer );
+unsigned int unicap_data_buffer_get_refcount( unicap_data_buffer_t *buffer );
+void *unicap_data_buffer_set_user_data( unicap_data_buffer_t *buffer, void *data );
+void *unicap_data_buffer_get_user_data( unicap_data_buffer_t *buffer );
 
 
 

@@ -18,6 +18,7 @@ libv4l2cpi_la_CFLAGS = @LIBV4L_CFLAGS@
 
 libv4l2cpi_la_SOURCES =  \
 	v4l2.c v4l2.h \
+	buffermanager.c buffermanager.h \
 	tisuvccam.c tisuvccam.h uvcvideo.h uvc_compat.h \
 	tiseuvccam.c tiseuvccam.h 
 

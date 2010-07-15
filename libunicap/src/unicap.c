@@ -1458,3 +1458,83 @@ int unicap_get_ref_count( unicap_handle_t handle )
 {
    return *handle->ref_count;
 }
+
+unicap_data_buffer_t *unicap_data_buffer_new( unicap_format_t *format )
+{
+   unicap_data_buffer_t *buffer;
+   memset( buffer, 0x0, sizeof( unicap_data_buffer_t ) );
+   buffer = malloc( sizeof( unicap_data_buffer_t) );
+   buffer->buffer_size = buffer->format.buffer_size;
+   buffer->data = malloc( buffer->buffer_size );   
+   unicap_copy_format( &buffer->format, format );
+   buffer->private = NULL;
+
+   return buffer;
+}
+
+void unicap_data_buffer_init( unicap_data_buffer_t *buffer, unicap_format_t *format, unicap_data_buffer_free_func_t free_func, void *free_func_data )
+{
+   unicap_copy_format( &buffer->format, format );
+   buffer->private = malloc( sizeof( unicap_data_buffer_private_t ) );
+   sem_init( &buffer->private->lock, 0, 1 );   
+   buffer->private->free_func = free_func;
+   buffer->private->free_func_data = free_func_data;
+}
+
+void unicap_data_buffer_free( unicap_data_buffer_t *buffer )
+{
+   sem_wait( &buffer->private->lock );
+   if( buffer->private->ref_count > 0 ){
+      TRACE( "freeing a buffer with refcount = %d!!!\n", buffer->private.refcount );
+   }
+   if( buffer->private->free_func ){
+      buffer->private->free_func( buffer, buffer->private->free_func_data );
+   }
+   sem_destroy( &buffer->private->lock );
+   if (buffer->data)
+      free( buffer->data );
+   free( buffer );
+}
+
+unicap_status_t unicap_data_buffer_ref( unicap_data_buffer_t *buffer )
+{
+   sem_wait( &buffer->private->lock );
+   buffer->private->ref_count++;
+   sem_post( &buffer->private->lock );
+
+   return STATUS_SUCCESS;
+}
+
+unicap_status_t unicap_data_buffer_unref( unicap_data_buffer_t *buffer )
+{
+   unicap_status_t status = STATUS_SUCCESS;
+   sem_wait( &buffer->private->lock );
+   if( buffer->private->ref_count > 0 ){
+      buffer->private->ref_count--;
+      if (buffer->private->ref_count == 0 ){
+	 unicap_data_buffer_free( buffer );
+      }
+   }else{
+      TRACE( "unref of a buffer with refcount <= 0!" );
+      status = STATUS_FAILURE;
+   }
+   sem_post (&buffer->private->lock);
+   return status;
+}
+
+unsigned int unicap_data_buffer_get_refcount( unicap_data_buffer_t *buffer )
+{
+   return buffer->private->ref_count;
+}
+
+void *unicap_data_buffer_set_user_data( unicap_data_buffer_t *buffer, void *data )
+{
+   void *old_data = buffer->private->user_data;
+   buffer->private->user_data = data;
+   return old_data;
+}
+
+void *unicap_data_buffer_get_user_data( unicap_data_buffer_t *buffer )
+{
+   return buffer->private->user_data;
+}

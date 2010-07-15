@@ -26,6 +26,7 @@
 #include <sys/types.h>
 #include <sys/time.h>
 #include <time.h>
+#include <semaphore.h>
 
 #define SHM_REG_VERSION 1
 
@@ -82,6 +83,15 @@ struct _unicap_handle
    struct _unicap_callback_info *cb_info;
 } unicap_handle;
 
+struct unicap_data_buffer_private
+{
+   unsigned int ref_count;
+   unicap_data_buffer_free_func_t free_func;
+   void *free_func_data;
+   void *user_data;
+
+   sem_t lock;
+};
 
 
 unicap_status_t unicap_real_enumerate_devices( int *count );

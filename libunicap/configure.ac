@@ -383,7 +383,7 @@ AM_CONDITIONAL(HAVE_LIBV4L, test x$HAVE_LIBV4L == "xyes" )
 
 AC_ARG_ENABLE(euvccam, 
 	      AS_HELP_STRING( [--enable-euvccam], 
-		              [build plugin for The Imaging Source USB CMOS cameras \[default=yes\]] ),
+		              [build plugin for The Imaging Source USB CMOS cameras (experimental) \[default=no\]] ),
 	      {
 	      	if test "x$enableval" != "xno"; then
 			EUVCCAM="yes";
@@ -391,7 +391,7 @@ AC_ARG_ENABLE(euvccam,
 			EUVCCAM="no";
 	      	fi
 	      },
-	      EUVCCAM="yes" )
+	      EUVCCAM="no" )
 
 AC_ARG_ENABLE(thing, 
 	      AS_HELP_STRING( [--enable-thing], 

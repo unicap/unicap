@@ -101,6 +101,7 @@ struct fourcc_bpp
 };
 
 
+
 struct prop_category category_list[] =
 {
    { N_("shutter"), N_("exposure") },
@@ -2392,22 +2393,25 @@ static unicap_status_t v4l2_set_event_notify( void *cpi_data, unicap_event_callb
 static void v4l2_capture_thread( v4l2_handle_t handle )
 {
    unicap_data_buffer_t new_frame_buffer;
+   buffer_manager_t mgr;
    
    handle->dqindex = -1;
 
-   unicap_copy_format( &new_frame_buffer.format, &handle->current_format );
-   new_frame_buffer.buffer_size = handle->current_format.buffer_size;
-   new_frame_buffer.type = UNICAP_BUFFER_TYPE_SYSTEM;
+   /* unicap_data_buffer_init( &new_frame_buffer, &handle->current_format ); */
+   /* new_frame_buffer.type = UNICAP_BUFFER_TYPE_SYSTEM; */
+   /* unicap_data_buffer_ref( &new_frame_buffer ); */
+
+   mgr = buffer_manager_create( handle->fd, &handle->current_format );
 
    while( !handle->quit_capture_thread )
    {
-      struct v4l2_buffer v4l2_buffer;
       unicap_queue_t *entry;
-      struct timespec abs_timeout;
       struct timeval  ctime;
       int old_index;
       int drop = 0;
       int ret = 0;
+
+      unicap_data_buffer_t *data_buffer;
 
       memset( &v4l2_buffer, 0x0, sizeof( v4l2_buffer ) );
       
@@ -2417,155 +2421,108 @@ static void v4l2_capture_thread( v4l2_handle_t handle )
 
       old_index = handle->dqindex;
 
-      if( sem_timedwait( &handle->sema, &abs_timeout ) )
-      {
-	 TRACE( "SEM_WAIT FAILED\n" );
+
+      if( !SUCCESS( buffer_mgr_dequeue( mgr, &data_buffer ) ) ){
+	 TRACE( "buffer_mgr_dequeue failed!\n" );
+	 useleep( 1000 );
 	 continue;
       }
 
-      if( ( ( handle->dqindex + 1 ) % handle->buffer_count ) == handle->qindex )
-      {
-	 sem_post( &handle->sema );
-	 usleep( 1000 );
-	 continue;
-      }      
-	 
-      v4l2_buffer.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-      if( handle->io_method == CPI_V4L2_IO_METHOD_MMAP )
-      {
-	 handle->dqindex = ( handle->dqindex + 1 ) % handle->buffer_count;
-	 TRACE( "DQIndex: %d\n", handle->dqindex );
-	 v4l2_buffer.index = handle->dqindex;
-	 
-	 v4l2_buffer.memory = V4L2_MEMORY_MMAP;
-      }
-      
-      if( IOCTL( handle->fd, VIDIOC_DQBUF, &v4l2_buffer ) < 0 )
-      {
-	 TRACE( "VIDIOC_DQBUF ioctl failed: %s\n", strerror( errno ) );
-	 handle->dqindex = old_index;
-	 sem_post( &handle->sema );
-	 usleep( 30000 );
-	 continue;
-      }
-
-      if( v4l2_buffer.bytesused < new_frame_buffer.format.buffer_size )
+      if( data_buffer->buffer_size < handle->current_format.buffer_size )
       {
 	 TRACE( "Corrupt frame!\n" );
 	 drop = 1;
       }
       
-      if( sem_post( &handle->sema ) )
-      {
-	 TRACE( "SEM_POST FAILED\n" );
-      }
-
       if( !drop && handle->event_callback )
       {
-	 memcpy( &new_frame_buffer.fill_time, &v4l2_buffer.timestamp, sizeof( struct timeval ) );
-	 new_frame_buffer.data = handle->buffers[v4l2_buffer.index].start;
-	 handle->event_callback( handle->unicap_handle, UNICAP_EVENT_NEW_FRAME, &new_frame_buffer );
+	 handle->event_callback( handle->unicap_handle, UNICAP_EVENT_NEW_FRAME, data_buffer );
       }
 
-      entry = drop ? NULL :ucutil_get_front_queue( handle->in_queue );
-      if( entry )
-      {
-	 unicap_data_buffer_t *data_buffer = ( unicap_data_buffer_t * ) entry->data;
-	 unicap_queue_t *outentry = malloc( sizeof( unicap_queue_t ) );
-	 free( entry );
+/*       entry = drop ? NULL :ucutil_get_front_queue( handle->in_queue ); */
+/*       if( entry ) */
+/*       { */
+/* 	 unicap_data_buffer_t *data_buffer = ( unicap_data_buffer_t * ) entry->data; */
+/* 	 unicap_queue_t *outentry = malloc( sizeof( unicap_queue_t ) ); */
+/* 	 free( entry ); */
 	 
-	 switch( handle->io_method )
-	 {
-	    case CPI_V4L2_IO_METHOD_MMAP:
-	    {
-	       if( data_buffer->type == UNICAP_BUFFER_TYPE_SYSTEM )
-	       {
-		  data_buffer->buffer_size = handle->buffers[v4l2_buffer.index].length;
-		  data_buffer->data = handle->buffers[v4l2_buffer.index].start;
-	       }
-	       else
-	       {
-		  int length = data_buffer->buffer_size;
-		  if( length > handle->buffers[v4l2_buffer.index].length )
-		     length = handle->buffers[v4l2_buffer.index].length;
-		  
-		  memcpy( data_buffer->data, 
-			  handle->buffers[v4l2_buffer.index].start, 
-			  length);
-	       }
-	    }
-	    break;
-	
-	    case CPI_V4L2_IO_METHOD_USERPOINTER:
-	    {
-	       data_buffer->data = ( void* )v4l2_buffer.m.userptr;
-	       
-/* 	       if( returned_buffer->data != ( void* )v4l2_buffer.m.userptr ) */
+/* 	 switch( handle->io_method ) */
+/* 	 { */
+/* 	    case CPI_V4L2_IO_METHOD_MMAP: */
+/* 	    { */
+/* 	       if( data_buffer->type == UNICAP_BUFFER_TYPE_SYSTEM ) */
 /* 	       { */
-/* 		  TRACE( "returned_buffer->data != v4l2_buffer.m.userptr\n" ); */
+/* 		  data_buffer->buffer_size = handle->buffers[v4l2_buffer.index].length; */
+/* 		  data_buffer->data = handle->buffers[v4l2_buffer.index].start; */
 /* 	       } */
-	    }
-	    break;
-	    
-	    default:
-	    {
-	       TRACE( "Invalid io_method!!!'n" );
-	       return;
-	    }
-	 }
-	 memcpy( &data_buffer->fill_time, &v4l2_buffer.timestamp, sizeof( struct timeval ) );
-	 unicap_copy_format( &data_buffer->format, &handle->current_format );
-	 outentry->data = data_buffer;
-	 ucutil_insert_back_queue( handle->out_queue, outentry );
-      }      
-      else
-      {
-	 struct v4l2_buffer v4l2_buffer;
-	 
-	 if( handle->io_method == CPI_V4L2_IO_METHOD_MMAP )
-	 {
-	    while( sem_timedwait( &handle->sema, &abs_timeout ) )
-	    {
-	       TRACE( "SEM_WAIT FAILED!\n" );
-	       gettimeofday( &ctime, NULL );
-	       abs_timeout.tv_sec = ctime.tv_sec + 1;
-	       abs_timeout.tv_nsec = ctime.tv_usec * 1000;      
-	       if( handle->quit_capture_thread )
-	       {
-		  return;
-	       }
-	    }
-	    
-	    v4l2_buffer.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-	    v4l2_buffer.length = handle->current_format.buffer_size;
-	    v4l2_buffer.memory = V4L2_MEMORY_MMAP;
-	    v4l2_buffer.index = handle->qindex;
-	    v4l2_buffer.field = V4L2_FIELD_ANY;
-	    v4l2_buffer.flags = 0;
-	    TRACE( "Q: index = %d type = %u, memory = %u size: %d\n", handle->qindex, v4l2_buffer.type, v4l2_buffer.memory, v4l2_buffer.length );
-	    handle->qindex = ( handle->qindex + 1 ) % handle->buffer_count;
-	    
-	 
-	    if( ( ret = IOCTL( handle->fd, VIDIOC_QBUF, &v4l2_buffer ) ) < 0 )
-	    {
-	       if( ret == -ENODEV )
-	       {
-		  TRACE( "Device removed" );
-		  if( !handle->removed && handle->event_callback )
-		  {
-		     handle->event_callback( handle->unicap_handle, UNICAP_EVENT_DEVICE_REMOVED );
-		     handle->removed = 1;
-		  }
-	       }
+/* 	       else */
+/* 	       { */
+/* 		  int length = data_buffer->buffer_size; */
+/* 		  if( length > handle->buffers[v4l2_buffer.index].length ) */
+/* 		     length = handle->buffers[v4l2_buffer.index].length; */
+		  
+/* 		  memcpy( data_buffer->data,  */
+/* 			  handle->buffers[v4l2_buffer.index].start,  */
+/* 			  length); */
+/* 	       } */
+/* 	    } */
+/* 	    break; */
+	
+/* 	    case CPI_V4L2_IO_METHOD_USERPOINTER: */
+/* 	    { */
+/* 	       data_buffer->data = ( void* )v4l2_buffer.m.userptr; */
 	       
-	       TRACE( "VIDIOC_QBUF ioctl failed: %s\n", strerror( errno ) );
-	    }
-
-	    if( sem_post( &handle->sema ) )
-	    {
-	       TRACE( "SEM_POST FAILED!\n" );
+/* /\* 	       if( returned_buffer->data != ( void* )v4l2_buffer.m.userptr ) *\/ */
+/* /\* 	       { *\/ */
+/* /\* 		  TRACE( "returned_buffer->data != v4l2_buffer.m.userptr\n" ); *\/ */
+/* /\* 	       } *\/ */
+/* 	    } */
+/* 	    break; */
+	    
+/* 	    default: */
+/* 	    { */
+/* 	       TRACE( "Invalid io_method!!!'n" ); */
+/* 	       return; */
+/* 	    } */
+/* 	 } */
+/* 	 memcpy( &data_buffer->fill_time, &v4l2_buffer.timestamp, sizeof( struct timeval ) ); */
+/* 	 unicap_copy_format( &data_buffer->format, &handle->current_format ); */
+/* 	 outentry->data = data_buffer; */
+/* 	 ucutil_insert_back_queue( handle->out_queue, outentry ); */
+/*       }       */
+/*       else */
+/*       { */
+/* 	 struct v4l2_buffer v4l2_buffer; */
+	 
+/* 	 if( handle->io_method == CPI_V4L2_IO_METHOD_MMAP ) */
+/* 	 { */
+/* 	    while( sem_timedwait( &handle->sema, &abs_timeout ) ) */
+/* 	    { */
+/* 	       TRACE( "SEM_WAIT FAILED!\n" ); */
+/* 	       gettimeofday( &ctime, NULL ); */
+/* 	       abs_timeout.tv_sec = ctime.tv_sec + 1; */
+/* 	       abs_timeout.tv_nsec = ctime.tv_usec * 1000;       */
+/* 	       if( handle->quit_capture_thread ) */
+/* 	       { */
+/* 		  return; */
+/* 	       } */
+/* 	    } */
+	    
+/* 	    v4l2_buffer.type = V4L2_BUF_TYPE_VIDEO_CAPTURE; */
+/* 	    v4l2_buffer.length = handle->current_format.buffer_size; */
+/* 	    v4l2_buffer.memory = V4L2_MEMORY_MMAP; */
+/* 	    v4l2_buffer.index = handle->qindex; */
+/* 	    v4l2_buffer.field = V4L2_FIELD_ANY; */
+/* 	    v4l2_buffer.flags = 0; */
+/* 	    TRACE( "Q: index = %d type = %u, memory = %u size: %d\n", handle->qindex, v4l2_buffer.type, v4l2_buffer.memory, v4l2_buffer.length ); */
+/* 	    handle->qindex = ( handle->qindex + 1 ) % handle->buffer_count; */
+      if (unicap_data_buffer_get_refcount( data_buffer ) == 1){
+	 if (buffer_mgr_queue (mgr, data_buffer) == STATUS_NO_DEVICE){
+	    if( !handle->removed && handle->event_callback ){
+	       handle->event_callback( handle->unicap_handle, UNICAP_EVENT_DEVICE_REMOVED );
+	       handle->removed = 1;
 	    }
 	 }
-      }
+      } // else: buffer gets queued in
    }   
 }

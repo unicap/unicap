@@ -21,6 +21,7 @@
 #include <structmember.h>
 #include <unicap.h>
 #include <ucil.h>
+#include <ucil_png.h>
 
 #include "unicapmodule.h"
 #include "unicapimagebuffer.h"
@@ -221,6 +222,41 @@ PyObject *UnicapImageBuffer_new_from_buffer( const unicap_data_buffer_t *data_bu
    return (PyObject *)self;
 }
 
+static const char load_png__doc__[] = " \
+load_png(path)\n\
+\n\
+Returns: A new allocated image buffer\
+";
+PyObject *UnicapImageBuffer_load_png(PyTypeObject *type, PyObject *args, PyObject *kwargs)
+{
+   static char* kwlist[] = { "path", NULL };
+   char *path = NULL;
+   
+   if (!PyArg_ParseTupleAndKeywords(args, kwargs,
+				    "s:unicapgtk.ImageBuffer.load_png",
+				    kwlist, &path ))
+      return NULL;
+
+   UnicapImageBuffer *self;
+   self = (UnicapImageBuffer *)UnicapImageBufferType.tp_alloc( (PyTypeObject*)&UnicapImageBufferType, 0 );
+   if( self != NULL )
+   {
+      self->buffer.format.fourcc = UCIL_FOURCC( 'Y', 'U', 'V', 'A' );
+      self->buffer.format.bpp = 32;
+      
+      if( !SUCCESS( ucil_load_png( path, &self->buffer ) ) ){
+	    PyErr_SetString( PyExc_RuntimeError, "Failed to load PNG file" );
+	    return NULL;
+      }
+
+      self->format = build_video_format (&self->buffer.format);
+      self->time = 0;
+      self->free_data = TRUE;
+   }
+   
+   return (PyObject *)self;
+}     
+
 static const char load_file__doc__[] = " \
 load_file(path)\n\
 \n\
@@ -232,7 +268,7 @@ static PyObject *UnicapImageBuffer_load_file(PyTypeObject *type, PyObject *args,
    char *path = NULL;
    
    if (!PyArg_ParseTupleAndKeywords(args, kwargs,
-				    "s:unicapgtk.ImageBuffer.weave",
+				    "s:unicapgtk.ImageBuffer.load_file",
 				    kwlist, &path ))
       return NULL;
    
@@ -329,7 +365,6 @@ static PyObject *UnicapImageBuffer_copy( UnicapImageBuffer *self, PyObject *args
    return (PyObject*) copy;
    
 }
-
 
 
 
@@ -438,6 +473,44 @@ static PyObject *UnicapImageBuffer_tostring( UnicapImageBuffer *self, PyObject *
    str = PyString_FromStringAndSize( (char *)self->buffer.data, self->buffer.buffer_size );
    
    return str;
+}
+
+static const char composite__doc__[] = "\
+composite(buffer,pos,scale=(1.0,1.0),interp=unicap.ImageBuffer.INTERPOLATION_NONE)\n\
+Composites image buffers\n\
+\n\
+buffer: The buffer to be placed on this one\n\
+pos: (x,y) Tuple for where to place the buffer\n\
+scale: (x,y) Tuple with scale factors\n\
+interp: Interpolation\
+";
+static PyObject *UnicapImageBuffer_composite( UnicapImageBuffer *self, PyObject *args, PyObject *kwds )
+{
+   static char *kwlist[] = { "buffer", "pos", "scale", "interp", NULL };
+   
+   PyObject *obj;
+   UnicapImageBuffer *srcbuf;
+   int x,y;
+   double scalex = 1.0;
+   double scaley = 1.0;
+   int interp = UCIL_INTERP_NEAREST;
+   
+   if( !PyArg_ParseTupleAndKeywords( args, kwds, 
+				     "O(ii)(dd)|i", kwlist, 
+				     &obj, &x, &y, &scalex, &scaley, &interp  ) ){
+      return NULL;
+   }
+
+   if (!PyObject_TypeCheck( obj, &UnicapImageBufferType )){
+      PyErr_SetString( PyExc_ValueError, "'odd' must be a unicap.ImageBuffer" );
+      return NULL;
+   }
+   srcbuf = (UnicapImageBuffer*)obj;
+   
+   ucil_composite( &self->buffer, &srcbuf->buffer, x, y, scalex, scaley, interp );
+
+   Py_INCREF( Py_None );
+   return( Py_None );
 }
 
 static const char draw_line__doc__[] = "\
@@ -859,10 +932,12 @@ static PyMethodDef UnicapImageBuffer_methods[] =
 {
    { "wrap_gpointer", (PyCFunction)UnicapImageBuffer_wrap_gpointer, METH_VARARGS | METH_CLASS, wrap_gpointer__doc__ },
    { "load_file", (PyCFunction)UnicapImageBuffer_load_file, METH_VARARGS | METH_CLASS, load_file__doc__ },   
+   { "load_png", (PyCFunction)UnicapImageBuffer_load_png, METH_VARARGS | METH_CLASS, load_png__doc__ },
    { "weave", (PyCFunction)UnicapImageBuffer_weave, METH_VARARGS | METH_CLASS, weave__doc__ },
    { "copy", (PyCFunction)UnicapImageBuffer_copy, METH_VARARGS, copy__doc__ },
    { "convert", (PyCFunction)UnicapImageBuffer_convert, METH_VARARGS, convert__doc__ },   
    { "tostring", (PyCFunction)UnicapImageBuffer_tostring, METH_NOARGS, tostring__doc__ },
+   { "composite", (PyCFunction)UnicapImageBuffer_composite, METH_VARARGS, composite__doc__ },
    { "draw_line", (PyCFunction)UnicapImageBuffer_draw_line, METH_VARARGS, draw_line__doc__ },
    { "draw_rect", (PyCFunction)UnicapImageBuffer_draw_rect, METH_VARARGS, draw_rect__doc__ },
    { "draw_circle", (PyCFunction)UnicapImageBuffer_draw_circle, METH_VARARGS, draw_circle__doc__ },

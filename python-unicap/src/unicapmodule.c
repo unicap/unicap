@@ -73,7 +73,7 @@ static PyMethodDef UnicapMethods[] =
 PyMODINIT_FUNC
 initunicap(void)
 {
-   PyObject *m, *d;
+   PyObject *m;
    PyObject *c_api_object;
 
    static void *pyunicap_API[ pyunicap_API_POINTERS ];

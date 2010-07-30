@@ -275,7 +275,7 @@ static euvccam_property_t properties_8206[] =
 	relations: NULL,
 	relations_count: 0, 
 	{value: 0}, 
-	{range: { min: 0.0001, max: 4 } },
+	{range: { min: 0.0001, max: 30 } },
 	stepping: 0.0001,
 	type: UNICAP_PROPERTY_TYPE_RANGE,
 	flags: UNICAP_FLAGS_MANUAL,

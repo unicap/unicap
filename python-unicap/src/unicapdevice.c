@@ -809,17 +809,17 @@ static PyObject *UnicapDevice_stop_record( UnicapDevice *self, PyObject *args, P
 static PyMethodDef UnicapDevice_methods[] = 
 {
    { "enumerate_formats", (PyCFunction)UnicapDevice_enumerate_formats, METH_NOARGS, enumerate_formats__doc__ },
-   { "set_format", (PyCFunction)UnicapDevice_set_format, METH_VARARGS, set_format__doc__ },
+   { "set_format", (PyCFunction)UnicapDevice_set_format, METH_VARARGS | METH_KEYWORDS, set_format__doc__ },
    { "get_format", (PyCFunction)UnicapDevice_get_format, METH_NOARGS, get_format__doc__ },
    { "start_capture", (PyCFunction)UnicapDevice_start_capture, METH_NOARGS, start_capture__doc__ },
    { "stop_capture", (PyCFunction)UnicapDevice_stop_capture, METH_NOARGS, stop_capture__doc__ },
-   { "wait_buffer", (PyCFunction)UnicapDevice_wait_buffer, METH_VARARGS, wait_buffer__doc__ },
+   { "wait_buffer", (PyCFunction)UnicapDevice_wait_buffer, METH_VARARGS | METH_KEYWORDS, wait_buffer__doc__ },
    { "enumerate_properties", (PyCFunction)UnicapDevice_enumerate_properties, METH_NOARGS, enumerate_properties__doc__ },
-   { "get_property", (PyCFunction)UnicapDevice_get_property, METH_VARARGS, get_property__doc__ },
-   { "set_property", (PyCFunction)UnicapDevice_set_property, METH_VARARGS, set_property__doc__ },
+   { "get_property", (PyCFunction)UnicapDevice_get_property, METH_VARARGS | METH_KEYWORDS, get_property__doc__ },
+   { "set_property", (PyCFunction)UnicapDevice_set_property, METH_VARARGS | METH_KEYWORDS, set_property__doc__ },
    { "record_video", (PyCFunction)UnicapDevice_record_video, METH_VARARGS | METH_KEYWORDS, record_video__doc__ },
    { "stop_record", (PyCFunction)UnicapDevice_stop_record, METH_NOARGS, stop_record__doc__ },
-   { "set_callback", (PyCFunction)UnicapDevice_set_callback, METH_VARARGS, set_callback__doc__ },
+   { "set_callback", (PyCFunction)UnicapDevice_set_callback, METH_VARARGS | METH_KEYWORDS, set_callback__doc__ },
    
    { NULL }
 };

@@ -38,7 +38,7 @@ _wrap_unicapgtk_device_selection_new(PyGObject *self, PyObject *args, PyObject *
    return 0;
 }
 %%
-override unicapgtk_device_selection_set_device
+override unicapgtk_device_selection_set_device kwargs
 static PyObject *
 _wrap_unicapgtk_device_selection_set_device(PyGObject *self, PyObject *args, PyObject *kwargs)
 {

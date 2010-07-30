@@ -49,7 +49,7 @@ _wrap_unicapgtk_property_dialog_new(PyGObject *self, PyObject *args, PyObject *k
    return 0;
 }
 %%
-override unicapgtk_property_dialog_get_device
+override unicapgtk_property_dialog_get_device kwargs
 static PyObject *
 _wrap_unicapgtk_property_dialog_get_device(PyGObject *self, PyObject *args, PyObject *kwargs)
 {
@@ -93,7 +93,7 @@ _wrap_unicapgtk_property_dialog_set_device_id( PyGObject *self, PyObject *args, 
    return( Py_None );   
 }
 %%
-override unicapgtk_property_dialog_set_device
+override unicapgtk_property_dialog_set_device kwargs
 static PyObject *
 _wrap_unicapgtk_property_dialog_set_device( PyGObject *self, PyObject *args, PyObject *kwargs)
 {

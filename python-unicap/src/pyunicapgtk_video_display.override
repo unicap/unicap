@@ -65,7 +65,7 @@ _wrap_unicapgtk_video_display_new(PyGObject *self, PyObject *args, PyObject *kwa
    return 0;
 }
 %%
-override unicapgtk_video_display_get_device
+override unicapgtk_video_display_get_device kwargs
 static PyObject *
 _wrap_unicapgtk_video_display_get_device(PyGObject *self, PyObject *args, PyObject *kwargs)
 {
@@ -79,7 +79,7 @@ _wrap_unicapgtk_video_display_get_device(PyGObject *self, PyObject *args, PyObje
    return obj;
 }
 %%
-override unicapgtk_video_display_set_format
+override unicapgtk_video_display_set_format kwargs
 static PyObject *
 _wrap_unicapgtk_video_display_set_format(PyGObject *self, PyObject *args, PyObject *kwargs)
 {
@@ -106,7 +106,7 @@ _wrap_unicapgtk_video_display_set_format(PyGObject *self, PyObject *args, PyObje
    return( Py_None );   
 }
 %%
-override unicapgtk_video_display_get_format
+override unicapgtk_video_display_get_format kwargs
 static PyObject *
 _wrap_unicapgtk_video_display_get_format( PyGObject *self, PyObject *args, PyObject *kwargs)
 {
@@ -152,7 +152,7 @@ _wrap_unicapgtk_video_display_set_device_id( PyGObject *self, PyObject *args, Py
    return( Py_None );   
 }
 %%
-override unicapgtk_video_display_set_device
+override unicapgtk_video_display_set_device kwargs
 static PyObject *
 _wrap_unicapgtk_video_display_set_device( PyGObject *self, PyObject *args, PyObject *kwargs)
 {

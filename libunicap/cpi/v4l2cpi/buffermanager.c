@@ -113,7 +113,7 @@ unicap_status_t buffer_mgr_queue( buffer_mgr_t mgr, unicap_data_buffer_t *buffer
    for( i = 0; i < mgr->num_buffers; i++ ){
       if (&mgr->buffers[i].data_buffer == buffer){
 	 int ret;
-	 if( ( ret = IOCTL( handle->fd, VIDIOC_QBUF, &v4l2_buffer ) ) < 0 ){
+	 if( ( ret = IOCTL( mgr->fd, VIDIOC_QBUF, &v4l2_buffer ) ) < 0 ){
 	    if( ret == -ENODEV ){
 	       status = STATUS_NO_DEVICE;
 	    }
@@ -134,5 +134,32 @@ unicap_status_t buffer_mgr_queue( buffer_mgr_t mgr, unicap_data_buffer_t *buffer
 
 unicap_status_t buffer_mgr_dequeue( buffer_mgr_t mgr, unicap_data_buffer_t **buffer )
 {
-}
+   struct v4l2_buffer v4l2_buffer;
+   unicap_status_t status = STATUS_SUCCESS;
+   int i;
 
+   *buffer = NULL;
+   
+   BUFFER_MGR_LOCK (mgr);
+   if( IOCTL( mgr->fd, VIDIOC_DQBUF, &v4l2_buffer ) < 0 ){
+      TRACE( "VIDIOC_DQBUF ioctl failed: %s\n", strerror( errno ) );
+      status = STATUS_FAILURE;
+   } else {
+      for (i = 0; i < mgr->num_buffers; i++ ){
+	 if (mgr->buffers[i].v4l2_buffer.index == v4l2_buffer.index ){
+	    *buffer = &mgr->buffers[i].data_buffer;
+	    *buffer->buffer_size = v4l2_buffer.bytesused;
+	    memcpy( &*buffer->fill_time, &v4l2_buffer.timestamp, sizeof( struct timeval ) );
+	 }
+      }
+   }
+
+   if (!*buffer){
+      TRACE ("VIDIOC_DQBUF returned a buffer that is not in the pool!?!?!?");
+      status = STATUS_FAILURE;
+   }
+   
+   BUFFER_MGR_UNLOCK (mgr);
+   
+   return status;
+}

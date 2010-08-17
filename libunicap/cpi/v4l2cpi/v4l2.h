@@ -25,6 +25,8 @@
 #include <unicap.h>
 #include <unicap_cpi.h>
 
+#include "buffermanager.h"
+
 
 #define FOURCC(a,b,c,d) (unsigned int)((((unsigned int)d)<<24)+(((unsigned int)c)<<16)+(((unsigned int)b)<<8)+a)
 
@@ -97,6 +99,8 @@ struct _v4l2_handle
       char *video_norms[V4L2_MAX_VIDEO_NORMS];
       double frame_rates[V4L2_MAX_FRAME_RATES];
       int sizes_allocated;
+   
+   buffer_mgr_t buffer_mgr;
 
       cpi_v4l2_io_method_enum_t io_method;
       int buffer_count;

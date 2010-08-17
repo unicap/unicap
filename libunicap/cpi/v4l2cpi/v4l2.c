@@ -46,6 +46,7 @@
 #include <linux/types.h>
 #include <linux/videodev2.h>
 #include "v4l2.h"
+#include "buffermanager.h"
 
 #include "tisuvccam.h"
 #include "tiseuvccam.h"
@@ -53,6 +54,7 @@
 #if USE_LIBV4L
 #include <libv4l2.h>
 #endif
+
 
 #if V4L2_DEBUG
 #define DEBUG
@@ -1028,8 +1030,6 @@ static unicap_status_t v4l2_set_format( void *cpi_data, unicap_format_t *_format
    v4l2_fmt.fmt.pix.pixelformat = format.fourcc;/* handle->unicap_formats[ index ].fourcc; */
    v4l2_fmt.fmt.pix.field = V4L2_FIELD_ANY;
 	
-	
-
    if( IOCTL( handle->fd, VIDIOC_S_FMT, &v4l2_fmt ) < 0 )
    {
       TRACE( "VIDIOC_S_FMT ioctl failed: %s\n", strerror( errno ) );
@@ -1916,9 +1916,9 @@ static unicap_status_t v4l2_get_property( void *cpi_data, unicap_property_t *pro
 static unicap_status_t v4l2_capture_start( void *cpi_data )
 {
    v4l2_handle_t handle = (v4l2_handle_t) cpi_data;
-
    struct v4l2_requestbuffers v4l2_reqbuf;
-/* 	int v4l2_argp; */
+
+   unicap_status_t status = STATUS_SUCCESS;
 
    TRACE( "v4l2_start_capture\n" );
 
@@ -1927,155 +1927,43 @@ static unicap_status_t v4l2_capture_start( void *cpi_data )
       return STATUS_CAPTURE_ALREADY_STARTED;
    }
    
-
-   memset( &v4l2_reqbuf, 0x0, sizeof( struct v4l2_requestbuffers ) );
-   handle->qindex = 0;
-   handle->dqindex = 0;
-   handle->drop_count = 0;
-	
-   v4l2_reqbuf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-   switch( handle->io_method )
-   {
-      case CPI_V4L2_IO_METHOD_MMAP:
-      {
-	 v4l2_reqbuf.memory = V4L2_MEMORY_MMAP;
-	 v4l2_reqbuf.count = handle->buffer_count;
-		
-	 handle->buffers = calloc( v4l2_reqbuf.count, sizeof( struct _cpi_v4l2_buffer ) );
-	 if( !handle->buffers )
-	 {
-	    TRACE( "calloc failed\n" );
-	    return STATUS_FAILURE;
-	 }
-	 handle->free_buffers = calloc( v4l2_reqbuf.count, sizeof( int ) );
-	 if( !handle->free_buffers )
-	 {
-	    free( handle->buffers );
-	    TRACE( "calloc failed\n" );
-	    return STATUS_FAILURE;
-	 }
-	 memset( handle->free_buffers, 0x0, sizeof( int ) * v4l2_reqbuf.count );
-	 TRACE( "Method: MMAP\n" );
-      }
-      break;
-		
-      case CPI_V4L2_IO_METHOD_USERPOINTER:
-	 v4l2_reqbuf.memory = V4L2_MEMORY_USERPTR;
-	 TRACE( "Method: USERPOINTER\n" );
-	 break;
-		
-      default:
-/* 		ERROR( "Unknown IO method! Capture can not start!\n" ); */
-	 return STATUS_FAILURE;
-   }
-	
-
-   if( IOCTL( handle->fd, VIDIOC_REQBUFS, &v4l2_reqbuf ) < 0 )
-   {
-      TRACE( "VIDIOC_REQBUFS failed: %s\n", strerror( errno ) );
-      return STATUS_FAILURE;
-   }
-
-   if( handle->io_method == CPI_V4L2_IO_METHOD_MMAP )
-   {
-      int i;
-      int type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-      // method mmap returns the number of actual allocated buffers
-      handle->buffer_count = v4l2_reqbuf.count;
-
-      if( !handle->buffer_count )
-      {
-	 TRACE( "buffer_count == 0\n" );
-	 return STATUS_FAILURE;
-      }
-
-      for( i = 0; i < handle->buffer_count; i++ )
-      {
-	 struct v4l2_buffer v4l2_buffer;
-	 memset( &v4l2_buffer, 0x0, sizeof( v4l2_buffer ) );
-
-	 v4l2_buffer.type = v4l2_reqbuf.type;
-	 v4l2_buffer.memory = V4L2_MEMORY_MMAP;
-	 v4l2_buffer.index = i;
-	 if( IOCTL( handle->fd, VIDIOC_QUERYBUF, &v4l2_buffer ) < 0 )
-	 {
-	    TRACE( "VIDIOC_QUERYBUF ioctl failed: %s, index = %d\n", strerror( errno ), i );
-	    free( handle->buffers );
-	    free( handle->free_buffers );
-	    return STATUS_FAILURE;
-	 }
-			
-	 handle->buffers[i].length = v4l2_buffer.length;
-	 handle->buffers[i].start = MMAP( NULL, v4l2_buffer.length,
-					  PROT_READ | PROT_WRITE, /* required */
-					  MAP_SHARED,             /* recommended */
-					  handle->fd, v4l2_buffer.m.offset);
-
-	 if( handle->buffers[i].start == MAP_FAILED )
-	 {
-	    int j;
-	    TRACE( "mmap failed\n" );
-	    for( j = 0; j < i; j++ )
-	    {
-	       MUNMAP( handle->buffers[i].start, handle->buffers[i].length );
-	    }
-	    free( handle->buffers );
-	    free( handle->free_buffers );
-	    return STATUS_FAILURE;
-	 }
-	 handle->free_buffers[i] = 1;
-
-      }
-      if( IOCTL( handle->fd, VIDIOC_STREAMON, &type ) < 0 )
-      {
-	 int j;
-
-	 TRACE( "VIDIOC_STREAMON ioctl failed: %s\n", strerror( errno ) );
-
-	 for( j = 0; j < i; j++ )
-	 {
-	    MUNMAP( handle->buffers[i].start, handle->buffers[i].length );
-	 }
-
-	 free( handle->buffers );
-	 free( handle->free_buffers );
-
-	 return STATUS_FAILURE;
-      }
-   }
-/*    v4l2_get_format( cpi_data, &handle->current_format ); */
+   handle->buffer_mgr = buffer_mgr_create( handle->fd, &handle->current_format );
 
    handle->capture_running = 1;
 
-   if( ucutil_queue_get_size( handle->in_queue ) )
-   {
-      int i, size;
+   /* if( ucutil_queue_get_size( handle->in_queue ) ) */
+   /* { */
+   /*    int i, size; */
 
-      size = ucutil_queue_get_size( handle->in_queue );
+   /*    size = ucutil_queue_get_size( handle->in_queue ); */
       
-      for( i = 0; i < size; i++ )
-      {
-	 unicap_data_buffer_t *buffer;
-	 unicap_queue_t *entry;
+   /*    for( i = 0; i < size; i++ ) */
+   /*    { */
+   /* 	 unicap_data_buffer_t *buffer; */
+   /* 	 unicap_queue_t *entry; */
 	 
-	 entry = ucutil_get_front_queue( handle->in_queue );
-	 buffer = ( unicap_data_buffer_t * ) entry->data;
+   /* 	 entry = ucutil_get_front_queue( handle->in_queue ); */
+   /* 	 buffer = ( unicap_data_buffer_t * ) entry->data; */
 
-	 queue_buffer( handle, buffer );
-      }
-   }
+   /* 	 queue_buffer( handle, buffer ); */
+   /*    } */
+   /* } */
 
-   if( handle->current_format.buffer_type == UNICAP_BUFFER_TYPE_SYSTEM )
-   {
-
-      queue_system_buffers( handle );
-   }
+   /* if( handle->current_format.buffer_type == UNICAP_BUFFER_TYPE_SYSTEM ) */
+   /* { */
+   status = buffer_mgr_queue_all( handle->buffer_mgr );
+   /* } */
 
    handle->quit_capture_thread = 0;
    pthread_create( &handle->capture_thread, NULL, (void*(*)(void*))v4l2_capture_thread, handle );
 
+   int type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+   if( IOCTL( handle->fd, VIDIOC_STREAMON, &type ) < 0  ){
+      TRACE( "VIDIOC_STREAMON ioctl failed: %s\n", strerror( errno ) );
+      return STATUS_FAILURE;
+   }
 	 
-   return STATUS_SUCCESS;
+   return status;
 }
 
 static unicap_status_t v4l2_capture_stop( void *cpi_data )
@@ -2099,6 +1987,11 @@ static unicap_status_t v4l2_capture_stop( void *cpi_data )
 	 TRACE( "VIDIOC_STREAMOFF ioctl failed: %s\n", strerror( errno ) );
 	 return STATUS_FAILURE;
       }
+
+      
+
+      buffer_mgr_dequeue_all (handle->buffer_mgr);
+      buffer_mgr_destroy (handle->buffer_mgr);
       
       while( ucutil_get_front_queue( handle->in_queue ) )
       {
@@ -2106,12 +1999,12 @@ static unicap_status_t v4l2_capture_stop( void *cpi_data )
       }
 
 
-      for( i = 0; i < handle->buffer_count; i++ )
-      {
-	 MUNMAP( handle->buffers[i].start, handle->buffers[i].length );
-      }
-      free( handle->buffers );
-      free( handle->free_buffers );
+      /* for( i = 0; i < handle->buffer_count; i++ ) */
+      /* { */
+      /* 	 MUNMAP( handle->buffers[i].start, handle->buffers[i].length ); */
+      /* } */
+      /* free( handle->buffers ); */
+      /* free( handle->free_buffers ); */
 
    }
    
@@ -2170,7 +2063,6 @@ static unicap_status_t queue_buffer( v4l2_handle_t handle, unicap_data_buffer_t 
 	 }
 		
 	 v4l2_buffer.index = handle->qindex;
-	 buffer->reserved[0] = handle->qindex;
 	 TRACE( "Q: index = %d type = %u, memory = %u\n", handle->qindex, v4l2_buffer.type, v4l2_buffer.memory );
 	 handle->qindex = ( handle->qindex + 1 ) % handle->buffer_count;
 	 v4l2_buffer.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
@@ -2216,13 +2108,6 @@ static unicap_status_t queue_buffer( v4l2_handle_t handle, unicap_data_buffer_t 
 		
 	 if( ucutil_queue_get_size( handle->in_queue ) == 2 )
 	 {
-	    int type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-	    if( IOCTL( handle->fd, VIDIOC_STREAMON, &type ) < 0 )
-	    {
-	       TRACE( "VIDIOC_STREAMON ioctl failed: %s\n", strerror( errno ) );
-	       return STATUS_FAILURE;
-	    }
-	    TRACE( "streamon\n" );
 	 }
       }
       break;
@@ -2388,20 +2273,16 @@ static unicap_status_t v4l2_set_event_notify( void *cpi_data, unicap_event_callb
    return STATUS_SUCCESS;
 }
 
-   
-
 static void v4l2_capture_thread( v4l2_handle_t handle )
 {
    unicap_data_buffer_t new_frame_buffer;
-   buffer_manager_t mgr;
-   
+
    handle->dqindex = -1;
 
    /* unicap_data_buffer_init( &new_frame_buffer, &handle->current_format ); */
    /* new_frame_buffer.type = UNICAP_BUFFER_TYPE_SYSTEM; */
    /* unicap_data_buffer_ref( &new_frame_buffer ); */
 
-   mgr = buffer_manager_create( handle->fd, &handle->current_format );
 
    while( !handle->quit_capture_thread )
    {
@@ -2412,21 +2293,21 @@ static void v4l2_capture_thread( v4l2_handle_t handle )
       int ret = 0;
 
       unicap_data_buffer_t *data_buffer;
-
-      memset( &v4l2_buffer, 0x0, sizeof( v4l2_buffer ) );
       
-      gettimeofday( &ctime, NULL );
-      abs_timeout.tv_sec = ctime.tv_sec + 1;
-      abs_timeout.tv_nsec = ctime.tv_usec * 1000;      
+      /* gettimeofday( &ctime, NULL ); */
+      /* abs_timeout.tv_sec = ctime.tv_sec + 1; */
+      /* abs_timeout.tv_nsec = ctime.tv_usec * 1000;       */
 
-      old_index = handle->dqindex;
+      /* old_index = handle->dqindex; */
 
 
-      if( !SUCCESS( buffer_mgr_dequeue( mgr, &data_buffer ) ) ){
+      if( !SUCCESS( buffer_mgr_dequeue( handle->buffer_mgr, &data_buffer ) ) ){
 	 TRACE( "buffer_mgr_dequeue failed!\n" );
-	 useleep( 1000 );
+	 usleep( 1000 );
 	 continue;
       }
+
+      unicap_data_buffer_ref (data_buffer);
 
       if( data_buffer->buffer_size < handle->current_format.buffer_size )
       {
@@ -2516,13 +2397,14 @@ static void v4l2_capture_thread( v4l2_handle_t handle )
 /* 	    v4l2_buffer.flags = 0; */
 /* 	    TRACE( "Q: index = %d type = %u, memory = %u size: %d\n", handle->qindex, v4l2_buffer.type, v4l2_buffer.memory, v4l2_buffer.length ); */
 /* 	    handle->qindex = ( handle->qindex + 1 ) % handle->buffer_count; */
-      if (unicap_data_buffer_get_refcount( data_buffer ) == 1){
-	 if (buffer_mgr_queue (mgr, data_buffer) == STATUS_NO_DEVICE){
-	    if( !handle->removed && handle->event_callback ){
-	       handle->event_callback( handle->unicap_handle, UNICAP_EVENT_DEVICE_REMOVED );
-	       handle->removed = 1;
-	    }
-	 }
-      } // else: buffer gets queued in
+      /* if (unicap_data_buffer_get_refcount( data_buffer ) == 1){ */
+      /* 	 if (buffer_mgr_queue (mgr, data_buffer) == STATUS_NO_DEVICE){ */
+      /* 	    if( !handle->removed && handle->event_callback ){ */
+      /* 	       handle->event_callback( handle->unicap_handle, UNICAP_EVENT_DEVICE_REMOVED ); */
+      /* 	       handle->removed = 1; */
+      /* 	    } */
+      /* 	 } */
+      /* } // else: buffer gets queued in */
+      unicap_data_buffer_unref( data_buffer );
    }   
 }

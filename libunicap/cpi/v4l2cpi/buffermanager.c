@@ -211,7 +211,6 @@ unicap_status_t buffer_mgr_queue( buffer_mgr_t mgr, unicap_data_buffer_t *buffer
 	 } else {
 	    status = STATUS_SUCCESS;
 	    mgr->buffers[i].queued = 1;
-	    /* TRACE( "++queue\n" ); */
 	 }
 	 
 	 break;
@@ -254,8 +253,6 @@ unicap_status_t buffer_mgr_dequeue( buffer_mgr_t mgr, unicap_data_buffer_t **buf
    if (!*buffer){
       TRACE ("VIDIOC_DQBUF returned a buffer that is not in the pool (%d) !?!?!?", v4l2_buffer.index );
       status = STATUS_FAILURE;
-   } else {
-      /* TRACE( "--queue\n" ); */
    }
    
    BUFFER_MGR_UNLOCK (mgr);

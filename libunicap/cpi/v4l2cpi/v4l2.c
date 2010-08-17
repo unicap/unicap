@@ -1931,28 +1931,7 @@ static unicap_status_t v4l2_capture_start( void *cpi_data )
 
    handle->capture_running = 1;
 
-   /* if( ucutil_queue_get_size( handle->in_queue ) ) */
-   /* { */
-   /*    int i, size; */
-
-   /*    size = ucutil_queue_get_size( handle->in_queue ); */
-      
-   /*    for( i = 0; i < size; i++ ) */
-   /*    { */
-   /* 	 unicap_data_buffer_t *buffer; */
-   /* 	 unicap_queue_t *entry; */
-	 
-   /* 	 entry = ucutil_get_front_queue( handle->in_queue ); */
-   /* 	 buffer = ( unicap_data_buffer_t * ) entry->data; */
-
-   /* 	 queue_buffer( handle, buffer ); */
-   /*    } */
-   /* } */
-
-   /* if( handle->current_format.buffer_type == UNICAP_BUFFER_TYPE_SYSTEM ) */
-   /* { */
    status = buffer_mgr_queue_all( handle->buffer_mgr );
-   /* } */
 
    handle->quit_capture_thread = 0;
    pthread_create( &handle->capture_thread, NULL, (void*(*)(void*))v4l2_capture_thread, handle );
@@ -1988,8 +1967,6 @@ static unicap_status_t v4l2_capture_stop( void *cpi_data )
 	 return STATUS_FAILURE;
       }
 
-      
-
       buffer_mgr_dequeue_all (handle->buffer_mgr);
       buffer_mgr_destroy (handle->buffer_mgr);
       
@@ -1997,15 +1974,6 @@ static unicap_status_t v4l2_capture_stop( void *cpi_data )
       {
 	 TRACE( "!!possible memleak\n" );
       }
-
-
-      /* for( i = 0; i < handle->buffer_count; i++ ) */
-      /* { */
-      /* 	 MUNMAP( handle->buffers[i].start, handle->buffers[i].length ); */
-      /* } */
-      /* free( handle->buffers ); */
-      /* free( handle->free_buffers ); */
-
    }
    
 
@@ -2025,29 +1993,9 @@ static unicap_status_t queue_buffer( v4l2_handle_t handle, unicap_data_buffer_t 
       {
 	 int ret = 0;
 	 
-/* 	 int index = -1; */
 	 v4l2_buffer.index = 0;
 	 v4l2_buffer.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	 v4l2_buffer.memory = V4L2_MEMORY_MMAP;
-
-/* 	 for( i = 0; i < handle->buffer_count; i++ ) */
-/* 	 { */
-/* 	    v4l2_buffer.index = i; */
-/* 	    v4l2_buffer.type = V4L2_BUF_TYPE_VIDEO_CAPTURE; */
-/* 	    // TODO: Check correct way to do this */
-/* 	    if( ioctl( handle->fd, VIDIOC_QUERYBUF, &v4l2_buffer ) ) */
-/* 	    { */
-/* 	       TRACE( "VIDIOC_QUERYBUF ioctl failed: %s\n", strerror( errno ) ); */
-/* 	       TRACE( "index = %d\n", v4l2_buffer.index  ); */
-/* 	       index = i; */
-/* 	       break; */
-/* 	    } */
-/* 	    if( !(v4l2_buffer.flags & V4L2_BUF_FLAG_QUEUED ) && !( v4l2_buffer.flags & V4L2_BUF_FLAG_DONE ) ) */
-/* 	    { */
-/* 	       index = i; */
-/* 	       break; */
-/* 	    } */
-/* 	 } */
 
 	 if( sem_wait( &handle->sema ) )
 	 {
@@ -2279,11 +2227,6 @@ static void v4l2_capture_thread( v4l2_handle_t handle )
 
    handle->dqindex = -1;
 
-   /* unicap_data_buffer_init( &new_frame_buffer, &handle->current_format ); */
-   /* new_frame_buffer.type = UNICAP_BUFFER_TYPE_SYSTEM; */
-   /* unicap_data_buffer_ref( &new_frame_buffer ); */
-
-
    while( !handle->quit_capture_thread )
    {
       unicap_queue_t *entry;
@@ -2294,13 +2237,6 @@ static void v4l2_capture_thread( v4l2_handle_t handle )
 
       unicap_data_buffer_t *data_buffer;
       
-      /* gettimeofday( &ctime, NULL ); */
-      /* abs_timeout.tv_sec = ctime.tv_sec + 1; */
-      /* abs_timeout.tv_nsec = ctime.tv_usec * 1000;       */
-
-      /* old_index = handle->dqindex; */
-
-
       if( !SUCCESS( buffer_mgr_dequeue( handle->buffer_mgr, &data_buffer ) ) ){
 	 TRACE( "buffer_mgr_dequeue failed!\n" );
 	 usleep( 1000 );
@@ -2320,91 +2256,6 @@ static void v4l2_capture_thread( v4l2_handle_t handle )
 	 handle->event_callback( handle->unicap_handle, UNICAP_EVENT_NEW_FRAME, data_buffer );
       }
 
-/*       entry = drop ? NULL :ucutil_get_front_queue( handle->in_queue ); */
-/*       if( entry ) */
-/*       { */
-/* 	 unicap_data_buffer_t *data_buffer = ( unicap_data_buffer_t * ) entry->data; */
-/* 	 unicap_queue_t *outentry = malloc( sizeof( unicap_queue_t ) ); */
-/* 	 free( entry ); */
-	 
-/* 	 switch( handle->io_method ) */
-/* 	 { */
-/* 	    case CPI_V4L2_IO_METHOD_MMAP: */
-/* 	    { */
-/* 	       if( data_buffer->type == UNICAP_BUFFER_TYPE_SYSTEM ) */
-/* 	       { */
-/* 		  data_buffer->buffer_size = handle->buffers[v4l2_buffer.index].length; */
-/* 		  data_buffer->data = handle->buffers[v4l2_buffer.index].start; */
-/* 	       } */
-/* 	       else */
-/* 	       { */
-/* 		  int length = data_buffer->buffer_size; */
-/* 		  if( length > handle->buffers[v4l2_buffer.index].length ) */
-/* 		     length = handle->buffers[v4l2_buffer.index].length; */
-		  
-/* 		  memcpy( data_buffer->data,  */
-/* 			  handle->buffers[v4l2_buffer.index].start,  */
-/* 			  length); */
-/* 	       } */
-/* 	    } */
-/* 	    break; */
-	
-/* 	    case CPI_V4L2_IO_METHOD_USERPOINTER: */
-/* 	    { */
-/* 	       data_buffer->data = ( void* )v4l2_buffer.m.userptr; */
-	       
-/* /\* 	       if( returned_buffer->data != ( void* )v4l2_buffer.m.userptr ) *\/ */
-/* /\* 	       { *\/ */
-/* /\* 		  TRACE( "returned_buffer->data != v4l2_buffer.m.userptr\n" ); *\/ */
-/* /\* 	       } *\/ */
-/* 	    } */
-/* 	    break; */
-	    
-/* 	    default: */
-/* 	    { */
-/* 	       TRACE( "Invalid io_method!!!'n" ); */
-/* 	       return; */
-/* 	    } */
-/* 	 } */
-/* 	 memcpy( &data_buffer->fill_time, &v4l2_buffer.timestamp, sizeof( struct timeval ) ); */
-/* 	 unicap_copy_format( &data_buffer->format, &handle->current_format ); */
-/* 	 outentry->data = data_buffer; */
-/* 	 ucutil_insert_back_queue( handle->out_queue, outentry ); */
-/*       }       */
-/*       else */
-/*       { */
-/* 	 struct v4l2_buffer v4l2_buffer; */
-	 
-/* 	 if( handle->io_method == CPI_V4L2_IO_METHOD_MMAP ) */
-/* 	 { */
-/* 	    while( sem_timedwait( &handle->sema, &abs_timeout ) ) */
-/* 	    { */
-/* 	       TRACE( "SEM_WAIT FAILED!\n" ); */
-/* 	       gettimeofday( &ctime, NULL ); */
-/* 	       abs_timeout.tv_sec = ctime.tv_sec + 1; */
-/* 	       abs_timeout.tv_nsec = ctime.tv_usec * 1000;       */
-/* 	       if( handle->quit_capture_thread ) */
-/* 	       { */
-/* 		  return; */
-/* 	       } */
-/* 	    } */
-	    
-/* 	    v4l2_buffer.type = V4L2_BUF_TYPE_VIDEO_CAPTURE; */
-/* 	    v4l2_buffer.length = handle->current_format.buffer_size; */
-/* 	    v4l2_buffer.memory = V4L2_MEMORY_MMAP; */
-/* 	    v4l2_buffer.index = handle->qindex; */
-/* 	    v4l2_buffer.field = V4L2_FIELD_ANY; */
-/* 	    v4l2_buffer.flags = 0; */
-/* 	    TRACE( "Q: index = %d type = %u, memory = %u size: %d\n", handle->qindex, v4l2_buffer.type, v4l2_buffer.memory, v4l2_buffer.length ); */
-/* 	    handle->qindex = ( handle->qindex + 1 ) % handle->buffer_count; */
-      /* if (unicap_data_buffer_get_refcount( data_buffer ) == 1){ */
-      /* 	 if (buffer_mgr_queue (mgr, data_buffer) == STATUS_NO_DEVICE){ */
-      /* 	    if( !handle->removed && handle->event_callback ){ */
-      /* 	       handle->event_callback( handle->unicap_handle, UNICAP_EVENT_DEVICE_REMOVED ); */
-      /* 	       handle->removed = 1; */
-      /* 	    } */
-      /* 	 } */
-      /* } // else: buffer gets queued in */
       unicap_data_buffer_unref( data_buffer );
    }   
 }

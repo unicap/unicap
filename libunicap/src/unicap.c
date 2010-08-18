@@ -1472,13 +1472,18 @@ unicap_data_buffer_t *unicap_data_buffer_new( unicap_format_t *format )
    return buffer;
 }
 
-void unicap_data_buffer_init( unicap_data_buffer_t *buffer, unicap_format_t *format, unicap_data_buffer_free_func_t free_func, void *free_func_data )
+void unicap_data_buffer_init( unicap_data_buffer_t *buffer, unicap_format_t *format, unicap_data_buffer_init_data_t *init_data )
 {
    unicap_copy_format( &buffer->format, format );
    buffer->private = malloc( sizeof( unicap_data_buffer_private_t ) );
    sem_init( &buffer->private->lock, 0, 1 );   
-   buffer->private->free_func = free_func;
-   buffer->private->free_func_data = free_func_data;
+   buffer->private->ref_count = 0;
+   buffer->private->free_func = init_data->free_func;
+   buffer->private->free_func_data = init_data->free_func_data;
+   buffer->private->ref_func = init_data->ref_func;
+   buffer->private->ref_func_data = init_data->ref_func_data;
+   buffer->private->unref_func = init_data->unref_func;
+   buffer->private->unref_func_data = init_data->unref_func_data;
 }
 
 void unicap_data_buffer_free( unicap_data_buffer_t *buffer )
@@ -1490,6 +1495,7 @@ void unicap_data_buffer_free( unicap_data_buffer_t *buffer )
    if( buffer->private->free_func ){
       buffer->private->free_func( buffer, buffer->private->free_func_data );
    }
+   
    sem_destroy( &buffer->private->lock );
    if (buffer->data)
       free( buffer->data );
@@ -1511,6 +1517,9 @@ unicap_status_t unicap_data_buffer_unref( unicap_data_buffer_t *buffer )
    sem_wait( &buffer->private->lock );
    if( buffer->private->ref_count > 0 ){
       buffer->private->ref_count--;
+      if (buffer->private->unref_func){
+	 buffer->private->unref_func (buffer, buffer->private->unref_func_data);
+      }
       if (buffer->private->ref_count == 0 ){
 	 unicap_data_buffer_free( buffer );
       }

@@ -812,11 +812,22 @@ void unicap_cache_init( void );
 
 int unicap_get_ref_count( unicap_handle_t handle );
 
-typedef void (*unicap_data_buffer_free_func_t)( unicap_data_buffer_t *buffer, void *ptr );
+typedef void (*unicap_data_buffer_func_t)( unicap_data_buffer_t *buffer, void *ptr );
 
+struct unicap_data_buffer_init_data
+{
+   unicap_data_buffer_func_t free_func;
+   void *free_func_data;
+   unicap_data_buffer_func_t ref_func;
+   void *ref_func_data;
+   unicap_data_buffer_func_t unref_func;
+   void *unref_func_data;
+};
+
+typedef struct unicap_data_buffer_init_data unicap_data_buffer_init_data_t;
 
 unicap_data_buffer_t *unicap_data_buffer_new( unicap_format_t *format );
-void unicap_data_buffer_init( unicap_data_buffer_t *buffer, unicap_format_t *format, unicap_data_buffer_free_func_t free_func, void *free_func_data );
+void unicap_data_buffer_init( unicap_data_buffer_t *buffer, unicap_format_t *format, unicap_data_buffer_init_data_t *init_data );
 void unicap_data_buffer_free( unicap_data_buffer_t *buffer );
 unicap_status_t unicap_data_buffer_ref( unicap_data_buffer_t *buffer );
 unicap_status_t unicap_data_buffer_unref( unicap_data_buffer_t *buffer );

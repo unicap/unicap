@@ -86,8 +86,13 @@ struct _unicap_handle
 struct unicap_data_buffer_private
 {
    unsigned int ref_count;
-   unicap_data_buffer_free_func_t free_func;
+   unicap_data_buffer_func_t free_func;
    void *free_func_data;
+   unicap_data_buffer_func_t ref_func;
+   void *ref_func_data;
+   unicap_data_buffer_func_t unref_func;
+   void *unref_func_data;
+
    void *user_data;
 
    sem_t lock;

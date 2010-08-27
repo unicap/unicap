@@ -198,7 +198,7 @@ static PyObject *build_property_flags_list( unsigned long long flags )
 
 PyObject *build_property( const unicap_property_t *property )
 {
-   PyObject *obj;
+   PyObject *obj = NULL;
    PyObject *tmp = NULL;
    
    // name: string, category: string, unit: string, (value: float)|(menu_item: string), 

@@ -469,20 +469,21 @@ Possible flags are:\n\
 'read only': Indicates that the property may only be read\n\
 'write only': Indicates that the values read with get_property do not reflect the actual setting\
 ";
-static PyObject *UnicapDevice_enumerate_properties( UnicapDevice *self )
+static PyObject *UnicapDevice_enumerate_properties( UnicapDevice *self, PyObject *args, PyObject *kwds )
 {
    int i;
    PyObject *obj;
    unicap_property_t property;
    PyThreadState *save;
    
-   obj = PyList_New(0);
-   
+   obj = PyList_New(0);   
+
    save = PyEval_SaveThread();
 
    for( i = 0; SUCCESS( unicap_enumerate_properties( self->handle, NULL, &property, i ) ); i++ )
    {
       PyObject *tmp;
+      PyEval_RestoreThread(save);
       tmp = build_property( &property );
       if( !tmp )
 	 goto err;
@@ -491,13 +492,13 @@ static PyObject *UnicapDevice_enumerate_properties( UnicapDevice *self )
 	 Py_XDECREF( tmp );
 	 goto err;
       }
+      save = PyEval_SaveThread();
    }
    
    PyEval_RestoreThread(save);
    return obj;
    
   err:
-   PyEval_RestoreThread(save);
    Py_XDECREF( obj );
    return NULL;
 }
@@ -522,36 +523,34 @@ static PyObject *UnicapDevice_get_property( UnicapDevice *self, PyObject *args, 
       return NULL;
    }
 
+   save = PyEval_SaveThread();
    unicap_void_property( &prop_spec );
    strcpy( prop_spec.identifier, ppty_id );
 
-
-   save = PyEval_SaveThread();
    if( !SUCCESS( unicap_enumerate_properties( self->handle, &prop_spec, &property, 0 ) ) )
    {
+      PyEval_RestoreThread(save);
       PyErr_SetString( UnicapException, "Failed to enumerate property" );
-      goto err;
+      return NULL;
    }
+   PyEval_RestoreThread(save);
 
    if( dict ){
       parse_property( &property, dict );
    }
 
+   save = PyEval_SaveThread();
    if( !SUCCESS( unicap_get_property( self->handle, &property ) ) )
    {
+      PyEval_RestoreThread(save);
       PyErr_SetString( UnicapException, "Failed to get property" );
-      goto err;
+      return NULL;
    }
+   PyEval_RestoreThread(save);
 
    obj = build_property( &property );
-   PyEval_RestoreThread(save);
    
-   return obj;
-   
-  err:
-   PyEval_RestoreThread(save);
-   return NULL;
-   
+   return obj;   
 }
 
 static const char set_property__doc__[] = "\
@@ -579,38 +578,35 @@ static PyObject *UnicapDevice_set_property( UnicapDevice *self, PyObject *args, 
    if( !identifier )
       return NULL;
 
-   save = PyEval_SaveThread();
-   
+   save = PyEval_SaveThread();   
    unicap_void_property( &prop_spec );
    strcpy( prop_spec.identifier, identifier );
    if( !SUCCESS( unicap_enumerate_properties( self->handle, &prop_spec, &property, 0 ) ) )
    {
       PyEval_RestoreThread(save);
       PyErr_SetString( UnicapException, "Failed to enumerate property" );
-      goto err;
+      return NULL;   
    }
+   PyEval_RestoreThread(save);
    
    if( parse_property( &property, obj ) != 0 )
    {
-      PyEval_RestoreThread(save);
       PyErr_SetString( UnicapException, "Failed to parse property" );
-      goto err;
+      return NULL;   
    }
    
+   save = PyEval_SaveThread();
    if( !SUCCESS( unicap_set_property( self->handle, &property ) ) )
    {
       PyEval_RestoreThread(save);
       PyErr_SetString( UnicapException, "Failed to set property" );
-      goto err;
+      return NULL;   
    }
-
    PyEval_RestoreThread(save);
+
    Py_INCREF( Py_None );
    return( Py_None );
 
-  err:
-   PyEval_RestoreThread(save);
-   return NULL;   
 }
 
 static const char set_callback__doc__[] = "\

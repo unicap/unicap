@@ -33,7 +33,7 @@ import time
 
 
 # Create a device object with the first video capture device found
-dev = unicap.Device( unicap.enumerate_devices()[1] )
+dev = unicap.Device( unicap.enumerate_devices()[0] )
 
 # Get a list of supported video formats
 fmts = dev.enumerate_formats()

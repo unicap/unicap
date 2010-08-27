@@ -42,7 +42,11 @@ void euvccam_colorproc_by8_gr_rgb24_nn( euvccam_handle_t handle, unicap_data_buf
 
 void euvccam_colorproc_by8_sse2( euvccam_handle_t handle, unicap_data_buffer_t *dest, unicap_data_buffer_t *src )
 {
+#ifdef __SSE2__
    debayer_sse2( dest, src, &handle->debayer_data );
+#else
+   debayer_ccm_rgb24_nn( dest, src, &handle->debayer_data );
+#endif
 }
 
 unicap_status_t euvccam_colorproc_set_wbgain( euvccam_handle_t handle, unicap_property_t *property )

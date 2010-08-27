@@ -9,7 +9,8 @@ libeuvccam_cpi_la_LIBADD=-lpthread -L../../src/.libs/ -lunicap
 endif
 libcpidir = $(libdir)/unicap$(pkg_version)/cpi
 
-libeuvccam_cpi_la_CFLAGS=-msse2 -O2 -g
+#libeuvccam_cpi_la_CFLAGS=-msse2 -O2 -g
+libeuvccam_cpi_la_CFLAGS=-O2 -g
 libeuvccam_cpi_la_LDFLAGS=-module -avoid-version
 
 libeuvccam_cpi_la_SOURCES= \

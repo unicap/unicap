@@ -1,3 +1,9 @@
+libucil (0.9.10) lucid; urgency=low
+
+  * updated to 0.9.10
+
+ -- Arne Caspari <arne@unicap-imaging.org>  Tue, 31 Aug 2010 08:47:17 +0200
+
 libucil (0.9.9) lucid; urgency=low
 
   * updated to 0.9.9

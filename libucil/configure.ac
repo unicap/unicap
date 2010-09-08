@@ -8,16 +8,17 @@ AM_CONFIG_HEADER(config.h)
 #   1. Start with version information of `0:0:0' for each libtool library.
 #   2. Update the version information only immediately before a public release of your software. More frequent updates are unnecessary, and only guarantee that the current interface number gets larger faster.
 #   3. If the library source code has changed at all since the last update, then increment revision (`c:r:a' becomes `c:r+1:a').
+
 #   4. If any interfaces have been added, removed, or changed since the last update, increment current, and set revision to 0.
 #   5. If any interfaces have been added since the last public release, then increment age.
 #   6. If any interfaces have been removed since the last public release, then set age to 0. 
-lt_major=5
+lt_major=6
 lt_revision=0
-lt_age=3
+lt_age=4
 
 ucil_major_version=0
 ucil_minor_version=9
-ucil_micro_version=9
+ucil_micro_version=10
 ucil_prerelease=
 dist_version=$ucil_major_version.$ucil_minor_version.$ucil_micro_version$ucil_prerelease
 

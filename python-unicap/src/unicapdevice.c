@@ -571,8 +571,10 @@ static PyObject *UnicapDevice_set_property( UnicapDevice *self, PyObject *args, 
       return NULL;
 
    tmp = PyDict_GetItemString( obj, "identifier" );
-   if( !tmp )
+   if( !tmp ){
+      PyErr_SetString( PyExc_KeyError, "property specification must contain 'identifier'" );
       return NULL;
+   }
 
    identifier = PyString_AsString( tmp );
    if( !identifier )

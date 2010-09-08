@@ -309,6 +309,34 @@ int parse_property( unicap_property_t *property, PyObject *obj )
 {   
    PyObject *tmp = NULL;
 
+   tmp = PyDict_GetItemString( obj, "flags" );
+   if (tmp){
+      Py_ssize_t len,index;
+      if (!PyList_Check (tmp)){
+	 PyErr_SetString (PyExc_TypeError, "Expected a List for 'flags' item");
+	 goto err;
+      }
+      
+      len = PyList_Size( tmp );
+      property->flags = 0;
+      for (index = 0; index < len; index++){
+	 PyObject *item = PyList_GetItem( tmp, index );
+	 if (!item)
+	    goto err;
+	 char *str = PyString_AsString (item);
+	 if (!str)
+	    goto err;
+	 if (!strcmp (str, "manual"))
+	    property->flags |= UNICAP_FLAGS_MANUAL;
+	 else if (!strcmp (str, "one push"))
+	    property->flags |= UNICAP_FLAGS_ONE_PUSH;
+	 else if (!strcmp (str, "auto"))
+	    property->flags |= UNICAP_FLAGS_AUTO;
+      }	 
+   }
+   
+
+
    switch( property->type )
    {
       case UNICAP_PROPERTY_TYPE_RANGE:

@@ -1,3 +1,9 @@
+libunicap (0.9.11) lucid; urgency=low
+
+  * updated to 0.9.11
+
+ -- Arne Caspari <arne@unicap-imaging.org>  Tue, 31 Aug 2010 08:40:02 +0200
+
 libunicap (0.9.10) lucid; urgency=low
 
   * updated to 0.9.10

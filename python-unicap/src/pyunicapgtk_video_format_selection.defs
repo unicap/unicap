@@ -1,0 +1,72 @@
+;; -*- scheme -*-
+; object definitions ...
+(define-object VideoFormatSelection
+  (in-module "Unicapgtk")
+  (parent "GtkHBox")
+  (c-name "UnicapgtkVideoFormatSelection")
+  (gtype-id "UNICAPGTK_TYPE_VIDEO_FORMAT_SELECTION")
+)
+
+;; Enumerations and flags ...
+
+
+;; From unicapgtk_video_format_selection.h
+
+(define-function unicapgtk_video_format_selection_get_type
+  (c-name "unicapgtk_video_format_selection_get_type")
+  (return-type "GType")
+)
+
+(define-function unicapgtk_video_format_selection_new
+  (c-name "unicapgtk_video_format_selection_new")
+  (is-constructor-of "UnicapgtkVideoFormatSelection")
+  (return-type "GtkWidget*")
+)
+
+(define-function unicapgtk_video_format_selection_new_by_handle
+  (c-name "unicapgtk_video_format_selection_new_by_handle")
+  (return-type "GtkWidget*")
+  (parameters
+    '("unicap_handle_t" "handle")
+  )
+)
+
+(define-function unicapgtk_video_format_selection_new_by_device
+  (c-name "unicapgtk_video_format_selection_new_by_device")
+  (return-type "GtkWidget*")
+  (parameters
+    '("unicap_device_t*" "device_spec")
+  )
+)
+
+(define-method get_format
+  (of-object "UnicapgtkVideoFormatSelection")
+  (c-name "unicapgtk_video_format_selection_get_format")
+  (return-type "unicap_format_t*")
+)
+
+(define-method set_device
+  (of-object "UnicapgtkVideoFormatSelection")
+  (c-name "unicapgtk_video_format_selection_set_device")
+  (return-type "gboolean")
+  (parameters
+    '("unicap_device_t*" "device_spec")
+  )
+)
+
+(define-method set_handle
+  (of-object "UnicapgtkVideoFormatSelection")
+  (c-name "unicapgtk_video_format_selection_set_handle")
+  (return-type "none")
+  (parameters
+    '("unicap_handle_t" "handle")
+  )
+)
+
+(define-method get_handle
+  (of-object "UnicapgtkVideoFormatSelection")
+  (c-name "unicapgtk_video_format_selection_get_handle")
+  (return-type "unicap_handle_t")
+)
+
+

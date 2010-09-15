@@ -2,10 +2,22 @@ CODEGEN ?= pygobject-codegen-2.0
 PYGTK_DEFSDIR=`pkg-config --variable=defsdir pygtk-2.0`
 
 OVERRIDEFILES=	pyunicapgtk_video_display.override pyunicapgtk_property_dialog.override \
-	      	pyunicapgtk_device_property.override pyunicapgtk_device_selection.override
+	      	pyunicapgtk_device_property.override pyunicapgtk_device_selection.override \
+		pyunicapgtk_video_format_selection.override 
+
 DEFSFILES=	unicap.defs\
-		pyunicapgtk_video_display.defs pyunicapgtk_property_dialog.defs pyunicapgtk_device_property.defs pyunicapgtk_device_selection.defs
-GENCFILES=	pyunicapgtk_video_display.c pyunicapgtk_property_dialog.c pyunicapgtk_device_property.c pyunicapgtk_device_selection.c
+		pyunicapgtk_video_display.defs \
+		pyunicapgtk_property_dialog.defs \
+		pyunicapgtk_device_property.defs \
+		pyunicapgtk_device_selection.defs \
+		pyunicapgtk_video_format_selection.defs 
+
+GENCFILES=	pyunicapgtk_video_display.c \
+		pyunicapgtk_property_dialog.c \
+		pyunicapgtk_device_property.c \
+		pyunicapgtk_device_selection.c \
+		pyunicapgtk_video_format_selection.c 
+
 DISTCFILES=	\
 		unicapmodule.c \
 		unicapmodule.h \
@@ -20,7 +32,9 @@ DISTCFILES=	\
 		pyunicapgtk_device_property.h \
 		pyunicapgtk_device_selection.h \
 		pyunicapgtk_property_dialog.h \
-		pyunicapgtk_video_display.h 
+		pyunicapgtk_video_display.h \
+		pyunicapgtk_video_format_selection.h
+
 DISTFILES= 	\
 		Makefile\
 		setup.py

@@ -56,6 +56,9 @@ class AppWindow( gtk.Window ):
 	prop_button = gtk.Button( label = "Properties" )
 	hbox.pack_start( prop_button, False, False )
 
+	self.fmt_sel = unicapgtk.VideoFormatSelection()
+	hbox.pack_end( self.fmt_sel, False, False )
+
 	self.dev_sel = unicapgtk.DeviceSelection()
 	self.dev_sel.rescan()
 	self.dev_sel.connect( 'unicapgtk_device_selection_changed', self.__on_device_changed )
@@ -63,22 +66,28 @@ class AppWindow( gtk.Window ):
 
 	self.display = unicapgtk.VideoDisplay()
 	self.display.connect( 'unicapgtk_video_display_predisplay', self.__on_new_frame )
-	vbox.pack_start( self.display, False, False )
+	self.display.set_property( "scale-to-fit", True )
+	vbox.pack_start( self.display, True, True )
 
 	self.property_dialog = unicapgtk.PropertyDialog()
 	self.property_dialog.connect( 'delete-event', self.property_dialog.hide_on_delete )
 	prop_button.connect( 'clicked', lambda(x): self.property_dialog.present() )
 	self.property_dialog.hide()
 
-	self.dev_sel.set_device( unicap.enumerate_devices()[0] )
+	dev = unicap.enumerate_devices()[0]
+	self.dev_sel.set_device( dev )
+	self.fmt_sel.set_device( dev )
 
 	vbox.show_all()
+
+	self.set_default_size( 640, 480 )
 
 	capture_button.set_active( True )		
 
     def __on_device_changed(self, dev_sel, identifier ):
 	self.display.set_device( identifier )
 	self.property_dialog.set_device( identifier )
+	self.fmt_sel.set_device( identifier )
 
     def __on_capture_toggled(self, button):
 	if button.get_active():

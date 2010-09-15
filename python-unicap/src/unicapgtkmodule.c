@@ -26,6 +26,7 @@
 #include "pyunicapgtk_property_dialog.h"
 #include "pyunicapgtk_device_property.h"
 #include "pyunicapgtk_device_selection.h"
+#include "pyunicapgtk_video_format_selection.h"
 #include "unicapimagebuffer.h"
 
 static PyMethodDef UnicapgtkMethods[] = 
@@ -50,6 +51,7 @@ initunicapgtk(void)
    pyunicapgtk_property_dialog_register_classes(d);
    pyunicapgtk_device_property_register_classes(d);
    pyunicapgtk_device_selection_register_classes(d);
+   pyunicapgtk_video_format_selection_register_classes(d);
    
 
 }

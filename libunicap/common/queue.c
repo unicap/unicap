@@ -60,7 +60,7 @@ int ucutil_free_queue( unicap_queue_t *queue )
    
    if( sem_wait( queue->psema ) ){
       TRACE( "FATAL: sem_wait failed\n" );
-      return;
+      return -1;
    }
 
    while ( queue->next != NULL ){
@@ -96,7 +96,7 @@ int ucutil_destroy_queue( unicap_queue_t *queue )
    
    if( sem_wait( queue->psema ) ){
       TRACE( "FATAL: sem_wait failed\n" );
-      return;
+      return -1;
    }
 
    while ( queue->next != NULL ){

@@ -636,7 +636,7 @@ static unicap_status_t open_cpi( unicap_handle_t *unicap_handle, unicap_device_t
 
 unicap_status_t unicap_open( unicap_handle_t *unicap_handle, unicap_device_t *device )
 {
-   unicap_status_t status;
+   unicap_status_t status = STATUS_SUCCESS;
    struct unicap_device_cache *cache_entry;
 
    unicap_initialize();

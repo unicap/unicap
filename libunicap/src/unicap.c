@@ -1462,8 +1462,8 @@ int unicap_get_ref_count( unicap_handle_t handle )
 unicap_data_buffer_t *unicap_data_buffer_new( unicap_format_t *format )
 {
    unicap_data_buffer_t *buffer;
-   memset( buffer, 0x0, sizeof( unicap_data_buffer_t ) );
    buffer = malloc( sizeof( unicap_data_buffer_t) );
+   memset( buffer, 0x0, sizeof( unicap_data_buffer_t ) );
    buffer->buffer_size = buffer->format.buffer_size;
    buffer->data = malloc( buffer->buffer_size );   
    unicap_copy_format( &buffer->format, format );

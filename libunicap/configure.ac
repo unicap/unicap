@@ -17,7 +17,7 @@ lt_age=2
 
 unicap_major_version=0
 unicap_minor_version=9
-unicap_micro_version=11
+unicap_micro_version=12
 unicap_prerelease=
 dist_version=$unicap_major_version.$unicap_minor_version.$unicap_micro_version$unicap_prerelease
 
@@ -383,7 +383,7 @@ AM_CONDITIONAL(HAVE_LIBV4L, test x$HAVE_LIBV4L == "xyes" )
 
 AC_ARG_ENABLE(euvccam, 
 	      AS_HELP_STRING( [--enable-euvccam], 
-		              [build plugin for The Imaging Source USB CMOS cameras (experimental) \[default=no\]] ),
+		              [build plugin for The Imaging Source USB CMOS cameras (experimental) \[default=yes\]] ),
 	      {
 	      	if test "x$enableval" != "xno"; then
 			EUVCCAM="yes";
@@ -391,7 +391,7 @@ AC_ARG_ENABLE(euvccam,
 			EUVCCAM="no";
 	      	fi
 	      },
-	      EUVCCAM="no" )
+	      EUVCCAM="yes" )
 
 AC_ARG_ENABLE(thing, 
 	      AS_HELP_STRING( [--enable-thing], 

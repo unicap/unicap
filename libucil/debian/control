@@ -2,23 +2,23 @@ Source: libucil
 Section: libs
 Priority: optional
 Maintainer: Arne Caspari <arne@unicap-imaging.org>
-Build-Depends: debhelper (>= 7), autotools-dev, libunicap-dev (>=0.9.8), libtheora-dev, libglib2.0-dev, libpango1.0-dev, gtk-doc-tools, libasound2-dev, libvorbis-dev, libtool
-Standards-Version: 3.8.3
+Build-Depends: debhelper (>= 7), autotools-dev, libunicap2-dev (>=0.9.11), libtheora-dev, libglib2.0-dev, libpango1.0-dev, gtk-doc-tools, libasound2-dev, libvorbis-dev, libtool, libgstreamer0.10-dev, libgstreamer-plugins-base0.10-dev
+Standards-Version: 3.8.4
 
 Package: libucil2
 Section: libs
 Architecture: any
-Depends: libunicap2 (>= 0.9.8), libtheora0, libasound2, libvorbis0a, libvorbisenc2, libpango1.0-0, libglib2.0-0, ${shlibs:Depends}
+Depends: libunicap2 (>= 0.9.11), libtheora0, libasound2, libvorbis0a, libvorbisenc2, libpango1.0-0, libglib2.0-0, ${shlibs:Depends}
 Conflicts: libucil-0
 Description: a simple image processing library, designed to work with unicap
  .
  This package provides ucil, a simple image processing library. The
  library is designed to work with unicap.
 
-Package: libucil-dev
+Package: libucil2-dev
 Section: libdevel
 Architecture: any
-Depends: libucil2 (=${binary:Version}), libunicap-dev (>= 0.9.8), libtheora-dev, libvorbis-dev
+Depends: libucil2 (=${source:Version}), libunicap2-dev (>= 0.9.11), libtheora-dev, libvorbis-dev
 Description: ucil library, development files
  .
  This package provides the development files required to develop

@@ -1,3 +1,21 @@
+libunicapgtk (0.9.8-3) lucid; urgency=low
+
+  * added missing dirs and install files
+
+ -- Arne Caspari <arne@unicap-imaging.org>  Sat, 18 Sep 2010 20:06:56 +0200
+
+libunicapgtk (0.9.8-2) lucid; urgency=low
+
+  * fixed dependency version
+
+ -- Arne Caspari <arne@unicap-imaging.org>  Sat, 18 Sep 2010 19:06:12 +0200
+
+libunicapgtk (0.9.8-1) lucid; urgency=low
+
+  * renamed dev package to libunicapgtk2-dev
+
+ -- Arne Caspari <arne@unicap-imaging.org>  Sat, 18 Sep 2010 18:45:10 +0200
+
 libunicapgtk (0.9.8) karmic; urgency=low
 
   * Initial PPA package

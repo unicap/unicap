@@ -2,14 +2,14 @@ Source: python-unicap
 Section: misc
 Priority: optional
 Maintainer: Arne Caspari <arne@unicap-imaging.org>
-Build-Depends: debhelper (>= 4.0.0), libunicapgtk-dev, libunicap-dev, libucil-dev, python-dev, python-gtk2-dev, python-gobject-dev, libvorbis-dev
+Build-Depends: debhelper (>= 4.0.0), libunicapgtk2-dev (>=0.9.8), libunicap2-dev (>=0.9.11), libucil2-dev (>=0.9.10), python-dev, python-gtk2-dev, python-gobject-dev, libvorbis-dev
 Standards-Version: 3.8.0
 
 Package: python-unicap
 Section: python
 Priority: optional
 Architecture: any
-Depends: libucil2 (>=0.9.3), libunicap2 (>=0.9.3), libunicapgtk2 (>=0.9.3), python-gtk2, ${shlibs:Depends}
+Depends: libucil2 (>=0.9.10), libunicap2 (>=0.9.11), libunicapgtk2 (>=0.9.8), python-gtk2, ${shlibs:Depends}
 Description: A Python extension for video capture devices
  .
  pyunicap is a Python extension to access video capture devices. 

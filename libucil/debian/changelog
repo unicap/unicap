@@ -1,3 +1,28 @@
+libucil (0.9.10-4) lucid; urgency=low
+
+  * added gstreamer to the build dependencies
+  * added missing header file
+
+ -- Arne Caspari <arne@unicap-imaging.org>  Sun, 19 Sep 2010 10:08:44 +0200
+
+libucil (0.9.10-3) lucid; urgency=low
+
+  * added missing dirs and install files
+
+ -- Arne Caspari <arne@unicap-imaging.org>  Sat, 18 Sep 2010 19:48:26 +0200
+
+libucil (0.9.10-2) lucid; urgency=low
+
+  * fixed dependency version 
+
+ -- Arne Caspari <arne@unicap-imaging.org>  Sat, 18 Sep 2010 19:04:07 +0200
+
+libucil (0.9.10-1) lucid; urgency=low
+
+  * renamed dev package to libucil2-dev
+
+ -- Arne Caspari <arne@unicap-imaging.org>  Sat, 18 Sep 2010 18:46:19 +0200
+
 libucil (0.9.10) lucid; urgency=low
 
   * updated to 0.9.10

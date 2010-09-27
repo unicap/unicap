@@ -1,3 +1,10 @@
+2010-09-19  Arne Caspari  <arne@unicap-imaging.org>
+
+	* src/unicap.c (unicap_open): fix: returned uninitialized status
+	(unicap_data_buffer_new): fix: buffer_structure was initialized before allocated
+
+	* configure.ac: euvccam is now enabled by default
+
 2010-01-25  Arne Caspari  <arne@unicap-imaging.org>
 
 	* include/unicap.h (enum): add flags for interlaced buffers

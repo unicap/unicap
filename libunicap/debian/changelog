@@ -1,8 +1,32 @@
+libunicap (0.9.12) lucid; urgency=low
+
+  * updated to 0.9.12
+
+ -- Arne Caspari <arne@unicap-imaging.org>  Sun, 19 Sep 2010 09:20:35 +0200
+
+libunicap (0.9.11-3) lucid; urgency=low
+
+  * fix missing dirs and install
+
+ -- Arne Caspari <arne@unicap-imaging.org>  Sat, 18 Sep 2010 19:26:05 +0200
+
+libunicap (0.9.11-2) lucid; urgency=low
+
+  * fixed dependency version 
+
+ -- Arne Caspari <arne@unicap-imaging.org>  Sat, 18 Sep 2010 19:02:03 +0200
+
+libunicap (0.9.11-1) lucid; urgency=low
+
+  * renamed dev package to libunicap2-dev
+
+ -- Arne Caspari <arne@unicap-imaging.org>  Sat, 18 Sep 2010 18:23:59 +0200
+
 libunicap (0.9.11) lucid; urgency=low
 
   * updated to 0.9.11
 
- -- Arne Caspari <arne@unicap-imaging.org>  Tue, 31 Aug 2010 08:40:02 +0200
+ -- Arne Caspari <arne@unicap-imaging.org>  Thu, 16 Sep 2010 18:06:34 +0200
 
 libunicap (0.9.10) lucid; urgency=low
 

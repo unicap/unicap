@@ -482,6 +482,25 @@ static euvccam_property_t properties_8206[] =
       set_func: euvccam_device_set_gpout,
       enumerate_func: euvccam_device_enumerate_gpout,
    },
+   {
+      {
+	identifier: N_("software trigger"),
+	category: N_("device"),
+	unit: "",
+	relations: NULL,
+	relations_count: 0,
+	stepping: 0.0,
+	type: UNICAP_PROPERTY_TYPE_FLAGS,
+	flags: UNICAP_FLAGS_ONE_PUSH | UNICAP_FLAGS_MANUAL,
+	flags_mask: UNICAP_FLAGS_ONE_PUSH | UNICAP_FLAGS_MANUAL,
+	property_data: NULL,
+	property_data_size: 0
+      },
+      
+      get_func: euvccam_device_get_software_trigger,
+      set_func: euvccam_device_set_software_trigger,
+      enumerate_func: euvccam_device_enumerate_software_trigger,
+   },
 };
 
 static euvccam_property_t properties_8202_color[] =

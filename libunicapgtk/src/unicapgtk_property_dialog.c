@@ -308,7 +308,7 @@ static gboolean property_update_timeout_cb( UnicapgtkPropertyDialog *ugtk )
 
 static void update_lock_destroy_cb( gpointer _id )
 {
-   guint id = ( guint ) id;
+   guint id = ( guint ) _id;
    
    if( id )
    {

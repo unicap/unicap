@@ -225,6 +225,7 @@ static void avi_list_pad( avi_buffer_t *list, int offset, int padding )
    padsize = padding - ( ( offset + list->dwPtr + sizeof( avi_list_t ) - 4 ) % padding );
    
    avi_add_chunk( list, UCIL_FOURCC( 'J', 'U', 'N', 'K' ), padsize, chunk_buffer );
+   free (chunk_buffer);
 }
 
 
@@ -571,6 +572,7 @@ unicap_status_t ucil_rawavi_encode_frame( ucil_rawavi_video_file_object_t *vobj,
 static avi_buffer_t *ucil_rawavi_create_index( ucil_rawavi_video_file_object_t *vobj )
 {
    avi_index_entry_t *idx;
+   avi_buffer_t *buf;
    int i;
    int offset = 4;
    
@@ -586,7 +588,9 @@ static avi_buffer_t *ucil_rawavi_create_index( ucil_rawavi_video_file_object_t *
       offset += vobj->format.buffer_size + 8;
    }
    
-   return avi_create_chunk( UCIL_FOURCC( 'i', 'd', 'x', '1' ), idx, vobj->movi_frames * sizeof( avi_index_entry_t ) );   
+   buf = avi_create_chunk( UCIL_FOURCC( 'i', 'd', 'x', '1' ), idx, vobj->movi_frames * sizeof( avi_index_entry_t ) );
+   free (idx);
+   return (buf);
 }
 
 unicap_status_t ucil_rawavi_close_video_file( ucil_rawavi_video_file_object_t *vobj )

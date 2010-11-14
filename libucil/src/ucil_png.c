@@ -38,13 +38,19 @@ static int check_if_png(char *file_name, FILE **fp)
       return 0;
 
    /* Read in some of the signature bytes */
-   if (fread(buf, 1, PNG_BYTES_TO_CHECK, *fp) != PNG_BYTES_TO_CHECK)
+   if (fread(buf, 1, PNG_BYTES_TO_CHECK, *fp) != PNG_BYTES_TO_CHECK){
+      fclose (*fp);
       return 0;
+   }
 
    /* Compare the first PNG_BYTES_TO_CHECK bytes of the signature.
       Return nonzero (true) if they match */
+   int ret;
+   ret = !png_sig_cmp(buf, (png_size_t)0, PNG_BYTES_TO_CHECK);
+   if (!ret)
+      fclose (*fp);
 
-   return(!png_sig_cmp(buf, (png_size_t)0, PNG_BYTES_TO_CHECK));
+   return( ret );
 }
 
 

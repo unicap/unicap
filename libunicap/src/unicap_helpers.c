@@ -102,16 +102,16 @@ unicap_status_t unicap_describe_device( unicap_device_t *device, char *buffer, s
 		 "Model name: %s\n"\
 		 "Vendor name: %s\n"\
 		 "Model id: %llu\n"\
-		 "Vendor id: %u ( 0x%x )\n"\
+		 "Vendor id: %u ( 0x%x )\n"	\
 		 "cpi: %s\n"\
 		 "device: %s\n", 
-		 device->identifier ? device->identifier : "(nil)",
-		 device->model_name ? device->model_name : "(nil)", 
-		 device->vendor_name ? device->vendor_name : "(nil)", 
+		 device->identifier,
+		 device->model_name, 
+		 device->vendor_name, 
 		 device->model_id,
 		 device->vendor_id, device->vendor_id, 
-		 device->cpi_layer ? device->cpi_layer : "(nil)", 
-		 device->device ? device->device : "(nil)" );
+		 device->cpi_layer, 
+		 device->device );
 	
 	strncpy( buffer, tmp_buffer, (*buffer_size)-1 );
 	

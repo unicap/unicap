@@ -637,7 +637,8 @@ unicap_status_t cpi_reenumerate_formats( void *cpi_data, int *count )
       }
    }
 
-   *count = nr_formats;
+   if (count)
+      *count = nr_formats;
 	
    memcpy( data->current_formats, vid21394_formats, sizeof( unicap_format_t ) * nr_formats );
 	
@@ -654,11 +655,7 @@ int cpi_enumerate_formats( void *cpi_data, unicap_format_t *format, int index )
       return STATUS_INVALID_PARAMETER;
    }
 	
-   if( !data->current_formats )
-   {
-      int tmp;
-      cpi_reenumerate_formats( cpi_data, &tmp );
-   }
+   cpi_reenumerate_formats( cpi_data, NULL );
 
    if( ( index >= 0 ) && ( index < nr_formats ) )
    {
@@ -683,11 +680,7 @@ int cpi_set_format( void *cpi_data, unicap_format_t *format )
 	
    TRACE( "cpi_set_format\n" );
 
-   if( !data->current_formats )
-   {
-      int tmp;
-      cpi_reenumerate_formats( cpi_data, &tmp );
-   }
+   cpi_reenumerate_formats( cpi_data, NULL );
 
    // search for a matching name in the formats list
    while( ( format_index < nr_formats ) && ( strcmp( format->identifier, vid21394_formats[format_index].identifier ) ) )
@@ -845,11 +838,7 @@ unicap_status_t cpi_get_format( void *cpi_data, unicap_format_t *format )
 {
    vid21394_data_t *data = cpi_data;
 
-   if( !data->current_formats )
-   {
-      int tmp;
-      cpi_reenumerate_formats( cpi_data, &tmp );
-   }
+   cpi_reenumerate_formats( cpi_data, NULL );
 
    if( data->format == -1 )
    {

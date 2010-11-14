@@ -501,7 +501,7 @@ static unicap_status_t _vid21394_send_fcp_command_new( vid21394handle_t vid21394
 
    raw1394handle_t raw1394handle = vid21394handle->raw1394handle;
 
-   nodeid_t nodeid = 	nodeid = 0xffc0 | vid21394handle->node;
+   nodeid_t nodeid = 0xffc0 | vid21394handle->node;
 	
    unicap_status_t status = STATUS_SUCCESS;
 

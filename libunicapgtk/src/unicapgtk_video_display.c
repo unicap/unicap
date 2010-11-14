@@ -1012,8 +1012,7 @@ void unicapgtk_video_display_set_pause( UnicapgtkVideoDisplay *ugtk, gboolean st
    unicap_data_buffer_t data_buffer;
 
    
-   if( ugtk->capture_running )
-   {
+   if( ugtk->capture_running ){
       if( state ){
 	 if( ugtk->backend ){
 	    ugtk->backend_lock (ugtk->backend_data);

@@ -1464,10 +1464,12 @@ unicap_data_buffer_t *unicap_data_buffer_new( unicap_format_t *format )
    unicap_data_buffer_t *buffer;
    buffer = malloc( sizeof( unicap_data_buffer_t) );
    memset( buffer, 0x0, sizeof( unicap_data_buffer_t ) );
+   unicap_copy_format( &buffer->format, format );
    buffer->buffer_size = buffer->format.buffer_size;
    buffer->data = malloc( buffer->buffer_size );   
-   unicap_copy_format( &buffer->format, format );
-   buffer->priv = NULL;
+   buffer->priv = malloc( sizeof( unicap_data_buffer_private_t ) );
+   memset (buffer->priv, 0x0, sizeof (unicap_data_buffer_private_t) );
+   sem_init( &buffer->priv->lock, 0, 1 );   
 
    return buffer;
 }
@@ -1475,8 +1477,10 @@ unicap_data_buffer_t *unicap_data_buffer_new( unicap_format_t *format )
 void unicap_data_buffer_init( unicap_data_buffer_t *buffer, unicap_format_t *format, unicap_data_buffer_init_data_t *init_data )
 {
    unicap_copy_format( &buffer->format, format );
-   buffer->priv = malloc( sizeof( unicap_data_buffer_private_t ) );
-   sem_init( &buffer->priv->lock, 0, 1 );   
+   if (!buffer->priv){
+      buffer->priv = malloc( sizeof( unicap_data_buffer_private_t ) );
+      sem_init( &buffer->priv->lock, 0, 1 );   
+   }
    buffer->priv->ref_count = 0;
    buffer->priv->free_func = init_data->free_func;
    buffer->priv->free_func_data = init_data->free_func_data;

@@ -1556,7 +1556,10 @@ ucil_theora_video_file_object_t *ucil_theora_create_video_filev( const char *pat
    
 #endif
 
-   theora_encode_init( &vobj->th, &vobj->ti );   
+   if (theora_encode_init( &vobj->th, &vobj->ti ) != 0){
+      free (vobj);
+      return NULL;
+   }
 
    vobj->full_queue = g_queue_new();
    vobj->empty_queue = g_queue_new();

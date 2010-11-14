@@ -18,7 +18,7 @@ Description: graphical user interface to be used with libunicap
 Package: libunicapgtk2-dev
 Section: libdevel
 Architecture: any
-Depends: libunicapgtk2 (= ${source:Version}), libunicap2-dev (>= 0.9.8), libgtk2.0-dev, libxv-dev
+Depends: libunicapgtk2 (= ${binary:Version}), libunicap2-dev (>= 0.9.8), libgtk2.0-dev, libxv-dev
 Description: unicapgtk library, development files
  .
  This package contains the files needed to compile and link 

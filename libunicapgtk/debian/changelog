@@ -1,3 +1,9 @@
+libunicapgtk (0.9.8.4) lucid; urgency=low
+
+  * corrected version
+
+ -- Arne Caspari <arne@unicap-imaging.org>  Thu, 07 Oct 2010 23:29:54 +0200
+
 libunicapgtk (0.9.8-3) lucid; urgency=low
 
   * added missing dirs and install files

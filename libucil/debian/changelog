@@ -1,3 +1,9 @@
+libucil (0.9.10.5) lucid; urgency=low
+
+  * corrected version
+
+ -- Arne Caspari <arne@unicap-imaging.org>  Thu, 07 Oct 2010 23:24:22 +0200
+
 libucil (0.9.10-4) lucid; urgency=low
 
   * added gstreamer to the build dependencies

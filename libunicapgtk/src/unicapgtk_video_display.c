@@ -1014,21 +1014,18 @@ void unicapgtk_video_display_set_pause( UnicapgtkVideoDisplay *ugtk, gboolean st
    
    if( ugtk->capture_running )
    {
-      if( state )
-      {
-	 if( ugtk->backend )
-	 {
+      if( state ){
+	 if( ugtk->backend ){
+	    ugtk->backend_lock (ugtk->backend_data);
 	    ugtk->backend_get_image_data( ugtk->backend_data, &data_buffer, 0 );
 	    unicap_copy_format( &ugtk->pause_buffer.format, &data_buffer.format );
 	    ugtk->pause_buffer.buffer_size = data_buffer.format.buffer_size;
 	    ugtk->pause_buffer.data = malloc( ugtk->pause_buffer.format.buffer_size );
 	    memcpy( ugtk->pause_buffer.data, data_buffer.data, ugtk->pause_buffer.format.buffer_size );
+	    ugtk->backend_unlock (ugtk->backend_data);
 	 }
-      }
-      else
-      {
-	 if( ugtk->backend )
-	 {
+      }else{
+	 if( ugtk->backend ){
 	    free( ugtk->pause_buffer.data );
 	 }
       }   

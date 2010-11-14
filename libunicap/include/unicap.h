@@ -215,7 +215,7 @@ struct _unicap_data_buffer_t
 
    unicap_buffer_flags_t flags;
    
-   unicap_data_buffer_private_t *private;
+   unicap_data_buffer_private_t *priv;
 };
 
 typedef struct _unicap_data_buffer_t unicap_data_buffer_t;

@@ -504,9 +504,6 @@ int cpi_close( void *cpi_data )
 {
    vid21394_data_t *data = cpi_data;
 
-   vid21394_close( data->vid21394handle );
-
-
    ucutil_destroy_queue( data->in_queue );
    ucutil_destroy_queue( data->out_queue );	
 	
@@ -514,6 +511,8 @@ int cpi_close( void *cpi_data )
    {
       free( data->vid21394handle->unicap_handle );
    }
+
+   vid21394_close( data->vid21394handle );
 
    g_instance_count--;
    free( data );

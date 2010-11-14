@@ -182,7 +182,8 @@ unicap_status_t _dcam_prepare_format_array( dcam_handle_t dcamhandle,
 		  int index = _dcam_get_mode_index( f, i );
 		  TRACE( "f: %d m: %d  index: %d (%s)\n", f, i, index, _dcam_unicap_formats[index].identifier );
 		  TRACE( "size: %d x %d\n", _dcam_unicap_formats[index].size.width, _dcam_unicap_formats[index].size.height );
-		  memcpy( format_array + current_format, &_dcam_unicap_formats[index], sizeof( unicap_format_t ) );
+		  if (index >0)
+		     memcpy( format_array + current_format, &_dcam_unicap_formats[index], sizeof( unicap_format_t ) );
 		  current_format++;
 	       }
 	    }

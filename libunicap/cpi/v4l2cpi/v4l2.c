@@ -861,22 +861,18 @@ static unicap_status_t v4l2_reenumerate_formats( void *cpi_data, int *_pcount )
       handle->unicap_formats[v4l2_fmt.index].size.width = v4l2_crop.defrect.width;
       handle->unicap_formats[v4l2_fmt.index].size.height = v4l2_crop.defrect.height;
       handle->unicap_formats[v4l2_fmt.index].buffer_type = UNICAP_BUFFER_TYPE_USER;
-
+      
       sizes = build_format_size_table( handle, v4l2_fmt.pixelformat, &size_count );
 		
-      if( size_count == 0 )
-      {
+      if( sizes == NULL ){
 	 handle->unicap_formats[v4l2_fmt.index].min_size.width = 
 	    handle->unicap_formats[v4l2_fmt.index].min_size.height = 1;
 	 handle->unicap_formats[v4l2_fmt.index].max_size.width = v4l2_crop.bounds.width;
 	 handle->unicap_formats[v4l2_fmt.index].max_size.height = v4l2_crop.bounds.height;
-	 if( v4l2_crop.defrect.width && v4l2_crop.defrect.height )
-	 {
+	 if( v4l2_crop.defrect.width && v4l2_crop.defrect.height ){
 	    handle->unicap_formats[v4l2_fmt.index].buffer_size = 
 	       v4l2_crop.defrect.width * v4l2_crop.defrect.height * handle->unicap_formats[v4l2_fmt.index].bpp / 8;
-	 }
-	 else
-	 {
+	 }else{
 	    handle->unicap_formats[v4l2_fmt.index].buffer_size =
 	       v4l2_crop.bounds.width * v4l2_crop.bounds.height * handle->unicap_formats[v4l2_fmt.index].bpp / 8;
 	 }
@@ -885,9 +881,7 @@ static unicap_status_t v4l2_reenumerate_formats( void *cpi_data, int *_pcount )
 	 handle->unicap_formats[v4l2_fmt.index].v_stepping = 16;
 	 handle->unicap_formats[v4l2_fmt.index].sizes = 0;
 	 handle->unicap_formats[v4l2_fmt.index].size_count = 0;
-      }
-      else
-      {
+      }else{
 	 // TODO : fix: currently assuming smallest format is first;
 	 // largest is last
 	 int i; 
@@ -895,25 +889,20 @@ static unicap_status_t v4l2_reenumerate_formats( void *cpi_data, int *_pcount )
 	 int max_width = 0;
 	 int min_height = 0x7fffffff;
 	 int max_height = 0;
-	 for( i = 0; i < size_count; i++ )
-	 {
-	    if( sizes[i].width < min_width )
-	    {
+	 for( i = 0; i < size_count; i++ ){
+	    if( sizes[i].width < min_width ){
 	       min_width = sizes[i].width;
 	    }
 	    
-	    if( sizes[i].width > max_width )
-	    {
+	    if( sizes[i].width > max_width ){
 	       max_width = sizes[i].width;   
 	    }
 	    
-	    if( sizes[i].height < min_height )
-	    {
+	    if( sizes[i].height < min_height ){
 	       min_height = sizes[i].height;   
 	    }
 	    
-	    if( sizes[i].height > max_height )
-	    {
+	    if( sizes[i].height > max_height ){
 	       max_height = sizes[i].height;
 	    }
 	 }
@@ -934,8 +923,7 @@ static unicap_status_t v4l2_reenumerate_formats( void *cpi_data, int *_pcount )
 	
    handle->format_count = v4l2_fmt.index;
    handle->supported_formats = count;
-   if( _pcount )
-   {
+   if( _pcount ){
       *_pcount = count;
    }
 
@@ -2140,22 +2128,21 @@ static unicap_status_t v4l2_queue_buffer( void *cpi_data, unicap_data_buffer_t *
    if( handle->capture_running )
    {
       unicap_status_t status = queue_buffer( handle, buffer );
-      if( SUCCESS( status ) )
-      {
+      if( SUCCESS( status ) ){
 	 queue->data = buffer;
 	 ucutil_insert_back_queue( handle->in_queue, queue );
-      }
-      else
-      {
+      }else{
 	 TRACE( "queue buffer failed\n" );
+	 free (queue);
       }
 
       if( ( status == STATUS_NO_BUFFERS ) && ( buffer->type == UNICAP_BUFFER_TYPE_SYSTEM ) )
       {
 	 status = STATUS_SUCCESS;
       }
+   } else {
+      free (queue);
    }
-
    
    return STATUS_SUCCESS;
 }

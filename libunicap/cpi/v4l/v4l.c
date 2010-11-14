@@ -292,7 +292,7 @@ static unicap_status_t v4l_open( void **cpi_data, unicap_device_t *device )
 	v4l_handle_t v4lhandle;
 	
 	*cpi_data = malloc( sizeof( struct _v4l_handle ) );
-	if( !cpi_data )
+	if( !*cpi_data )
 	{
 		TRACE( "malloc failed\n" );
 		return STATUS_FAILURE;

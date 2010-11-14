@@ -1518,7 +1518,9 @@ unicap_status_t unicap_data_buffer_unref( unicap_data_buffer_t *buffer )
    if( buffer->priv->ref_count > 0 ){
       buffer->priv->ref_count--;
       if (buffer->priv->unref_func){
+	 sem_post (&buffer->priv->lock);
 	 buffer->priv->unref_func (buffer, buffer->priv->unref_func_data);
+	 return STATUS_SUCCESS;
       }
       if (buffer->priv->ref_count == 0 ){
 	 unicap_data_buffer_free( buffer );

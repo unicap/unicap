@@ -1916,6 +1916,8 @@ static unicap_status_t v4l2_capture_start( void *cpi_data )
    }
    
    handle->buffer_mgr = buffer_mgr_create( handle->fd, &handle->current_format );
+   if (!handle->buffer_mgr)
+      return STATUS_FAILURE;
 
    handle->capture_running = 1;
 

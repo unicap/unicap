@@ -22,6 +22,8 @@ void ucil_blend_uyvy_a( unicap_data_buffer_t *dest,
 void ucil_fill_uyvy( unicap_data_buffer_t *buffer, 
 		     ucil_color_t *color );
 
+void ucil_fill_yuy2( unicap_data_buffer_t *buffer, 
+		     ucil_color_t *color );
 
 void ucil_composite_UYVY_YUVA( unicap_data_buffer_t *dest, 
 			       unicap_data_buffer_t *img, 

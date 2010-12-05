@@ -124,6 +124,12 @@ void ucil_fill( unicap_data_buffer_t *buffer, ucil_color_t *color )
       }
       break;
 
+      case UCIL_FOURCC( 'Y', 'U', 'Y', '2' ):
+      {
+	 ucil_fill_yuy2( buffer, color );
+      }
+      break;
+
       case UCIL_FOURCC( 'R', 'G', 'B', '3' ):
       {
 	 ucil_fill_rgb24( buffer, color );

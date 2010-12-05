@@ -325,6 +325,21 @@ void ucil_fill_uyvy( unicap_data_buffer_t *buffer,
    }
 }
 
+void ucil_fill_yuy2( unicap_data_buffer_t *buffer, 
+		     ucil_color_t *color )
+{
+   int offset;
+
+   __u32 word;
+   
+   word = ( color->yuv.v << 24 ) | (color->yuv.y << 16 ) | ( color->yuv.u << 8 ) | ( color->yuv.y );
+   
+   for( offset = 0; offset < ( buffer->format.buffer_size / 4 ); offset++ )
+   {
+      *(((__u32 *)buffer->data) + offset ) = word;
+   }
+}
+
 void ucil_convolution_mask_uyvy( unicap_data_buffer_t *dest, 
 				 unicap_data_buffer_t *src, 
 				 ucil_convolution_mask_t *mask )

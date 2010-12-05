@@ -1925,6 +1925,7 @@ static unicap_status_t v4l2_capture_start( void *cpi_data )
 
    handle->quit_capture_thread = 0;
    pthread_create( &handle->capture_thread, NULL, (void*(*)(void*))v4l2_capture_thread, handle );
+   
 
    int type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
    if( IOCTL( handle->fd, VIDIOC_STREAMON, &type ) < 0  ){
@@ -2213,6 +2214,13 @@ static unicap_status_t v4l2_set_event_notify( void *cpi_data, unicap_event_callb
 static void v4l2_capture_thread( v4l2_handle_t handle )
 {
    unicap_data_buffer_t new_frame_buffer;
+   /* struct sched_param param; */
+
+   /* param.sched_priority = 10; */
+   
+   /* if( sched_setscheduler( 0, SCHED_FIFO, &param ) != 0 ) */
+   /* { */
+   /* } */
 
    handle->dqindex = -1;
 
@@ -2228,7 +2236,7 @@ static void v4l2_capture_thread( v4l2_handle_t handle )
       
       if( !SUCCESS( buffer_mgr_dequeue( handle->buffer_mgr, &data_buffer ) ) ){
 	 TRACE( "buffer_mgr_dequeue failed!\n" );
-	 usleep( 1000 );
+	 usleep (1000);
 	 continue;
       }
 
@@ -2237,7 +2245,7 @@ static void v4l2_capture_thread( v4l2_handle_t handle )
       if( data_buffer->buffer_size < handle->current_format.buffer_size )
       {
 	 TRACE( "Corrupt frame!\n" );
-	 drop = 1;
+	 /* drop = 1; */
       }
       
       if( !drop && handle->event_callback )

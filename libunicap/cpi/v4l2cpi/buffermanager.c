@@ -8,6 +8,8 @@
 #include <errno.h>
 #include <sys/mman.h>
 
+#include <stdio.h>
+
 #if V4L2_DEBUG
 #define DEBUG
 #endif

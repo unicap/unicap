@@ -34,7 +34,7 @@
 #define V4L2_MAX_VIDEO_INPUTS 32
 #define V4L2_MAX_VIDEO_NORMS  32
 #define V4L2_MAX_FRAME_RATES  32
-#define V4L2_NUM_BUFFERS      8
+#define V4L2_NUM_BUFFERS      16
 
 struct v4l_cache_entry
 {

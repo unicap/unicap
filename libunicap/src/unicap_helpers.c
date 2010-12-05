@@ -187,34 +187,33 @@ unicap_property_t *unicap_copy_property( unicap_property_t *dest, const unicap_p
 	dest->relations_count = src->relations_count;
 	dest->type = src->type;
 
-	switch( src->type )
+	switch( src->type ){
+	case UNICAP_PROPERTY_TYPE_MENU:
 	{
-		case UNICAP_PROPERTY_TYPE_MENU:
-		{
-			strcpy( dest->menu_item, src->menu_item );
-			dest->menu.menu_items = src->menu.menu_items;
-			dest->menu.menu_item_count = src->menu.menu_item_count;
-		}
-		break;
+	   strcpy( dest->menu_item, src->menu_item );
+	   dest->menu.menu_items = src->menu.menu_items;
+	   dest->menu.menu_item_count = src->menu.menu_item_count;
+	}
+	break;
 		
-		case UNICAP_PROPERTY_TYPE_VALUE_LIST:
-		{
-			dest->value = src->value;
-			dest->value_list.values = src->value_list.values;
-			dest->value_list.value_count = src->value_list.value_count;
-		}
-		break;
-		
-		case UNICAP_PROPERTY_TYPE_RANGE:
-		{
-			dest->value = src->value;
-			dest->range.min = src->range.min;
-			dest->range.max = src->range.max;
-		}
-		break;
-
-		default: 
-			break;
+	case UNICAP_PROPERTY_TYPE_VALUE_LIST:
+	{
+	   dest->value = src->value;
+	   dest->value_list.values = src->value_list.values;
+	   dest->value_list.value_count = src->value_list.value_count;
+	}
+	break;
+	
+	case UNICAP_PROPERTY_TYPE_RANGE:
+	{
+	   dest->value = src->value;
+	   dest->range.min = src->range.min;
+	   dest->range.max = src->range.max;
+	}
+	break;
+	
+	default: 
+	   break;
 	}
 	
 	dest->stepping = src->stepping;

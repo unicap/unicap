@@ -242,11 +242,7 @@ static PyObject *UnicapDevice_enumerate_formats( UnicapDevice *self )
       obj = build_video_format( &format );
       
       if( obj )
-      {
 	 PyList_Append( list, obj );
-      } else{
-	 printf( "Failed to build video format\n" );
-      }
    }
    
    Py_END_ALLOW_THREADS;

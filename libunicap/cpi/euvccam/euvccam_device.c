@@ -54,6 +54,13 @@
 #define CT_TIS_SENSOR_RESET               0x2c
 #define CT_TIS_FIRMWARE_REVISION          0x2d
 #define CT_TIS_GPOUT                      0x2e
+#define CT_TIS_HDR_ENABLE                 0x2f
+#define CT_TIS_HDR_SHUTTER_1              0x30
+#define CT_TIS_HDR_SHUTTER_2              0x31
+#define CT_TIS_HDR_VSTEP_1                0x32
+#define CT_TIS_HDR_VSTEP_2                0x33
+#define CT_TIS_HDR_VSTEP_3                0x34
+#define CT_TIS_HDR_VSTEP_4                0x35
 
 
 #define PU_GAIN_CONTROL                         0x04
@@ -826,6 +833,156 @@ unicap_status_t euvccam_device_enumerate_gpout( euvccam_handle_t handle, unicap_
    if( SUCCESS( euvccam_device_get_gpout( handle, property ) ) ){
       status = STATUS_SUCCESS;
    }
+   
+   return status;
+}
+
+unicap_status_t euvccam_device_enable_hdr (euvccam_handle_t handle, unicap_property_t *property)
+{
+   unicap_status_t status = STATUS_SUCCESS;
+   unsigned char val = (property->flags & UNICAP_FLAGS_ON_OFF)?1:0;
+   
+   status = euvccam_usb_ctrl_msg( handle->dev.fd, 
+				  EP0_OUT | USB_TYPE_CLASS | USB_RECIP_INTERFACE, 
+				  SET_CUR, 
+				  CT_TIS_HDR_ENABLE << 8, 
+				  CAMERA_TERMINAL << 8, 
+				  (char*)&val, 1);
+   return status;
+}
+
+unicap_status_t euvccam_device_get_enable_hdr (euvccam_handle_t handle, unicap_property_t *property)
+{
+   unicap_status_t status = STATUS_SUCCESS;   
+   unsigned char val;
+
+   
+   status = euvccam_usb_ctrl_msg( handle->dev.fd, 
+				  EP0_IN | USB_TYPE_CLASS | USB_RECIP_INTERFACE, 
+				  GET_CUR, 
+				  CT_TIS_GPOUT << 8, 
+				  CAMERA_TERMINAL << 8, 
+				  (char*)&val, 1);
+
+   property->flags = UNICAP_FLAGS_MANUAL | ( val ? UNICAP_FLAGS_ON_OFF : 0);
+   
+   return status;
+}
+
+unicap_status_t euvccam_device_enumerate_hdr( euvccam_handle_t handle, unicap_property_t *property )
+{
+   unicap_status_t status = STATUS_NO_MATCH;
+
+   if( SUCCESS( euvccam_device_get_enable_hdr( handle, property ) ) ){
+      status = STATUS_SUCCESS;
+   }
+   
+   return status;
+}
+
+
+unicap_status_t euvccam_device_set_hdr_shutter (euvccam_handle_t handle, unicap_property_t *property)
+{
+   unicap_status_t status = STATUS_SUCCESS;
+   unsigned int val = property->value * 10000.0;
+   int function = 0;
+
+   if (property->identifier[strlen(property->identifier)-1] == '1'){
+      function = CT_TIS_HDR_SHUTTER_1;
+   } else {
+      function = CT_TIS_HDR_SHUTTER_2;
+   }
+      
+   status = euvccam_usb_ctrl_msg( handle->dev.fd, 
+				  EP0_OUT | USB_TYPE_CLASS | USB_RECIP_INTERFACE, 
+				  SET_CUR, 
+				  function << 8, 
+				  CAMERA_TERMINAL << 8, 
+				  (char*)&val, 4);
+
+   return status;
+}
+
+unicap_status_t euvccam_device_get_hdr_shutter (euvccam_handle_t handle, unicap_property_t *property)
+{
+   unicap_status_t status = STATUS_SUCCESS;
+   unsigned int val;
+   int function = 0;
+
+   if (property->identifier[strlen(property->identifier)-1] == '1'){
+      function = CT_TIS_HDR_SHUTTER_1;
+   } else {
+      function = CT_TIS_HDR_SHUTTER_2;
+   }
+
+   status = euvccam_usb_ctrl_msg( handle->dev.fd, 
+				  EP0_IN | USB_TYPE_CLASS | USB_RECIP_INTERFACE, 
+				  GET_CUR, 
+				  function << 8, 
+				  CAMERA_TERMINAL << 8, 
+				  (char*)&val, 4);
+
+   property->value = (double)val / 10000.0;
+   
+   return status;
+}
+
+unicap_status_t euvccam_device_set_hdr_vstep( euvccam_handle_t handle, unicap_property_t *property )
+{
+   unicap_status_t status = STATUS_SUCCESS;
+   unsigned char val = property->value;
+   
+   switch (property->identifier[strlen(property->identifier)-1]){
+   case '1':
+      function = CT_TIS_HDR_VSTEP_1; break;
+   case '2':
+      function = CT_TIS_HDR_VSTEP_2; break;
+   case '3':
+      function = CT_TIS_HDR_VSTEP_3; break;
+   case '4':
+      function = CT_TIS_HDR_VSTEP_4; break;
+   default:
+      TRACE ("Invalid parameter in HDR vstep\n");
+      return STATUS_INVALID_PARAMETER;
+   }
+      
+   status = euvccam_usb_ctrl_msg( handle->dev.fd, 
+				  EP0_OUT | USB_TYPE_CLASS | USB_RECIP_INTERFACE, 
+				  SET_CUR, 
+				  function << 8, 
+				  CAMERA_TERMINAL << 8, 
+				  (char*)&val, 1);
+
+   return status;
+}
+
+unicap_status_t euvccam_device_get_hdr_vstep( euvccam_handle_t handle, unicap_property_t *property )
+{
+   unicap_status_t status = STATUS_SUCCESS;
+   unsigned char val;
+
+   switch (property->identifier[strlen(property->identifier)-1]){
+   case '1':
+      function = CT_TIS_HDR_VSTEP_1; break;
+   case '2':
+      function = CT_TIS_HDR_VSTEP_2; break;
+   case '3':
+      function = CT_TIS_HDR_VSTEP_3; break;
+   case '4':
+      function = CT_TIS_HDR_VSTEP_4; break;
+   default:
+      TRACE ("Invalid parameter in HDR vstep\n");
+      return STATUS_INVALID_PARAMETER;
+   }
+
+   status = euvccam_usb_ctrl_msg( handle->dev.fd, 
+				  EP0_IN | USB_TYPE_CLASS | USB_RECIP_INTERFACE, 
+				  GET_CUR, 
+				  function << 8, 
+				  CAMERA_TERMINAL << 8, 
+				  (char*)&val, 1);
+
+   property->value = val;
    
    return status;
 }

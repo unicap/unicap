@@ -91,6 +91,13 @@ unicap_status_t euvccam_device_enumerate_gpout( euvccam_handle_t handle, unicap_
 unicap_status_t euvccam_device_get_gpout( euvccam_handle_t handle, unicap_property_t *property );
 unicap_status_t euvccam_device_set_gpout( euvccam_handle_t handle, unicap_property_t *property );
 
+unicap_status_t euvccam_device_enable_hdr (euvccam_handle_t handle, unicap_property_t *property);
+unicap_status_t euvccam_device_get_enable_hdr (euvccam_handle_t handle, unicap_property_t *property);
+unicap_status_t euvccam_device_enumerate_hdr (euvccam_handle_t handle, unicap_property_t *property); 
+unicap_status_t euvccam_device_set_hdr_shutter (euvccam_handle_t handle, unicap_property_t *property);
+unicap_status_t euvccam_device_get_hdr_shutter (euvccam_handle_t handle, unicap_property_t *property);
+unicap_status_t euvccam_device_set_hdr_vstep (euvccam_handle_t handle, unicap_property_t *property); 
+unicap_status_t euvccam_device_get_hdr_vstep (euvccam_handle_t handle, unicap_property_t *property); 
 
 
 #endif//__EUVCCAM_DEVICE_H__

@@ -44,7 +44,7 @@
 
 #define MAX_READ_WRITE	   (16 * 1024)
 #define NUM_URBS           32
-#define NUM_SYSTEM_BUFFERS 4
+#define NUM_SYSTEM_BUFFERS 8
 
 static void sighandler(int sig )
 {
@@ -299,11 +299,12 @@ static void *capture_thread( euvccam_handle_t handle )
 	    // first packet in stream: skip header
 	    memcpy( system_buffers[ current_buffer ].data, urb->buffer + 2, urb->actual_length - 2 );
 	    bytes_done += urb->actual_length - 2;
-	    
+	    system_buffers[ current_buffer ].buffer_size = bytes_done;
 	 }else{
 	    if( ( bytes_done + urb->actual_length ) <= /* handle->current_format-> */usb_buffer_size ){
 	       memcpy( system_buffers[ current_buffer ].data + bytes_done, urb->buffer, urb->actual_length );
 	       bytes_done += urb->actual_length;
+	       system_buffers[ current_buffer ].buffer_size = bytes_done;
 	    }else{
 	       corrupt_frame = 1;
 
@@ -321,15 +322,14 @@ static void *capture_thread( euvccam_handle_t handle )
 	       buffer_done( handle, &context );
 	       current_buffer = ( current_buffer + 1 ) % NUM_SYSTEM_BUFFERS;
 	    }else{
-#ifdef DEBUG
 	       context.buffer = &system_buffers[ current_buffer ];
 	       buffer_done( handle, &context );
 	       current_buffer = ( current_buffer + 1 ) % NUM_SYSTEM_BUFFERS;
 	       TRACE( "corrupt_frame: bytes = %d / %d \n", bytes_done, /* handle->current_format-> */usb_buffer_size );
-#endif
 	    }
 	       
 	    bytes_done = 0;
+	    system_buffers[ current_buffer ].buffer_size = 0;
 	 }
 
 	 submit_urb( handle->dev.fd, urb );
@@ -396,11 +396,11 @@ unicap_status_t euvccam_capture_start_capture( euvccam_handle_t handle )
 
    param.sched_priority = 5;
 
-/*    if( pthread_setschedparam( handle->capture_thread, SCHED_FIFO, &param ) == 0 ){ */
-/*       TRACE( "Successfully moved to RT scheduler\n" ); */
-/*    }else{ */
-/*       perror( "pthread_setschedparam: " ); */
-/*    } */
+   if( pthread_setschedparam( handle->capture_thread, SCHED_FIFO, &param ) == 0 ){
+      TRACE( "Successfully moved to RT scheduler\n" );
+   }else{
+      perror( "pthread_setschedparam: " );
+   }
 
    handle->capture_running = 1;
 

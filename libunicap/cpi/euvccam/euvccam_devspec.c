@@ -860,6 +860,49 @@ static euvccam_property_t properties_8202_mono[] =
       enumerate_func: NULL,
    },
 
+   {
+      {
+	identifier: N_("HDR Enable"),
+	category: N_("device"),
+	unit: "",
+	relations: NULL,
+	relations_count: 0,
+	{value: 0},
+	{range: { min: 0, max: 0 } },
+	stepping: 0.0,
+	type: UNICAP_PROPERTY_TYPE_FLAGS,
+	flags: UNICAP_FLAGS_MANUAL,
+	flags_mask: UNICAP_FLAGS_MANUAL | UNICAP_FLAGS_ON_OFF,
+	property_data: NULL,
+	property_data_size: 0
+      },
+      
+      get_func: euvccam_device_get_enable_hdr,
+      set_func: euvccam_device_enable_hdr,
+      enumerate_func: euvccam_device_enumerate_hdr,
+   },
+
+   {
+      {
+	identifier: N_("HDR Shutter 1"),
+	category: N_("device"),
+	unit: "",
+	relations: NULL,
+	relations_count: 0,
+	{value: 0},
+	{range: { min: 0, max: 0 } },
+	stepping: 0.0,
+	type: UNICAP_PROPERTY_TYPE_FLAGS,
+	flags: UNICAP_FLAGS_MANUAL,
+	flags_mask: UNICAP_FLAGS_MANUAL | UNICAP_FLAGS_ON_OFF,
+	property_data: NULL,
+	property_data_size: 0
+      },
+      
+      get_func: euvccam_device_get_enable_hdr,
+      set_func: euvccam_device_enable_hdr,
+      enumerate_func: euvccam_device_enumerate_hdr,
+   },
 };
 
 static struct euvccam_video_format_description formats_8201[] =
@@ -974,32 +1017,32 @@ static int    format_8202_framerate_map[] = { 7, 6,  0,  1,  2,   3, 4};
 
 static struct euvccam_video_format_description formats_8202_color[] =
 {
-   {
-      1,
-      2,
-      { identifier: "Y800 104x104",
-	size: {0,0,104,104},
-	min_size: { 0,0,104,104 },
-	max_size: { 0,0,756,480 },
-	h_stepping: 16,
-	v_stepping: 16,
-	sizes: NULL,
-	size_count: 0,
-	bpp: 8,
-	buffer_size: 104 * 104,
-	fourcc: FOURCC( 'Y', '8', '0', '0' ),
-	flags: 0,
-	buffer_types: UNICAP_BUFFER_TYPE_SYSTEM | UNICAP_BUFFER_TYPE_USER,
-	system_buffer_count: EUVCCAM_SYSTEM_BUFFER_COUNT,
-	buffer_type: 0
-      },
-      N_ELEMENTS( format_8202_framerates ),
-      format_8202_framerates,
-      format_8202_framerate_map,
-      756 * 480,
-      NULL,
-      EUVCCAM_FORMAT_IS_PARTIAL_SCAN,
-   },
+   /* { */
+   /*    1, */
+   /*    2, */
+   /*    { identifier: "Y800 104x104", */
+   /* 	size: {0,0,104,104}, */
+   /* 	min_size: { 0,0,104,104 }, */
+   /* 	max_size: { 0,0,756,480 }, */
+   /* 	h_stepping: 16, */
+   /* 	v_stepping: 16, */
+   /* 	sizes: NULL, */
+   /* 	size_count: 0, */
+   /* 	bpp: 8, */
+   /* 	buffer_size: 104 * 104, */
+   /* 	fourcc: FOURCC( 'Y', '8', '0', '0' ), */
+   /* 	flags: 0, */
+   /* 	buffer_types: UNICAP_BUFFER_TYPE_SYSTEM | UNICAP_BUFFER_TYPE_USER, */
+   /* 	system_buffer_count: EUVCCAM_SYSTEM_BUFFER_COUNT, */
+   /* 	buffer_type: 0 */
+   /*    }, */
+   /*    N_ELEMENTS( format_8202_framerates ), */
+   /*    format_8202_framerates, */
+   /*    format_8202_framerate_map, */
+   /*    756 * 480, */
+   /*    NULL, */
+   /*    EUVCCAM_FORMAT_IS_PARTIAL_SCAN, */
+   /* }, */
    {
       1,
       2,

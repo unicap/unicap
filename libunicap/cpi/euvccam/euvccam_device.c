@@ -860,7 +860,7 @@ unicap_status_t euvccam_device_get_enable_hdr (euvccam_handle_t handle, unicap_p
    status = euvccam_usb_ctrl_msg( handle->dev.fd, 
 				  EP0_IN | USB_TYPE_CLASS | USB_RECIP_INTERFACE, 
 				  GET_CUR, 
-				  CT_TIS_GPOUT << 8, 
+				  CT_TIS_HDR_ENABLE << 8, 
 				  CAMERA_TERMINAL << 8, 
 				  (char*)&val, 1);
 
@@ -931,6 +931,7 @@ unicap_status_t euvccam_device_set_hdr_vstep( euvccam_handle_t handle, unicap_pr
 {
    unicap_status_t status = STATUS_SUCCESS;
    unsigned char val = property->value;
+   unsigned char function;
    
    switch (property->identifier[strlen(property->identifier)-1]){
    case '1':
@@ -960,6 +961,7 @@ unicap_status_t euvccam_device_get_hdr_vstep( euvccam_handle_t handle, unicap_pr
 {
    unicap_status_t status = STATUS_SUCCESS;
    unsigned char val;
+   unsigned char function;
 
    switch (property->identifier[strlen(property->identifier)-1]){
    case '1':

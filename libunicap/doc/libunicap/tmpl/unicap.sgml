@@ -86,7 +86,7 @@ unicap
 @buffer_size: 
 @type: 
 @flags: 
-@private: 
+@priv: 
 
 <!-- ##### ENUM unicap_property_flags_t ##### -->
 <para>

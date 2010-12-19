@@ -863,7 +863,7 @@ static euvccam_property_t properties_8202_mono[] =
    {
       {
 	identifier: N_("HDR Enable"),
-	category: N_("device"),
+	category: N_("hdr"),
 	unit: "",
 	relations: NULL,
 	relations_count: 0,
@@ -885,22 +885,129 @@ static euvccam_property_t properties_8202_mono[] =
    {
       {
 	identifier: N_("HDR Shutter 1"),
-	category: N_("device"),
-	unit: "",
+	category: N_("hdr"),
+	unit: "s",
 	relations: NULL,
 	relations_count: 0,
 	{value: 0},
-	{range: { min: 0, max: 0 } },
+	{range: { min: 0.0001, max: 4 } },
 	stepping: 0.0,
-	type: UNICAP_PROPERTY_TYPE_FLAGS,
+	type: UNICAP_PROPERTY_TYPE_RANGE,
+	flags: UNICAP_FLAGS_MANUAL,
+	flags_mask: UNICAP_FLAGS_MANUAL | UNICAP_FLAGS_ON_OFF,
+	property_data: NULL,
+	property_data_size: 0
+      },
+      get_func: euvccam_device_get_hdr_shutter,
+      set_func: euvccam_device_set_hdr_shutter,
+      enumerate_func: euvccam_device_enumerate_hdr,
+   },
+
+   {
+      {
+	identifier: N_("HDR Shutter 2"),
+	category: N_("hdr"),
+	unit: "s",
+	relations: NULL,
+	relations_count: 0,
+	{value: 0},
+	{range: { min: 0.0001, max: 4 } },
+	stepping: 0.0,
+	type: UNICAP_PROPERTY_TYPE_RANGE,
 	flags: UNICAP_FLAGS_MANUAL,
 	flags_mask: UNICAP_FLAGS_MANUAL | UNICAP_FLAGS_ON_OFF,
 	property_data: NULL,
 	property_data_size: 0
       },
       
-      get_func: euvccam_device_get_enable_hdr,
-      set_func: euvccam_device_enable_hdr,
+      get_func: euvccam_device_get_hdr_shutter,
+      set_func: euvccam_device_set_hdr_shutter,
+      enumerate_func: euvccam_device_enumerate_hdr,
+   },
+
+   {
+      {
+	identifier: N_("HDR VStep 1"),
+	category: N_("hdr"),
+	unit: "",
+	relations: NULL,
+	relations_count: 0,
+	{value: 0},
+	{range: { min: 0, max: 63 } },
+	stepping: 1.0,
+	type: UNICAP_PROPERTY_TYPE_RANGE,
+	flags: UNICAP_FLAGS_MANUAL,
+	flags_mask: UNICAP_FLAGS_MANUAL | UNICAP_FLAGS_ON_OFF,
+	property_data: NULL,
+	property_data_size: 0
+      },
+      
+      get_func: euvccam_device_get_hdr_vstep,
+      set_func: euvccam_device_set_hdr_vstep,
+      enumerate_func: euvccam_device_enumerate_hdr,
+   },
+
+   {
+      {
+	identifier: N_("HDR VStep 2"),
+	category: N_("hdr"),
+	unit: "",
+	relations: NULL,
+	relations_count: 0,
+	{value: 0},
+	{range: { min: 0, max: 63 } },
+	stepping: 1.0,
+	type: UNICAP_PROPERTY_TYPE_RANGE,
+	flags: UNICAP_FLAGS_MANUAL,
+	flags_mask: UNICAP_FLAGS_MANUAL | UNICAP_FLAGS_ON_OFF,
+	property_data: NULL,
+	property_data_size: 0
+      },
+      
+      get_func: euvccam_device_get_hdr_vstep,
+      set_func: euvccam_device_set_hdr_vstep,
+      enumerate_func: euvccam_device_enumerate_hdr,
+   },
+   {
+      {
+	identifier: N_("HDR VStep 3"),
+	category: N_("hdr"),
+	unit: "",
+	relations: NULL,
+	relations_count: 0,
+	{value: 0},
+	{range: { min: 0, max: 63 } },
+	stepping: 1.0,
+	type: UNICAP_PROPERTY_TYPE_RANGE,
+	flags: UNICAP_FLAGS_MANUAL,
+	flags_mask: UNICAP_FLAGS_MANUAL | UNICAP_FLAGS_ON_OFF,
+	property_data: NULL,
+	property_data_size: 0
+      },
+      
+      get_func: euvccam_device_get_hdr_vstep,
+      set_func: euvccam_device_set_hdr_vstep,
+      enumerate_func: euvccam_device_enumerate_hdr,
+   },
+   {
+      {
+	identifier: N_("HDR VStep 4"),
+	category: N_("hdr"),
+	unit: "",
+	relations: NULL,
+	relations_count: 0,
+	{value: 0},
+	{range: { min: 0, max: 63 } },
+	stepping: 1.0,
+	type: UNICAP_PROPERTY_TYPE_RANGE,
+	flags: UNICAP_FLAGS_MANUAL,
+	flags_mask: UNICAP_FLAGS_MANUAL | UNICAP_FLAGS_ON_OFF,
+	property_data: NULL,
+	property_data_size: 0
+      },
+      
+      get_func: euvccam_device_get_hdr_vstep,
+      set_func: euvccam_device_set_hdr_vstep,
       enumerate_func: euvccam_device_enumerate_hdr,
    },
 };

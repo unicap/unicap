@@ -74,66 +74,65 @@ typedef enum
 
 struct _UnicapgtkVideoDisplay
 {
-      GtkAspectFrame  parent_instance;
+   GtkAspectFrame  parent_instance;
       
-      GtkWidget *drawing_area;
-      GdkGC *gc;
+   GtkWidget *drawing_area;
+   GdkGC *gc;
       
-      GdkPixbuf *still_image_pixbuf;
+   GdkPixbuf *still_image_pixbuf;
       
-      gint display_timeout_tag;
-      gboolean scale_to_fit;
-      gboolean capture_running;
-      volatile gboolean pause;
+   gint display_timeout_tag;
+   gboolean scale_to_fit;
+   gboolean capture_running;
+   volatile gboolean pause;
       
-      unicap_handle_t unicap_handle;
-      unicap_device_t device;
-      unicap_format_t format;
-      unicap_data_buffer_t data_buffer[DATA_BUFFERS];
-      unicap_data_buffer_t still_image_buffer;
-      unicap_data_buffer_t pause_buffer;
+   unicap_handle_t unicap_handle;
+   unicap_device_t device;
+   unicap_format_t format;
+   unicap_data_buffer_t data_buffer[DATA_BUFFERS];
+   unicap_data_buffer_t still_image_buffer;
+   unicap_data_buffer_t pause_buffer;
    unicap_data_buffer_t stored_buffer;
 
-      volatile gboolean new_frame;
-      unicap_new_frame_callback_t new_frame_callback;
-      void * new_frame_callback_data;
-      unsigned int new_frame_callback_flags;
-      struct timeval disp_time;
+   volatile gboolean new_frame;
+   unicap_new_frame_callback_t new_frame_callback;
+   void * new_frame_callback_data;
+   unsigned int new_frame_callback_flags;
+   struct timeval disp_time;
+   
+   unicapgtk_color_conversion_callback_t color_conversion_cb;
+   void                                 *color_conversion_data;
 
-      unicapgtk_color_conversion_callback_t color_conversion_cb;
-      void                                 *color_conversion_data;
-
-      unsigned int backend_fourcc;
+   unsigned int backend_fourcc;
       
-      int crop_x;
-      int crop_y;
-      int crop_width;
-      int crop_height;
+   int crop_x;
+   int crop_y;
+   int crop_width;
+   int crop_height;
       
-      int display_width;
-      int display_height;
+   int display_width;
+   int display_height;
 
-      backend_type_t requested_backend;
-      gchar *backend;
+   backend_type_t requested_backend;
+   gchar *backend;
    gboolean store_original_buffer;
-      backend_update_image_func_t backend_update_image;
-      backend_redraw_func_t backend_redraw;
-      backend_destroy_func_t backend_destroy;
-      backend_set_output_size_func_t backend_set_output_size;
-      backend_expose_event_t backend_expose;
-      backend_get_image_data_t backend_get_image_data;
-      backend_lock_t backend_lock;
-      backend_unlock_t backend_unlock;
-      backend_display_image_t backend_display_image;
-      backend_size_allocate_t backend_size_allocate;
-      backend_set_crop_t backend_set_crop;
-      backend_set_scale_to_fit_t backend_set_scale_to_fit;
-      backend_set_pause_state_t backend_set_pause_state;
-      backend_get_flags_t backend_get_flags;
-      backend_set_color_conversion_callback_t backend_set_color_conversion_callback;
-      
-      
-      gpointer backend_data;
+   backend_update_image_func_t backend_update_image;
+   backend_redraw_func_t backend_redraw;
+   backend_destroy_func_t backend_destroy;
+   backend_set_output_size_func_t backend_set_output_size;
+   backend_expose_event_t backend_expose;
+   backend_get_image_data_t backend_get_image_data;
+   backend_lock_t backend_lock;
+   backend_unlock_t backend_unlock;
+   backend_display_image_t backend_display_image;
+   backend_size_allocate_t backend_size_allocate;
+   backend_set_crop_t backend_set_crop;
+   backend_set_scale_to_fit_t backend_set_scale_to_fit;
+   backend_set_pause_state_t backend_set_pause_state;
+   backend_get_flags_t backend_get_flags;
+   backend_set_color_conversion_callback_t backend_set_color_conversion_callback;
+         
+   gpointer backend_data;
 };
 
 

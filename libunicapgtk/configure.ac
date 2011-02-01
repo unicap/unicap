@@ -17,7 +17,7 @@ lt_age=1
 
 unicapgtk_major_version=0
 unicapgtk_minor_version=9
-unicapgtk_micro_version=8
+unicapgtk_micro_version=9
 unicapgtk_prerelease=
 dist_version=$unicapgtk_major_version.$unicapgtk_minor_version.$unicapgtk_micro_version$unicapgtk_prerelease
 

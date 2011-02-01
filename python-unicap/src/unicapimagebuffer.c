@@ -425,6 +425,7 @@ static PyObject *UnicapImageBuffer_convert( UnicapImageBuffer *self, PyObject *a
    PyObject *ret = NULL;
    char *str;
    unicap_data_buffer_t dest_buffer;
+   unicap_status_t status = STATUS_SUCCESS;
 
    static char *kwlist[] = { "fourcc", NULL };
    
@@ -443,13 +444,16 @@ static PyObject *UnicapImageBuffer_convert( UnicapImageBuffer *self, PyObject *a
       return NULL;
    }
    
+   Py_BEGIN_ALLOW_THREADS;
    dest_buffer.format.buffer_size = dest_buffer.buffer_size = dest_buffer.format.size.width * dest_buffer.format.size.height * dest_buffer.format.bpp / 8;
    dest_buffer.data = malloc( dest_buffer.buffer_size );
    
-   if( !SUCCESS( ucil_convert_buffer( &dest_buffer, &self->buffer ) ) ){
-      PyErr_SetString( PyExc_RuntimeError, "Could not convert to target format" );
-      ret =  NULL;
-      goto out;
+   status = ucil_convert_buffer( &dest_buffer, &self->buffer );
+   Py_END_ALLOW_THREADS;
+   if( !SUCCESS( status ) ){
+	   PyErr_SetString( PyExc_RuntimeError, "Could not convert to target format" );
+	   ret =  NULL;
+	   goto out;
    }
    
    ret = UnicapImageBuffer_new_from_buffer( &dest_buffer );

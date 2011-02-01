@@ -18,7 +18,7 @@ lt_age=4
 
 ucil_major_version=0
 ucil_minor_version=9
-ucil_micro_version=10
+ucil_micro_version=11
 ucil_prerelease=
 dist_version=$ucil_major_version.$ucil_minor_version.$ucil_micro_version$ucil_prerelease
 

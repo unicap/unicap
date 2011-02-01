@@ -599,7 +599,7 @@ gboolean backend_xv_init( GtkWidget *widget, unicap_format_t *format, guint32 re
 
    data->current_buffer = -1;
    
-   set_colorkey( data, 0x5, 0x5, 0xfe );
+   /* set_colorkey( data, 0x5, 0x5, 0xfe ); */
 
    if( data->atom_colorkey )
    {
@@ -712,12 +712,12 @@ void backend_xv_redraw( gpointer _data )
       width = data->widget->allocation.width < data->output_width ? data->widget->allocation.width : data->output_width;
       height = data->widget->allocation.height < data->output_height ? data->widget->allocation.height : data->output_height;
       
-/*       gdk_draw_rectangle( data->widget->window, */
-/* 			  data->gdkgc, */
-/* 			  TRUE, */
-/* 			  0, 0, */
-/* 			  width, height ); */
-/*       printf( "draw_rectangle\n" ); */
+      gdk_draw_rectangle( data->widget->window,
+			  data->gdkgc,
+			  TRUE,
+			  0, 0,
+			  width, height );
+      printf( "draw_rectangle\n" );
       
    }
 

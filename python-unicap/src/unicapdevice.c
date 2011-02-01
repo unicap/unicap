@@ -231,21 +231,17 @@ static PyObject *UnicapDevice_enumerate_formats( UnicapDevice *self )
    unicap_format_t format;
    int i;
 
-   Py_BEGIN_ALLOW_THREADS;
 
    list = PyList_New(0);
 
    for( i = 0; SUCCESS( unicap_enumerate_formats( self->handle, NULL, &format, i ) ); i++ )
    {
       PyObject *obj = NULL;
-      
       obj = build_video_format( &format );
       
       if( obj )
 	 PyList_Append( list, obj );
    }
-   
-   Py_END_ALLOW_THREADS;
 
    return list;
 }      

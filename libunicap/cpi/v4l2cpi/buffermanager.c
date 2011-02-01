@@ -101,7 +101,7 @@ buffer_mgr_t buffer_mgr_create( int fd, unicap_format_t *format )
    mgr->num_buffers = v4l2_reqbuf.count;
    
    for( i = 0; i < v4l2_reqbuf.count; i++ ){
-      memset( &mgr->buffers[i].v4l2_buffer, 0x0, sizeof( struct v4l2_buffer ) );
+      memset( &mgr->buffers[i], 0x0, sizeof( v4l2cpi_buffer_t ) );
       unicap_data_buffer_init (&mgr->buffers[i].data_buffer, format, &init_data);
       unicap_data_buffer_ref (&mgr->buffers[i].data_buffer);
 

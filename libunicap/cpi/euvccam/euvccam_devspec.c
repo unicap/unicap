@@ -54,13 +54,13 @@ static euvccam_property_t properties_8201[] =
 {
    {
       {
-	identifier: "Shutter", 
-	category: "Exposure",
+	identifier: N_("Shutter"), 
+	category: N_("Exposure"),
 	unit: "s",
 	relations: NULL,
 	relations_count: 0, 
 	{value: 0}, 
-	{range: { min: 0.0001, max: 4 } },
+	{range: { min: 0.0001, max: 0.25 } },
 	stepping: 0.0001,
 	type: UNICAP_PROPERTY_TYPE_RANGE,
 	flags: UNICAP_FLAGS_MANUAL,
@@ -75,8 +75,8 @@ static euvccam_property_t properties_8201[] =
    },
    {
       {
-	identifier: "Gain", 
-	category: "Exposure",
+	identifier: N_("Gain"), 
+	category: N_("Exposure"),
 	unit: "",
 	relations: NULL,
 	relations_count: 0, 
@@ -224,6 +224,7 @@ static euvccam_property_t properties_8201[] =
       set_func: euvccam_device_set_trigger,
       enumerate_func: euvccam_device_enumerate_trigger,
    },
+#if 0
    {
       {
 	identifier: N_("reset sensor"),
@@ -242,6 +243,7 @@ static euvccam_property_t properties_8201[] =
       get_func: euvccam_device_get_reset_mt9v024,
       set_func: euvccam_device_set_reset_mt9v024,
    },
+#endif
    {
       {
 	identifier: "IIC Command", 
@@ -275,7 +277,7 @@ static euvccam_property_t properties_8206[] =
 	relations: NULL,
 	relations_count: 0, 
 	{value: 0}, 
-	{range: { min: 0.0001, max: 30 } },
+	{range: { min: 0.0001, max: 0.25 } },
 	stepping: 0.0001,
 	type: UNICAP_PROPERTY_TYPE_RANGE,
 	flags: UNICAP_FLAGS_MANUAL,
@@ -483,6 +485,27 @@ static euvccam_property_t properties_8206[] =
       enumerate_func: euvccam_device_enumerate_gpout,
    },
    {
+     {
+	identifier: N_("UART"),
+	category: N_("device"),
+	unit: "",
+	relations: NULL,
+	relations_count: 0,
+	{value: 0},
+	{range: { min: 0, max: 255} },
+	stepping: 1.0,
+	type: UNICAP_PROPERTY_TYPE_RANGE,
+	flags: UNICAP_FLAGS_MANUAL,
+	flags_mask: UNICAP_FLAGS_MANUAL,
+	property_data: NULL,
+	property_data_size: 0
+      },
+      
+      get_func: euvccam_device_get_uart,
+      set_func: euvccam_device_set_uart,
+      enumerate_func: euvccam_device_enumerate_uart,
+   },
+   {
       {
 	identifier: N_("software trigger"),
 	category: N_("device"),
@@ -513,7 +536,7 @@ static euvccam_property_t properties_8202_color[] =
 	relations: NULL,
 	relations_count: 0, 
 	{value: 0}, 
-	{range: { min: 0.0001, max: 4 } },
+	{range: { min: 0.0001, max: 0.25 } },
 	stepping: 0.0001,
 	type: UNICAP_PROPERTY_TYPE_RANGE,
 	flags: UNICAP_FLAGS_MANUAL,
@@ -672,6 +695,7 @@ static euvccam_property_t properties_8202_color[] =
       set_func: euvccam_device_set_software_trigger,
       enumerate_func: euvccam_device_enumerate_software_trigger,
    },
+#if 0
    {
       {
 	identifier: N_("reset sensor"),
@@ -690,6 +714,7 @@ static euvccam_property_t properties_8202_color[] =
       get_func: euvccam_device_get_reset_mt9v024,
       set_func: euvccam_device_set_reset_mt9v024,
    },
+#endif
    {
       {
 	identifier: "IIC Command", 
@@ -724,7 +749,7 @@ static euvccam_property_t properties_8202_mono[] =
 	relations: NULL,
 	relations_count: 0, 
 	{value: 0}, 
-	{range: { min: 0.0001, max: 4 } },
+	{range: { min: 0.0001, max: 0.25 } },
 	stepping: 0.0001,
 	type: UNICAP_PROPERTY_TYPE_RANGE,
 	flags: UNICAP_FLAGS_MANUAL,
@@ -820,6 +845,7 @@ static euvccam_property_t properties_8202_mono[] =
       set_func: euvccam_device_set_software_trigger,
       enumerate_func: euvccam_device_enumerate_software_trigger,
    },
+#if 0
    {
       {
 	identifier: N_("reset sensor"),
@@ -838,6 +864,7 @@ static euvccam_property_t properties_8202_mono[] =
       get_func: euvccam_device_get_reset_mt9v024,
       set_func: euvccam_device_set_reset_mt9v024,
    },
+#endif
    {
       {
 	identifier: "IIC Command", 
@@ -859,7 +886,7 @@ static euvccam_property_t properties_8202_mono[] =
       set_func: euvccam_device_write_iic,
       enumerate_func: NULL,
    },
-
+#if 0
    {
       {
 	identifier: N_("HDR Enable"),
@@ -1010,6 +1037,7 @@ static euvccam_property_t properties_8202_mono[] =
       set_func: euvccam_device_set_hdr_vstep,
       enumerate_func: euvccam_device_enumerate_hdr,
    },
+#endif
 };
 
 static struct euvccam_video_format_description formats_8201[] =

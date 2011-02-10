@@ -62,6 +62,7 @@
 #define CT_TIS_HDR_VSTEP_3                0x34
 #define CT_TIS_HDR_VSTEP_4                0x35
 
+#define CT_TIS_UART                       0x41
 
 #define PU_GAIN_CONTROL                         0x04
 #define PU_WHITE_BALANCE_COMPONENT_CONTROL      0x0c
@@ -795,8 +796,6 @@ unicap_status_t euvccam_device_set_gpout( euvccam_handle_t handle, unicap_proper
    unicap_status_t status = STATUS_SUCCESS;
    unsigned char val = (property->flags & UNICAP_FLAGS_ON_OFF)?1:0;
    
-   printf( "%lld %d\n", property->flags, val );
-
    status = euvccam_usb_ctrl_msg( handle->dev.fd, 
 				  EP0_OUT | USB_TYPE_CLASS | USB_RECIP_INTERFACE, 
 				  SET_CUR, 
@@ -985,6 +984,52 @@ unicap_status_t euvccam_device_get_hdr_vstep( euvccam_handle_t handle, unicap_pr
 				  (char*)&val, 1);
 
    property->value = val;
+   
+   return status;
+}
+
+unicap_status_t euvccam_device_set_uart (euvccam_handle_t handle, unicap_property_t *property) 
+{
+   unicap_status_t status = STATUS_SUCCESS;
+   unsigned char *val = property->property_data;
+   if ((property->property_data_size <= 0) || (property->property_data_size > 8 ))
+	   return STATUS_INVALID_PARAMETER;
+   
+   
+   status = euvccam_usb_ctrl_msg( handle->dev.fd, 
+				  EP0_OUT | USB_TYPE_CLASS | USB_RECIP_INTERFACE, 
+				  SET_CUR, 
+				  CT_TIS_UART << 8, 
+				  CAMERA_TERMINAL << 8, 
+				  (char*)property->property_data, property->property_data_size);
+   return status;
+}
+
+unicap_status_t euvccam_device_get_uart( euvccam_handle_t handle, unicap_property_t *property )
+{
+   unicap_status_t status = STATUS_SUCCESS;
+   unsigned char val;
+
+   
+   status = euvccam_usb_ctrl_msg( handle->dev.fd, 
+				  EP0_IN | USB_TYPE_CLASS | USB_RECIP_INTERFACE, 
+				  GET_CUR, 
+				  CT_TIS_UART << 8, 
+				  CAMERA_TERMINAL << 8, 
+				  (char*)&val, 1);
+
+   property->value = val;
+   
+   return status;
+}
+
+unicap_status_t euvccam_device_enumerate_uart( euvccam_handle_t handle, unicap_property_t *property )
+{
+   unicap_status_t status = STATUS_NO_MATCH;
+
+   if (SUCCESS (euvccam_device_get_uart (handle, property))){ 
+      status = STATUS_SUCCESS;
+   }
    
    return status;
 }

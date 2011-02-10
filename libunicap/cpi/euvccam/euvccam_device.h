@@ -99,6 +99,11 @@ unicap_status_t euvccam_device_get_hdr_shutter (euvccam_handle_t handle, unicap_
 unicap_status_t euvccam_device_set_hdr_vstep (euvccam_handle_t handle, unicap_property_t *property); 
 unicap_status_t euvccam_device_get_hdr_vstep (euvccam_handle_t handle, unicap_property_t *property); 
 
+unicap_status_t euvccam_device_set_uart (euvccam_handle_t handle, unicap_property_t *property); 
+unicap_status_t euvccam_device_get_uart( euvccam_handle_t handle, unicap_property_t *property );
+unicap_status_t euvccam_device_enumerate_uart( euvccam_handle_t handle, unicap_property_t *property );
+
+
 
 #endif//__EUVCCAM_DEVICE_H__
 

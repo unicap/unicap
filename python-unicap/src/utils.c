@@ -402,8 +402,6 @@ int parse_property( unicap_property_t *property, PyObject *obj )
       break;
    }
 
-      
-
    return 0;
 
   err:

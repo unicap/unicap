@@ -1366,7 +1366,22 @@ static xfm_info_t conversions[] =
       
       priority: 5, 
 
-      func: (xfm_func_t) by8torgb24,
+      func: (xfm_func_t) y8002rgb24,
+
+      flags: 0
+   },
+   { 
+      src_fourcc: FOURCC('B','Y','8',' '), 
+      src_guid: {0}, 
+      src_bpp: 8,
+      
+      dest_fourcc: FOURCC('R','G','B','3'), 
+      dest_guid: GUID_RGB24, 
+      dest_bpp: 24, 
+      
+      priority: 5, 
+
+      func: (xfm_func_t) y8002rgb24,
 
       flags: 0
    },
@@ -1396,7 +1411,7 @@ static xfm_info_t conversions[] =
       
       priority: 5, 
 
-      func: (xfm_func_t) by8torgb32,
+      func: (xfm_func_t) y8002rgb32,
 
       flags: 0
    },
@@ -1411,7 +1426,7 @@ static xfm_info_t conversions[] =
       
       priority: 5, 
 
-      func: (xfm_func_t) by8torgb32,
+      func: (xfm_func_t) y8002rgb32,
 
       flags: 0
    },

@@ -995,6 +995,8 @@ unicap_status_t euvccam_device_set_uart (euvccam_handle_t handle, unicap_propert
    if ((property->property_data_size <= 0) || (property->property_data_size > 8 ))
 	   return STATUS_INVALID_PARAMETER;
    
+
+   printf ("send: %s\n", property->property_data);
    
    status = euvccam_usb_ctrl_msg( handle->dev.fd, 
 				  EP0_OUT | USB_TYPE_CLASS | USB_RECIP_INTERFACE, 

@@ -492,9 +492,9 @@ static euvccam_property_t properties_8206[] =
 	relations: NULL,
 	relations_count: 0,
 	{value: 0},
-	{range: { min: 0, max: 255} },
+	{range: { min: 0, max: 0.0} },
 	stepping: 1.0,
-	type: UNICAP_PROPERTY_TYPE_RANGE,
+	type: UNICAP_PROPERTY_TYPE_DATA,
 	flags: UNICAP_FLAGS_MANUAL,
 	flags_mask: UNICAP_FLAGS_MANUAL,
 	property_data: NULL,
@@ -503,7 +503,7 @@ static euvccam_property_t properties_8206[] =
       
       get_func: euvccam_device_get_uart,
       set_func: euvccam_device_set_uart,
-      enumerate_func: euvccam_device_enumerate_uart,
+      enumerate_func: NULL,
    },
    {
       {

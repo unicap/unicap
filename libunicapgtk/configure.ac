@@ -88,7 +88,7 @@ GTK_DOC_CHECK(1.4)
 # The unicap library
 PKG_CHECK_MODULES(UNICAP_PACKAGE, [libunicap libucil])
 
-pkg_modules="gtk+-2.0 >= 2.6.0"
+pkg_modules="gtk+-2.0 >= 2.6.0 gdk-pixbuf-2.0"
 PKG_CHECK_MODULES(GTK_PACKAGE, [$pkg_modules], HAVE_GTK2="yes", HAVE_GTK2="no" )
 
 pkg_modules="glib-2.0"

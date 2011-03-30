@@ -381,6 +381,15 @@ if test "x$USE_LIBV4L" == "xyes"; then
 fi
 AM_CONDITIONAL(HAVE_LIBV4L, test x$HAVE_LIBV4L == "xyes" )
 
+PKG_CHECK_MODULES(LIBUDEV, libudev, HAVE_LIBUDEV="yes", HAVE_LIBUDEV="no")
+if test "x$HAVE_LIBUDEV" == "xyes"; then
+   AC_DEFINE( [USE_LIBUDEV], 1, Define to enable libudev support )
+else
+   AC_DEFINE( [USE_LIBUDEV], 0, Define to enable libudev support )
+fi
+AM_CONDITIONAL(HAVE_LIBUDEV, test x$HAVE_LIBUDEV == "xyes" )
+
+
 AC_ARG_ENABLE(euvccam, 
 	      AS_HELP_STRING( [--enable-euvccam], 
 		              [build plugin for The Imaging Source USB CMOS cameras (experimental) \[default=yes\]] ),
@@ -463,6 +472,10 @@ fi
 
 if test x$HAVE_LIBV4L == xyes && test x$V4L2 == xyes; then
    V4L2="yes, with libv4l2 support"
+fi
+
+if test x$HAVE_LIBUDEV != xyes && test x$V4L2 == xyes; then
+   V4L2+=", libudev is recommended for this module but was not found"
 fi
    
 

@@ -51,6 +51,8 @@
 #include "tisuvccam.h"
 #include "tiseuvccam.h"
 
+#include "udev.h"
+
 #if USE_LIBV4L
 #include <libv4l2.h>
 #endif
@@ -398,6 +400,8 @@ static unicap_status_t v4l2_enumerate_devices( unicap_device_t *device, int inde
    int n;
    int found = -1;
    char devname[512];
+   char *serial;
+   
       
    TRACE( "v4l2_enumerate_devices[%d]\n", index );
    
@@ -420,6 +424,7 @@ static unicap_status_t v4l2_enumerate_devices( unicap_device_t *device, int inde
 	 continue;
       }
 
+      
 #if USE_LIBV4L
       v4l2_fd_open( fd, V4L2_ENABLE_ENUM_FMT_EMULATION );
 #endif
@@ -450,10 +455,20 @@ static unicap_status_t v4l2_enumerate_devices( unicap_device_t *device, int inde
    }
 
 
-   sprintf( device->identifier, "%s (%s)", v4l2caps.card, devname );
+   TRACE ("Bus: %s\n", v4l2caps.bus_info);
+
+   serial = v4l2cpi_udev_get_serial (devname);
+
+   if (serial){
+	   sprintf( device->identifier, "%s %s", v4l2caps.card, serial );
+	   device->model_id = atoll (serial);
+	   free (serial);
+   } else {
+	   sprintf( device->identifier, "%s %s", v4l2caps.card, devname );
+	   device->model_id = 0x1;
+   }
    strcpy( device->model_name, (char*)v4l2caps.card );
    strcpy( device->vendor_name, "");
-   device->model_id = 0x1;
    device->vendor_id = 0xffff0000;
    device->flags = UNICAP_CPI_SERIALIZED;
    strcpy( device->device, devname ) ;  

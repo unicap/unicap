@@ -157,27 +157,27 @@ static euvccam_property_t properties_8201[] =
       set_func: euvccam_device_set_white_balance,
       enumerate_func: NULL,
    },   
-/*    { */
-/*       { */
-/* 	identifier: "Frame Rate",  */
-/* 	category: "Video", */
-/* 	unit: "", */
-/* 	relations: NULL, */
-/* 	relations_count: 0,  */
-/* 	{value: 0},  */
-/* 	{range: { min: 10, max: 63 } }, */
-/* 	stepping: 1.0, */
-/* 	type: UNICAP_PROPERTY_TYPE_VALUE_LIST, */
-/* 	flags: UNICAP_FLAGS_MANUAL, */
-/* 	flags_mask: UNICAP_FLAGS_MANUAL, */
-/* 	property_data: NULL,  */
-/* 	property_data_size: 0, */
-/*       }, */
+   {
+      {
+	identifier: "Frame Rate",
+	category: "Video",
+	unit: "",
+	relations: NULL,
+	relations_count: 0,
+	{value: 0},
+	{range: { min: 10, max: 63 } },
+	stepping: 1.0,
+	type: UNICAP_PROPERTY_TYPE_VALUE_LIST,
+	flags: UNICAP_FLAGS_MANUAL,
+	flags_mask: UNICAP_FLAGS_MANUAL,
+	property_data: NULL,
+	property_data_size: 0,
+      },
       
-/*       get_func: euvccam_device_get_frame_rate, */
-/*       set_func: euvccam_device_set_frame_rate, */
-/*       enumerate_func: euvccam_device_enumerate_frame_rate, */
-/*    }, */
+      get_func: euvccam_device_get_frame_rate,
+      set_func: euvccam_device_set_frame_rate,
+      enumerate_func: euvccam_device_enumerate_frame_rate,
+   },
 
 #if 1
    {
@@ -374,27 +374,27 @@ static euvccam_property_t properties_8206[] =
       set_func: euvccam_device_set_white_balance,
       enumerate_func: NULL,
    },   
-   {
-      {
-	identifier: "Frame Rate", 
-	category: "Video",
-	unit: "",
-	relations: NULL,
-	relations_count: 0, 
-	{value: 0}, 
-	{range: { min: 0, max: 0 } },
-	stepping: 1.0,
-	type: UNICAP_PROPERTY_TYPE_VALUE_LIST,
-	flags: UNICAP_FLAGS_MANUAL,
-	flags_mask: UNICAP_FLAGS_MANUAL,
-	property_data: NULL, 
-	property_data_size: 0,
-      },
+   /* { */
+   /*    { */
+   /* 	identifier: "Frame Rate",  */
+   /* 	category: "Video", */
+   /* 	unit: "", */
+   /* 	relations: NULL, */
+   /* 	relations_count: 0,  */
+   /* 	{value: 0},  */
+   /* 	{range: { min: 0, max: 0 } }, */
+   /* 	stepping: 1.0, */
+   /* 	type: UNICAP_PROPERTY_TYPE_VALUE_LIST, */
+   /* 	flags: UNICAP_FLAGS_MANUAL, */
+   /* 	flags_mask: UNICAP_FLAGS_MANUAL, */
+   /* 	property_data: NULL,  */
+   /* 	property_data_size: 0, */
+   /*    }, */
       
-      get_func: euvccam_device_get_frame_rate,
-      set_func: euvccam_device_set_frame_rate,
-      enumerate_func: euvccam_device_enumerate_frame_rate,
-   },
+   /*    get_func: euvccam_device_get_frame_rate, */
+   /*    set_func: euvccam_device_set_frame_rate, */
+   /*    enumerate_func: euvccam_device_enumerate_frame_rate, */
+   /* }, */
    {
       {
 	identifier: N_("trigger"),
@@ -506,6 +506,27 @@ static euvccam_property_t properties_8206[] =
       enumerate_func: NULL,
    },
    {
+     {
+	identifier: N_("TEST"),
+	category: N_("device"),
+	unit: "",
+	relations: NULL,
+	relations_count: 0,
+	{value: 0},
+	{range: { min: 0, max: 255.0} },
+	stepping: 1.0,
+	type: UNICAP_PROPERTY_TYPE_RANGE,
+	flags: UNICAP_FLAGS_MANUAL,
+	flags_mask: UNICAP_FLAGS_MANUAL,
+	property_data: NULL,
+	property_data_size: 0
+      },
+      
+      get_func: euvccam_device_get_uart,
+      set_func: euvccam_device_set_test,
+      enumerate_func: NULL,
+   },
+   {
       {
 	identifier: N_("software trigger"),
 	category: N_("device"),
@@ -572,19 +593,19 @@ static euvccam_property_t properties_8202_color[] =
    },
    {
       {
-	identifier: "Frame Rate", 
-	category: "Video",
-	unit: "",
-	relations: NULL,
-	relations_count: 0, 
-	{value: 0}, 
-	{range: { min: 0, max: 0 } },
-	stepping: 1.0,
-	type: UNICAP_PROPERTY_TYPE_VALUE_LIST,
-	flags: UNICAP_FLAGS_MANUAL,
-	flags_mask: UNICAP_FLAGS_MANUAL,
-	property_data: NULL, 
-	property_data_size: 0,
+   	identifier: "Frame Rate",
+   	category: "Video",
+   	unit: "",
+   	relations: NULL,
+   	relations_count: 0,
+   	{value: 0},
+   	{range: { min: 0, max: 0 } },
+   	stepping: 1.0,
+   	type: UNICAP_PROPERTY_TYPE_VALUE_LIST,
+   	flags: UNICAP_FLAGS_MANUAL,
+   	flags_mask: UNICAP_FLAGS_MANUAL,
+   	property_data: NULL,
+   	property_data_size: 0,
       },
       
       get_func: euvccam_device_get_frame_rate,
@@ -785,19 +806,19 @@ static euvccam_property_t properties_8202_mono[] =
    },
    {
       {
-	identifier: "Frame Rate", 
-	category: "Video",
-	unit: "",
-	relations: NULL,
-	relations_count: 0, 
-	{value: 0}, 
-	{range: { min: 0, max: 0 } },
-	stepping: 1.0,
-	type: UNICAP_PROPERTY_TYPE_VALUE_LIST,
-	flags: UNICAP_FLAGS_MANUAL,
-	flags_mask: UNICAP_FLAGS_MANUAL,
-	property_data: NULL, 
-	property_data_size: 0,
+   	identifier: "Frame Rate",
+   	category: "Video",
+   	unit: "",
+   	relations: NULL,
+   	relations_count: 0,
+   	{value: 0},
+   	{range: { min: 0, max: 0 } },
+   	stepping: 1.0,
+   	type: UNICAP_PROPERTY_TYPE_VALUE_LIST,
+   	flags: UNICAP_FLAGS_MANUAL,
+   	flags_mask: UNICAP_FLAGS_MANUAL,
+   	property_data: NULL,
+   	property_data_size: 0,
       },
       
       get_func: euvccam_device_get_frame_rate,
@@ -2070,7 +2091,7 @@ struct euvccam_devspec euvccam_devspec[] =
    { 
       0x8201,
       0, 
-      EUVCCAM_HAS_AUTO_EXPOSURE | EUVCCAM_HAS_AUTO_GAIN,
+      0,
       N_ELEMENTS( formats_8201 ),
       formats_8201, 
       N_ELEMENTS( properties_8201 ),
@@ -2079,7 +2100,7 @@ struct euvccam_devspec euvccam_devspec[] =
    {
       0x8202,
       1,
-      EUVCCAM_HAS_AUTO_EXPOSURE | EUVCCAM_HAS_AUTO_GAIN,
+      0,
       N_ELEMENTS( formats_8202_mono ),
       formats_8202_mono,
       N_ELEMENTS( properties_8202_mono ),
@@ -2088,7 +2109,7 @@ struct euvccam_devspec euvccam_devspec[] =
    {
       0x8202,
       2,
-      EUVCCAM_HAS_AUTO_EXPOSURE | EUVCCAM_HAS_AUTO_GAIN,
+      0,
       N_ELEMENTS( formats_8202_color ),
       formats_8202_color,
       N_ELEMENTS( properties_8202_color ),
@@ -2115,7 +2136,7 @@ struct euvccam_devspec euvccam_devspec[] =
    { 
       0x8205,
       (3<<2)|1, 
-      EUVCCAM_HAS_AUTO_EXPOSURE | EUVCCAM_HAS_AUTO_GAIN,
+      0,
       N_ELEMENTS( formats_8205 ),
       formats_8205, 
       N_ELEMENTS( properties_8201 ),
@@ -2124,7 +2145,7 @@ struct euvccam_devspec euvccam_devspec[] =
    { 
       0x8206,
       (4<<2), 
-      EUVCCAM_HAS_AUTO_EXPOSURE | EUVCCAM_HAS_AUTO_GAIN,
+      0,
       N_ELEMENTS( formats_8206 ),
       formats_8206, 
       N_ELEMENTS( properties_8206 ),
@@ -2133,7 +2154,7 @@ struct euvccam_devspec euvccam_devspec[] =
    { 
       0x8207,
       (5<<2)|2, 
-      EUVCCAM_HAS_AUTO_EXPOSURE | EUVCCAM_HAS_AUTO_GAIN,
+      0,
       N_ELEMENTS( formats_8207_color ),
       formats_8207_color, 
       N_ELEMENTS( properties_8206 ),
@@ -2142,7 +2163,7 @@ struct euvccam_devspec euvccam_devspec[] =
    { 
       0x8207,
       (5<<2)|1, 
-      EUVCCAM_HAS_AUTO_EXPOSURE | EUVCCAM_HAS_AUTO_GAIN,
+      0,
       N_ELEMENTS( formats_8207_mono ),
       formats_8207_mono, 
       N_ELEMENTS( properties_8206 ),

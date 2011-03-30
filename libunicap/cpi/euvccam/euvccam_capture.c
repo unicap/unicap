@@ -399,7 +399,7 @@ unicap_status_t euvccam_capture_start_capture( euvccam_handle_t handle )
    if( pthread_setschedparam( handle->capture_thread, SCHED_FIFO, &param ) == 0 ){
       TRACE( "Successfully moved to RT scheduler\n" );
    }else{
-      perror( "pthread_setschedparam: " );
+	   //perror( "pthread_setschedparam: " );
    }
 
    handle->capture_running = 1;

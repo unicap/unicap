@@ -30,6 +30,8 @@
 
 #include <unicap.h>
 
+#include <time.h>
+
 #include "euvccam_cpi.h"
 #include "euvccam_usb.h"
 
@@ -146,7 +148,7 @@ void print_caller( int depth )
    strings = backtrace_symbols (array, size);
    
    if( size > depth ){
-      TRACE( "Caller: %s\n", strings[depth ] );
+      printf ("%s\n", strings[depth ]); 
    }
 
    free (strings);
@@ -160,6 +162,7 @@ unicap_status_t euvccam_usb_ctrl_msg( int fd, uint8_t reqtype, uint8_t req, uint
    struct usbdevfs_ctrltransfer xfer;
    int ret;
    unicap_status_t status = STATUS_SUCCESS;
+   struct timespec start, end;
 
    xfer.bRequestType = reqtype;
    xfer.bRequest = req;
@@ -169,14 +172,26 @@ unicap_status_t euvccam_usb_ctrl_msg( int fd, uint8_t reqtype, uint8_t req, uint
    xfer.data = buf;
    xfer.timeout = 10000;
 	
-   TRACE( "ctrl msg: %x %x %x %x %x\n", reqtype, req, val, index, size );
+   TRACE( "ctrl msg: %x %x %x %x %x   ::", reqtype, req, val, index, size );
    print_caller( 2 );
+   
+   clock_gettime (CLOCK_MONOTONIC, &start);
 
    ret = ioctl( fd, USBDEVFS_CONTROL, &xfer );
    if( ret<0 ){
       TRACE( "control message failed!\n" );
       status = STATUS_FAILURE;
    }
+
+   clock_gettime (CLOCK_MONOTONIC, &end);
+   end.tv_sec -= start.tv_sec;
+   end.tv_nsec -= start.tv_nsec;
+   if (end.tv_nsec < 0) {
+	   end.tv_sec--;
+	   end.tv_nsec += 1000000000;
+   }
+   TRACE ("ctrl:: %lu.%06lu secs\n", end.tv_sec, end.tv_nsec / 1000);
+   
 	
    return status;
 }
@@ -260,13 +275,16 @@ euvccam_usb_device_t *euvccam_usb_find_device( int index )
 		     dev.idVendor = descriptor.idVendor;
 		     dev.idProduct = descriptor.idProduct;
 		     dev.fd = -1;
-		     if( !SUCCESS( euvccam_usb_read_ascii_string( fd, descriptor.iManufacturer, dev.strVendor, sizeof( dev.strVendor ) ) ) ){
+		     if( !SUCCESS( euvccam_usb_read_ascii_string( fd, descriptor.iManufacturer, dev.strVendor, sizeof( dev.strVendor ) ) ) ||
+			 !strcmp (dev.strVendor, "\t") ){
 			strcpy( dev.strVendor, "The Imaging Source" );
 		     }
-		     if( !SUCCESS( euvccam_usb_read_ascii_string( fd, descriptor.iProduct, dev.strProduct, sizeof( dev.strProduct ) ) ) ){
+		     if( !SUCCESS( euvccam_usb_read_ascii_string( fd, descriptor.iProduct, dev.strProduct, sizeof( dev.strProduct ) ) ) || 
+			 !strcmp (dev.strProduct, "\t") ){
 			strcpy( dev.strProduct, "CMOS camera" );
 		     }
-		     if( !SUCCESS( euvccam_usb_read_ascii_string( fd, descriptor.iSerialNumber, dev.strSerialNumber, sizeof( dev.strSerialNumber ) ) ) ){
+		     if( !SUCCESS( euvccam_usb_read_ascii_string( fd, descriptor.iSerialNumber, dev.strSerialNumber, sizeof( dev.strSerialNumber ) ) ) ||
+			 !strcmp (dev.strSerialNumber, "\t") ){
 			strcpy( dev.strSerialNumber, "0" );
 		     }
 		     strcpy( dev.devpath, devpath );

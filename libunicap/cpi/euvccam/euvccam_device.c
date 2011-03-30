@@ -712,6 +712,8 @@ unicap_status_t euvccam_device_set_frame_rate( euvccam_handle_t handle, unicap_p
       }
    }
    
+   printf ("fr: %f reg: %d\n", property->value, regval);
+
    property->value_list.values = handle->current_format->frame_rates;
    property->value_list.value_count = handle->current_format->frame_rate_count;
 
@@ -996,14 +998,14 @@ unicap_status_t euvccam_device_set_uart (euvccam_handle_t handle, unicap_propert
 	   return STATUS_INVALID_PARAMETER;
    
 
-   printf ("send: %s\n", property->property_data);
+   printf ("send: '%s' %d\n", val, property->property_data_size);
    
    status = euvccam_usb_ctrl_msg( handle->dev.fd, 
 				  EP0_OUT | USB_TYPE_CLASS | USB_RECIP_INTERFACE, 
 				  SET_CUR, 
 				  CT_TIS_UART << 8, 
 				  CAMERA_TERMINAL << 8, 
-				  (char*)property->property_data, property->property_data_size);
+				  (char*)val, property->property_data_size);
    return status;
 }
 
@@ -1033,5 +1035,20 @@ unicap_status_t euvccam_device_enumerate_uart( euvccam_handle_t handle, unicap_p
       status = STATUS_SUCCESS;
    }
    
+   return status;
+}
+
+unicap_status_t euvccam_device_set_test (euvccam_handle_t handle, unicap_property_t *property) 
+{
+   unicap_status_t status = STATUS_SUCCESS;
+   unsigned char val = property->value;
+
+   
+   status = euvccam_usb_ctrl_msg( handle->dev.fd, 
+				  EP0_OUT | USB_TYPE_CLASS | USB_RECIP_INTERFACE, 
+				  SET_CUR, 
+				  0x50 << 8, 
+				  CAMERA_TERMINAL << 8, 
+				  (char*)&val, 1);
    return status;
 }

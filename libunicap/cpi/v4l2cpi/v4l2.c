@@ -464,7 +464,7 @@ static unicap_status_t v4l2_enumerate_devices( unicap_device_t *device, int inde
 	   device->model_id = atoll (serial);
 	   free (serial);
    } else {
-	   sprintf( device->identifier, "%s %s", v4l2caps.card, devname );
+	   sprintf( device->identifier, "%s (%s)", v4l2caps.card, devname );
 	   device->model_id = 0x1;
    }
    strcpy( device->model_name, (char*)v4l2caps.card );
@@ -481,6 +481,8 @@ static unicap_status_t v4l2_cpi_open( void **cpi_data, unicap_device_t *device )
    v4l2_handle_t handle = NULL;
    struct v4l2_capability v4l2caps;
    char identifier[128];
+   char *serial;
+   
 	
    int i;
 
@@ -542,7 +544,14 @@ static unicap_status_t v4l2_cpi_open( void **cpi_data, unicap_device_t *device )
       return STATUS_FAILURE;
    }
 	
-   sprintf( identifier, "%s (%s)", v4l2caps.card, device->device );
+   serial = v4l2cpi_udev_get_serial (device->device);
+
+   if (serial){
+	   sprintf( identifier, "%s %s", v4l2caps.card, serial );
+	   free (serial);
+   } else {
+	   sprintf( identifier, "%s (%s)", v4l2caps.card, device->device );
+   }
    
    if( strcmp( identifier, device->identifier ) )
    {

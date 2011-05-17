@@ -729,6 +729,22 @@ static unicap_rect_t *try_enum_framesizes( v4l2_handle_t handle, __u32 fourcc, i
 }
    
 
+/* Check if format is supported (use VIDIOC_TRY_FMT if available).
+   Return 0 if fmt can be selected. */
+static int try_format( int fd, struct v4l2_format *fmt )
+{
+   int res = IOCTL( fd, VIDIOC_TRY_FMT, fmt );
+   if( res != 0 ) {
+      TRACE( "VIDIOC_TRY_FMT ioctl failed: %s\n", strerror( errno ) );
+      res = IOCTL( fd, VIDIOC_S_FMT, fmt );
+      if( res != 0 ) {
+         TRACE( "VIDIOC_S_FMT ioctl failed: %s\n", strerror( errno ) );
+      }
+   }
+   return res;
+}
+
+
 static unicap_rect_t *build_format_size_table( v4l2_handle_t handle, __u32 fourcc, int *pcount )
 {
    int nfound = 0;
@@ -766,12 +782,7 @@ static unicap_rect_t *build_format_size_table( v4l2_handle_t handle, __u32 fourc
       v4l2_fmt.fmt.pix.height = try_sizes[i].height;
       v4l2_fmt.fmt.pix.pixelformat = fourcc;
       v4l2_fmt.fmt.pix.field = V4L2_FIELD_ANY;
-      if( IOCTL( handle->fd, VIDIOC_S_FMT, &v4l2_fmt ) )
-      {
-	 TRACE( "VIDIOC_S_FMT ioctl failed: %s\n", strerror( errno ) );
-      }
-      else
-      {
+      if( try_format( handle->fd, &v4l2_fmt ) == 0 ) {
 	 int j;
 	 int found_fmt = 0;
 	 for( j = 0; j < nfound; j++ )

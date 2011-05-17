@@ -588,6 +588,7 @@ static void downsize_yuv420plane( const gint srcw, const gint srch,
    for( y = 0; (y < srch) && (rows < desth); y += f )
    {
       gint dstentries = 0;
+      guint8 *lineStart = src;
       for( x = 0; x < srcw; x += f )
       {
          if (dstentries < destw)
@@ -599,6 +600,7 @@ static void downsize_yuv420plane( const gint srcw, const gint srch,
          }
 	 src += f;
       }
+      src = lineStart + srcw;
       for ( i = 1; i < f; i++ ) 
       {
          src += srcw;

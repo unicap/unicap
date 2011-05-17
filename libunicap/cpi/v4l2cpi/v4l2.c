@@ -36,6 +36,7 @@
 #include <sys/mman.h>
 #include <fcntl.h>
 #include <dirent.h>
+#include <poll.h>
 
 
 #include <semaphore.h>
@@ -335,8 +336,6 @@ static unicap_status_t get_current_format( v4l2_handle_t handle, unicap_format_t
       v4l2_fmtdesc.pixelformat = v4l2_fmt.fmt.pix.pixelformat;
       handle->compat->fmt_get_func( &v4l2_fmtdesc, &v4l2_crop, NULL, &pixelformat, NULL  );
    }
-
-   
 
    for( i = 0; i < handle->format_count; i++ )
    {
@@ -2235,6 +2234,19 @@ static unicap_status_t v4l2_set_event_notify( void *cpi_data, unicap_event_callb
    return STATUS_SUCCESS;
 }
 
+/* Check if fd is readable, timing out after a short time (to allow
+   the capture thread to check if it should stop). */
+static int fd_readable( int fd )
+{
+   struct pollfd pfd = {
+      .fd      = fd,
+      .events  = POLLIN,
+      .revents = 0
+   };
+   int timeout_ms = 100;
+   return poll( &pfd, 1, timeout_ms );
+}
+
 static void v4l2_capture_thread( v4l2_handle_t handle )
 {
    unicap_data_buffer_t new_frame_buffer;
@@ -2258,6 +2270,13 @@ static void v4l2_capture_thread( v4l2_handle_t handle )
 
       unicap_data_buffer_t *data_buffer;
       
+      /* Check if dqbuf will block. If could block indefinitely, hanging the
+         whole application in effect. */
+      if( !fd_readable( handle->fd ) ) {
+         sem_post( &handle->sema );
+         continue;
+      }
+
       if( !SUCCESS( buffer_mgr_dequeue( handle->buffer_mgr, &data_buffer ) ) ){
 	 TRACE( "buffer_mgr_dequeue failed!\n" );
 	 usleep (1000);

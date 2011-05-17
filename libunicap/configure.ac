@@ -121,15 +121,17 @@ if test "x$RT_PRESENT" = "xyes"; then
   AC_SUBST(RT_LIBS)
 fi
 
+# Check for videodev.h ( old v4l support )
+AC_CHECK_HEADER (linux/videodev.h, [HAVE_VIDEODEV="yes"],,)
 
 # Check for raw1394
 pkg_modules="libraw1394 <= 1.0.0"
 PKG_CHECK_MODULES(LIBRAW1394_PACKAGE, [$pkg_modules], HAVE_LIBRAW1394="yes";LIBRAW1394_VERSION="RAW1394_1_0_API", HAVE_LIBRAW1394="no" )
 
-if( test "$HAVE_LIBRAW1394" != "yes" ); then
+if( test "x$HAVE_LIBRAW1394" != "xyes" ); then
     pkg_modules="libraw1394 >= 1.1.0"
     PKG_CHECK_MODULES(LIBRAW1394_PACKAGE, [$pkg_modules], HAVE_LIBRAW1394="yes";LIBRAW1394_VERSION="RAW1394_1_1_API", HAVE_LIBRAW1394="no" )
-    if( test "$HAVE_LIBRAW1394" == "yes" ); then
+    if( test "x$HAVE_LIBRAW1394" = "xyes" ); then
 	AC_DEFINE(RAW1394_1_1_API, 1, [Define if using the new raw1394 API])
     fi
 else
@@ -178,7 +180,7 @@ AC_ARG_ENABLE(vid21394-visca,
 	      }, 
        	      AC_DEFINE( VID21394_VISCA, 0, [Define to enable vid21394 visca support] ) )
 
-AM_CONDITIONAL(VID21394_VISCA, test x$VID21394_VISCA = xyes )
+AM_CONDITIONAL(VID21394_VISCA, test "x$VID21394_VISCA" = xyes )
 
 VID21394_21CF04="no"
 
@@ -298,7 +300,7 @@ if test "$VID21394" = "yes"; then
 	fi
 fi
 
-if test "x$VID21394" == "xyes"; then
+if test "x$VID21394" = "xyes"; then
    AC_DEFINE( BUILD_VID21394, 1, [Define to build vid21394 cpi] )
 fi
 
@@ -313,14 +315,14 @@ AC_ARG_ENABLE(dcam,
 	      	fi
 	      },
 	      DCAM="yes" )
-if test "$DCAM" = "yes"; then
+if test "x$DCAM" = "xyes"; then
 	if test "$HAVE_LIBRAW1394" != "yes"; then
 		AC_MSG_RESULT([ IIDC 1394 camera plugin requires recent libraw1394! ])
 		DCAM="no ( missing libraw1394 )"
 	fi
 fi
 
-if test "x$DCAM" == "xyes"; then
+if test "x$DCAM" = "xyes"; then
    AC_DEFINE( BUILD_DCAM, 1, [Define to build dcam cpi] )
 fi
 
@@ -336,8 +338,14 @@ AC_ARG_ENABLE(v4l,
 	      	fi
 	      },
 	      V4L="yes" )
+if test "x$V4L" = "xyes"; then 
+   if test "$HAVE_VIDEODEV" != "yes"; then
+      AC_MSG_RESULT([ linux/videodev.h not found for (old) v4l support! ])
+      V4L="no ( missing linux/videodev.h, obsolete video interface )"
+   fi
+fi
 
-if test "x$V4L" == "xyes"; then
+if test "x$V4L" = "xyes"; then
    AC_DEFINE( BUILD_V4L, 1, [Define to build v4l cpi] )
 fi
 
@@ -354,7 +362,7 @@ AC_ARG_ENABLE(v4l2,
 	      },
 	      V4L2="yes" )
 
-if test "x$V4L2" == "xyes"; then
+if test "x$V4L2" = "xyes"; then
    AC_DEFINE( BUILD_V4L2, 1, [Define to build v4l2 cpi] )
 fi
 
@@ -370,24 +378,24 @@ AC_ARG_ENABLE(libv4l,
 	      },
 	      USE_LIBV4L="no" )
 
-if test "x$USE_LIBV4L" == "xyes"; then
+if test "x$USE_LIBV4L" = "xyes"; then
    PKG_CHECK_MODULES(LIBV4L, libv4l2, HAVE_LIBV4L="yes", HAVE_LIBV4L="no")
-   if test "x$HAVE_LIBV4L" == "xyes"; then
+   if test "x$HAVE_LIBV4L" = "xyes"; then
       AC_MSG_RESULT( enable enable enable )
       AC_DEFINE( [USE_LIBV4L], 1, Define to enable libv4l support )
    else
       AC_DEFINE( [USE_LIBV4L], 0, Define to enable libv4l support )
    fi
 fi
-AM_CONDITIONAL(HAVE_LIBV4L, test x$HAVE_LIBV4L == "xyes" )
+AM_CONDITIONAL(HAVE_LIBV4L, test "x$HAVE_LIBV4L" = "xyes" )
 
 PKG_CHECK_MODULES(LIBUDEV, libudev, HAVE_LIBUDEV="yes", HAVE_LIBUDEV="no")
-if test "x$HAVE_LIBUDEV" == "xyes"; then
+if test "x$HAVE_LIBUDEV" = "xyes"; then
    AC_DEFINE( [USE_LIBUDEV], 1, Define to enable libudev support )
 else
    AC_DEFINE( [USE_LIBUDEV], 0, Define to enable libudev support )
 fi
-AM_CONDITIONAL(HAVE_LIBUDEV, test x$HAVE_LIBUDEV == "xyes" )
+AM_CONDITIONAL(HAVE_LIBUDEV, test x$HAVE_LIBUDEV = "xyes" )
 
 
 AC_ARG_ENABLE(euvccam, 
@@ -419,7 +427,7 @@ AC_ARG_ENABLE(static-cpi,
 			      AS_HELP_STRING( [--enable-static-cpi],  
 					      [Static link the cpi modules ( default=no )] ),
 	      {
-	        if test "x$enableval" == "xyes"; then
+	        if test "x$enableval" = "xyes"; then
 		   AC_DEFINE( ENABLE_STATIC_CPI, 1, [Define to enable static cpi])
 		   ENABLE_STATIC_CPI="yes";
 		fi   
@@ -431,7 +439,7 @@ AC_ARG_ENABLE(thread-locking,
 			       AS_HELP_STRING( [--enable-thread-locking],
 					       [ (default=yes) ] ), 
 	       {
-	         if test "x$enableval" == "xyes"; then
+	         if test "x$enableval" = "xyes"; then
 		    AC_DEFINE( UNICAP_THREAD_LOCKING, 1, [Define to enable thread locking] )
 		 fi
 	       }, AC_DEFINE( UNICAP_THREAD_LOCKING, 1, [Define to enable thread locking] ) )
@@ -440,18 +448,18 @@ AC_ARG_ENABLE(unicap-threads,
 			      AS_HELP_STRING( [--enable-unicap-threads], 
 					      [ (default=yes) ] ), 
 	       {
-	         if test "x$enableval" == "xyes"; then
+	         if test "x$enableval" = "xyes"; then
 		    AC_DEFINE( UNICAP_THREADS, 1, [Define to enable threads] )
 		 fi
 	       }, AC_DEFINE( UNICAP_THREADS, 1, [Define to enable threads] ) )
 
 
-AM_CONDITIONAL(BUILD_VID21394, test x$VID21394 = xyes )
-AM_CONDITIONAL(BUILD_DCAM, test x$DCAM = xyes )
-AM_CONDITIONAL(BUILD_V4L, test x$V4L = xyes )
-AM_CONDITIONAL(BUILD_V4L2, test x$V4L2 = xyes )
-AM_CONDITIONAL(BUILD_EUVCCAM, test x$EUVCCAM = xyes)
-AM_CONDITIONAL(BUILD_THING, test x$THING = xyes )
+AM_CONDITIONAL(BUILD_VID21394, test "x$VID21394" = xyes )
+AM_CONDITIONAL(BUILD_DCAM, test "x$DCAM" = xyes )
+AM_CONDITIONAL(BUILD_V4L, test "x$V4L" = xyes )
+AM_CONDITIONAL(BUILD_V4L2, test "x$V4L2" = xyes )
+AM_CONDITIONAL(BUILD_EUVCCAM, test "x$EUVCCAM" = xyes)
+AM_CONDITIONAL(BUILD_THING, test "x$THING" = xyes )
 
 AC_CONFIG_FILES([ include/unicap_version.h po/Makefile.in include/Makefile src/Makefile common/Makefile ])
 AC_CONFIG_FILES([ Makefile libunicap.pc ])
@@ -466,15 +474,15 @@ AC_CONFIG_FILES([ doc/libunicap/Makefile doc/Makefile ])
 AC_CONFIG_FILES([ data/Makefile ])
 AC_OUTPUT
 
-if test x$VID21394_VISCA = xyes; then
+if test "x$VID21394_VISCA" = xyes; then
 	VID21394="$VID21394 with visca support"
 fi
 
-if test x$HAVE_LIBV4L == xyes && test x$V4L2 == xyes; then
+if test "x$HAVE_LIBV4L" = xyes && test x$V4L2 = xyes; then
    V4L2="yes, with libv4l2 support"
 fi
 
-if test x$HAVE_LIBUDEV != xyes && test x$V4L2 == xyes; then
+if test "x$HAVE_LIBUDEV" != xyes && test x$V4L2 = xyes; then
    V4L2+=", libudev is recommended for this module but was not found"
 fi
    

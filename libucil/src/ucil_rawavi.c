@@ -60,6 +60,10 @@ struct _ucil_rawavi_video_file_object
    int movi_frames;
    int stream_length_pos;
 
+ 
+   // Frames per second as expecteded in the video
+   double frames_per_second;
+
    avi_buffer_t *avibuf;
 
    GQueue *full_queue;
@@ -343,6 +347,14 @@ static void parse_args( ucil_rawavi_video_file_object_t *vobj, guint n_parameter
       {
 	 vobj->format.fourcc = g_value_get_int( &parameters[i].value );
       }
+      else if( !strcmp( parameters[i].name, "fps" ) )
+      {
+	 vobj->frames_per_second = g_value_get_double( &parameters[i].value );
+      }
+      else    
+      {
+	 TRACE( "Unknown arg: %s\n", parameters[i].name );
+      }      
    }
 }
 
@@ -363,6 +375,11 @@ static void encode_va_list_to_parameters( va_list ap, guint *n_parameters, GPara
       {
 	 g_value_init( &tmp[n].value, G_TYPE_INT );
 	 g_value_set_int( &tmp[n].value, va_arg( ap, int ) );
+      }
+      else if( !strcmp( arg, "fps" ) )
+      {
+	 g_value_init( &tmp[n].value, G_TYPE_DOUBLE );
+	 g_value_set_double( &tmp[n].value, va_arg( ap, double ) );
       }
       else
       {
@@ -421,6 +438,7 @@ ucil_rawavi_video_file_object_t *ucil_rawavi_create_video_filev( const char *pat
    unicap_copy_format( &vobj->format, format );
 
    vobj->movi_frames = 0;
+   vobj->frames_per_second = 30.0;
    
    parse_args( vobj, n_parameters, parameters );
 
@@ -438,8 +456,8 @@ ucil_rawavi_video_file_object_t *ucil_rawavi_create_video_filev( const char *pat
    
    write_avi_header( vobj->outfile );
    vobj->file_size = 4;
-   avih.dwMicroSecPerFrame = 33333;
-   avih.dwMaxBytesPerSec = vobj->format.size.width * vobj->format.size.height * vobj->format.bpp/8*30;
+   avih.dwMicroSecPerFrame = 1000000 / vobj->frames_per_second;
+   avih.dwMaxBytesPerSec = vobj->format.size.width * vobj->format.size.height * vobj->format.bpp / 8 * vobj->frames_per_second;
    avih.dwPaddingGranularity = AVI_PAD_SIZE;
    avih.dwFlags = 0;
    avih.dwInitialFrames = 0;
@@ -456,7 +474,7 @@ ucil_rawavi_video_file_object_t *ucil_rawavi_create_video_filev( const char *pat
    strh.wPriority = 0;
    strh.wLanguage = 0;
    strh.dwScale = 10000;
-   strh.dwRate = 300000;
+   strh.dwRate = strh.dwScale * vobj->frames_per_second;
    strh.dwStart = 0;
    strh.dwLength = 0;
    strh.dwSuggestedBufferSize = format->buffer_size; 

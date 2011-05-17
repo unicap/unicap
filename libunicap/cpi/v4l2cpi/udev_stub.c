@@ -17,6 +17,8 @@
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+#include <stdlib.h>
+
 char *v4l2cpi_udev_get_serial (const char* devfile)
 {
 	return NULL;

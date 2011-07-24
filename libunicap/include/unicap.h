@@ -132,7 +132,11 @@ typedef struct _unicap_rect_t unicap_rect_t;
 typedef enum
 {
   UNICAP_FLAGS_SIGNIFICANT_BITS_ALL  = 0,
-  UNICAP_FLAGS_SIGNIFICANT_BITS_MASK = 0x1F
+  UNICAP_FLAGS_SIGNIFICANT_BITS_MASK = 0x1F,
+  UNICAP_FLAGS_FIELD_ALTERNATE       = 1<<5,
+  UNICAP_FLAGS_FIELD_TOP             = 1<<6,
+  UNICAP_FLAGS_FIELD_BOTTOM          = 1<<7,
+  UNICAP_FLAGS_FIELD_INTERLACED      = 1<<8,
 } unicap_format_flags_t;
 
 /**

@@ -136,22 +136,22 @@ static struct v4l2_uc_compat v4l2_uc_compat_list[] =
       tov4l2format_func: NULL, 
    },
 
-   { 
-      driver: "uvcvideo", 
-      probe_func: tiseuvccam_probe, 
-      count_ext_property_func: tiseuvccam_count_ext_property, 
-      enumerate_property_func: tiseuvccam_enumerate_properties,
-      override_property_func: tiseuvccam_override_property,
-      set_property_func: tiseuvccam_set_property,
-      get_property_func: tiseuvccam_get_property,
-      fmt_get_func: tiseuvccam_fmt_get,
-#ifdef VIDIOC_ENUM_FRAMESIZES
-      override_framesize_func: tiseuvccam_override_framesize, 
-#else
-      override_framesize_func: NULL,
-#endif
-      tov4l2format_func: tiseuvccam_tov4l2format,
-   },   
+/*    {  */
+/*       driver: "uvcvideo",  */
+/*       probe_func: tiseuvccam_probe,  */
+/*       count_ext_property_func: tiseuvccam_count_ext_property,  */
+/*       enumerate_property_func: tiseuvccam_enumerate_properties, */
+/*       override_property_func: tiseuvccam_override_property, */
+/*       set_property_func: tiseuvccam_set_property, */
+/*       get_property_func: tiseuvccam_get_property, */
+/*       fmt_get_func: tiseuvccam_fmt_get, */
+/* #ifdef VIDIOC_ENUM_FRAMESIZES */
+/*       override_framesize_func: tiseuvccam_override_framesize,  */
+/* #else */
+/*       override_framesize_func: NULL, */
+/* #endif */
+/*       tov4l2format_func: tiseuvccam_tov4l2format, */
+/*    },    */
 };
 
 
@@ -1050,7 +1050,11 @@ static unicap_status_t v4l2_set_format( void *cpi_data, unicap_format_t *_format
    v4l2_fmt.fmt.pix.width = format.size.width;
    v4l2_fmt.fmt.pix.height = format.size.height;
    v4l2_fmt.fmt.pix.pixelformat = format.fourcc;/* handle->unicap_formats[ index ].fourcc; */
-   v4l2_fmt.fmt.pix.field = V4L2_FIELD_ANY;
+   if ((format.flags & UNICAP_FLAGS_FIELD_ALTERNATE) == UNICAP_FLAGS_FIELD_ALTERNATE){
+	   v4l2_fmt.fmt.pix.field = V4L2_FIELD_ALTERNATE;
+   } else {
+	   v4l2_fmt.fmt.pix.field = V4L2_FIELD_ANY;
+   }
 	
    if( IOCTL( handle->fd, VIDIOC_S_FMT, &v4l2_fmt ) < 0 )
    {

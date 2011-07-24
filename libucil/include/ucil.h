@@ -248,6 +248,19 @@ void ucil_draw_box( unicap_data_buffer_t *data_buffer, ucil_color_t *color, int 
  */
 void ucil_draw_circle( unicap_data_buffer_t *dest, ucil_color_t *color, int cx, int cy, int r );
 /**
+ * ucil_draw_filled_circle:
+ * @data_buffer: target buffer
+ * @color: an #ucil_color_t. The colorspace of the color has to match
+ * the colorspace of the data_buffer.
+ * @cx: center of the circle ( x position )
+ * @cy: center of the circle ( y position )
+ * @r: radius
+ * 
+ * Draws a filled circle.
+ *
+ */
+void ucil_draw_filled_circle( unicap_data_buffer_t *dest, ucil_color_t *color, int cx, int cy, int r );
+/**
  * ucil_create_font_object:
  * @size: size of font in points
  * @font: name of font or NULL to use default font

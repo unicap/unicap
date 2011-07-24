@@ -13,6 +13,7 @@
 
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
 #include "debug.h"
 #include "unicap.h"
 
@@ -23,7 +24,10 @@
 #ifndef MAX
 #define MAX(a,b) (((a)<(b))?(b):(a))
 #endif
-#define CLIP(a,l,u) ((a)<(l)?(l):(((a)>(u)) ? (u) : (a) ) )	 
+#define CLIP(a,l,u) ((a)<(l)?(l):(((a)>(u)) ? (u) : (a) ) )
+#define NORMALIZE(dt, a, b) if ((a)>(b)) { dt t; t = a; a = b; b = t; }
+#define OOB(buf, x1, y1, x2, y2) ((x2)<0 || (x1)>=buf->format.size.width || \
+                                  (y2)<0 || (y1)>=buf->format.size.height)
 
 static __inline__ 
 void draw_hline( unicap_data_buffer_t *data_buffer, ucil_color_t *color, unsigned int fill, int y, int x1, int x2 );
@@ -532,271 +536,322 @@ void ucil_draw_line( unicap_data_buffer_t *data_buffer, ucil_color_t *color,
 static __inline__ 
 void draw_hline( unicap_data_buffer_t *data_buffer, ucil_color_t *color, unsigned int fill, int y, int x1, int x2 )
 {
-   int o;
-   int x;
+   // Coordinates should already have been normalised and clipped:
+   //    0 <= x1 <= x2 <= width-1
+   //    0 <= y <= height-1
+   //
+   // For 16/32bpp, works best if data start is aligned to at least the pixel
+   // size, so we can do aligned 32-bit writes most/all of the time.
+   //
+   // Fill generation (and rolling for 24bpp) is little-endian specific, but
+   // that is relatively easy to fix, we could also try to do 64-bit writes
+   // on 64-bit machines at the cost of an extra decision point.
+
    int bytespp;
+   unsigned char *p;
+   unsigned char *q;
+   unsigned int fill24[3];
+   int o;
 
    bytespp = data_buffer->format.bpp/8;
+   p = data_buffer->data + (y*data_buffer->format.size.width + x1)*bytespp;
 
-   o = y * data_buffer->format.size.width * bytespp;
+   switch( bytespp )
+   {
+      case 1:
+         // Assume this is more optimised than anything else we could do
+         memset( p, fill, x2-x1+1 );
+         break;
 
-   for( x = x1; x < ( ( x1 & ~0x3 ) + 4 ); x++ )
-   {
-      ucil_set_pixel( data_buffer, color, x, y );
-   }
-   for( x = x2 & ~0x3; x <= x2; x++ )
-   {
-      ucil_set_pixel( data_buffer, color, x, y );
-   }
-   for( x = ((x1&~0x3)+4); x < ((x2)&~03); x+=4/bytespp )
-   {
-      *(int*)(data_buffer->data + o + ( x * bytespp)) = fill;
+      case 2:
+         q = p + (x2-x1)*2;
+
+         if( (intptr_t)p & 2 )
+         {
+            // Align start to next word boundary
+            *(unsigned short*)p = fill;
+            p += 2;
+            if (p>q) return;
+         }
+         if( ((intptr_t)q & 2)==0 )
+         {
+            // Align end to previous word boundary
+            *(unsigned short*)q = fill;
+            q -= 4;
+         }
+         while( p<=q )
+         {
+            *(unsigned int*)p = fill;
+            p += 4;
+         }
+         break;
+
+      case 3:
+         // These aren't *quite* rotations: RBGR, GRBG, BGRB
+         fill24[0] = fill;
+         fill24[1] = (fill>>8) | ((fill & 0xff00)<<16);
+         fill24[2] = (fill<<8) | ((fill & 0xff0000)>>16);
+         q = p + (x2-x1)*3;
+         o = 0;
+
+         // Align start to next word boundary, and choose correct fill value
+         // for that position
+         switch( (intptr_t)p & 3 )
+         {
+            case 1:
+               *p = fill;
+               *(unsigned short*)(p+1) = fill>>8;
+               p += 3;
+               if (p>q) return;
+               break;
+            case 2:
+               *(unsigned short*)p = fill;
+               p += 2;
+               o = 2;
+               break;
+            case 3:
+               *p = fill;
+               p++;
+               o = 1;
+               break;
+         }
+
+         // Align end to previous word boundary
+         switch( (intptr_t)q & 3 )
+         {
+            case 0:
+               *q = fill;
+               *(unsigned short*)(q+1) = fill>>8;
+               break;
+            case 1:
+               q += 3;
+               break;
+            case 2:
+               q += 2;
+               *q = fill>>16;
+               break;
+            case 3:
+               q += 1;
+               *(unsigned short*)q = fill>>8;
+               break;
+         }
+
+         while( p<q )
+         {
+            *(unsigned int*)p = fill24[o++];
+            if (o==3) o = 0;
+            p += 4;
+         }
+         break;
+
+      case 4:
+         q = p + (x2-x1)*4;
+
+         while( p<=q )
+         {
+            *(unsigned int*)p = fill;
+            p += 4;
+         }
+         break;
    }
 }
 
-static __inline__ 
-void draw_hline_rgb24( unicap_data_buffer_t *data_buffer, ucil_color_t *color, int y, int x1, int x2 )
+static __inline__
+int get_colorspace_fill( unicap_data_buffer_t *data_buffer, ucil_color_t *color , unsigned int *fill )
 {
-   int xa;
-   int xb;
-   int xc;
-   unsigned int *o;
-   unsigned int fill1 = ( color->rgb24.r << 24 ) | ( color->rgb24.g << 16 ) | ( color->rgb24.b << 8 ) | ( color->rgb24.r );
-   unsigned int fill2 = ( color->rgb24.g << 24 ) | ( color->rgb24.b << 16 ) | ( color->rgb24.r << 8 ) | ( color->rgb24.g );
-   unsigned int fill3 = ( color->rgb24.b << 24 ) | ( color->rgb24.r << 16 ) | ( color->rgb24.g << 8 ) | ( color->rgb24.b );
-   
-   o = (unsigned int *) ( data_buffer->data + ( y * data_buffer->format.size.width * 3 ) );
-   
-   for( xa = x1; xa < ( x1 + ( x1 % 3 ) ); xa++ )
+   switch( color->colorspace )
    {
-      ucil_set_pixel( data_buffer, color, xa, y );
-   }
-   for( xb = x2 - 4; xb <= x2; xb++ )
-   {
-      ucil_set_pixel( data_buffer, color, xb, y );
-   }
-   for( xc = xa; xc < x2; xc += 4 )
-   {
-      *o++ = fill1;
-      *o++ = fill2;
-      *o++ = fill3;
-   }
-}
+      default:
+         TRACE( "color format not supported for this operation\n" );
+         return 0;
 
+      case UCIL_COLORSPACE_Y8: 
+         *fill = color->y8.y | ( color->y8.y << 8 ) | ( color->y8.y << 16 ) | ( color->y8.y << 24 );
+         break;
+
+      case UCIL_COLORSPACE_RGB24:
+         *fill = color->rgb24.r | ( color->rgb24.g << 8 ) | ( color->rgb24.b << 16 ) | ( color->rgb24.r << 24 );
+         break;
+      
+      case UCIL_COLORSPACE_RGB32: 
+         *fill = color->rgb32.r | ( color->rgb32.g << 8 ) | ( color->rgb32.b << 16 ) | ( color->rgb32.a << 24 );
+         break;
+
+      case UCIL_COLORSPACE_YUV:
+         switch( data_buffer->format.fourcc )
+         {
+            default:
+               TRACE( "color format not supported for this operation\n" );
+               return 0;
+            case FOURCC('U','Y','V','Y'):
+               *fill = color->yuv.u + ( color->yuv.y << 8 ) + ( color->yuv.v << 16 ) + ( color->yuv.y << 24 );
+               break;
+            case FOURCC('Y','U','Y','V'):
+            case FOURCC('Y','U','Y','2'):
+               *fill = (color->yuv.u<<8) + ( color->yuv.y  ) + ( color->yuv.v << 24 ) + ( color->yuv.y << 16 );
+               break;
+         }
+         break;
+   }
+
+   return 1;
+}
 
 void ucil_draw_rect( unicap_data_buffer_t *data_buffer, ucil_color_t *color, int x1, int y1, int x2, int y2 )
 {
-   if( x1 > x2 )
-   {
-      int t;
-      t = x2;
-      x2 = x1;
-      x1 = t;
-   }
-   if( y1 > y2 )
-   {
-      int t;
-      t = y2;
-      y2 = y1;
-      y1 = t;
-   }
+   unsigned int fill;
+   int y;
+
+   NORMALIZE( int, x1, x2 );
+   NORMALIZE( int, y1, y2 );
+
+   if( OOB( data_buffer, x1, y1, x2, y2 ) ) return;
 
    x1 = CLIP( x1, 0, data_buffer->format.size.width-1 );
    x2 = CLIP( x2, 0, data_buffer->format.size.width-1 );
    y1 = CLIP( y1, 0, data_buffer->format.size.height-1 );
    y2 = CLIP( y2, 0, data_buffer->format.size.height-1 );
-   
-   
-   switch( color->colorspace )
-   {
-      default:
-	 TRACE( "color format not supported for this operation\n" );
-	 break;
-
-      case UCIL_COLORSPACE_Y8: 
-      {
-	 unsigned int fill;
-	 int y;
-	 for( y = y1; y <= y2; y++ )
-	 {
-	    fill = color->y8.y | ( color->y8.y << 8 ) | ( color->y8.y << 16 ) | ( color->y8.y << 24 );
-	    draw_hline( data_buffer, color, fill, y, x1, x2 );
-	 }
-      }
-      break;
-
-      case UCIL_COLORSPACE_RGB24:
-      {
-	 int x,y;
-	 for( y = y1; y < y2; y++ )
-	 {
-	    for( x = x1; x <= x2; x++ )
-	    {
-	       ucil_set_pixel( data_buffer, color, x, y );
-	    }
-	    
-/* 	    draw_hline_rgb24( data_buffer, color, y, x1, x2 ); */
-	 }
-      }
-      break;
       
-      case UCIL_COLORSPACE_RGB32: 
-      {
-	 unsigned int fill;
-	 int y;
-	 for( y = y1; y <= y2; y++ )
-	 {
-	    fill = color->rgb32.r | ( color->rgb32.g << 8 ) | ( color->rgb32.b << 16 ) | ( color->rgb32.a << 24 );
-	    draw_hline( data_buffer, color, fill, y, x1, x2 );
-	 }
-      }
-      break;
+   if( !get_colorspace_fill( data_buffer, color, &fill ) ) return;
 
-      case UCIL_COLORSPACE_YUV:
-      {
-	 switch( data_buffer->format.fourcc )
-	 {
-	    case FOURCC('U','Y','V','Y'):
-	    {
-	       unsigned int fill;
-	       int y;
-	       for( y = y1; y <= y2; y++ )
-	       {
-		  fill = color->yuv.u + ( color->yuv.y << 8 ) + ( color->yuv.v << 16 ) + ( color->yuv.y << 24 );
-		  draw_hline( data_buffer, color, fill, y, x1, x2 );		  
-	       }
-	    }
-	    case FOURCC('Y','U','Y','V'):
-	    case FOURCC('Y','U','Y','2'):
-	    {
-	       unsigned int fill;
-	       int y;
-	       for( y = y1; y <= y2; y++ )
-	       {
-		  fill = (color->yuv.u<<8) + ( color->yuv.y  ) + ( color->yuv.v << 24 ) + ( color->yuv.y << 16 );
-		  draw_hline( data_buffer, color, fill, y, x1, x2 );		  
-	       }
-	    }
-	 }
-      }
-      break;
-   }   
+   for( y = y1; y <= y2; y++ )
+   {
+      draw_hline( data_buffer, color, fill, y, x1, x2 );
+   }
 }
 
 void ucil_draw_box( unicap_data_buffer_t *data_buffer, ucil_color_t *color, int x1, int y1, int x2, int y2 )
 {
-   if( x1 > x2 )
+   int xl, xr, yt, yb, y;
+   unsigned int fill;
+
+   NORMALIZE( int, x1, x2 );
+   NORMALIZE( int, y1, y2 );
+
+   if( OOB( data_buffer, x1, y1, x2, y2 ) ) return;
+
+   xl = CLIP( x1, 0, data_buffer->format.size.width-1 );
+   xr = CLIP( x2, 0, data_buffer->format.size.width-1 );
+   yt = CLIP( y1+1, 0, data_buffer->format.size.height-1 );
+   yb = CLIP( y2-1, 0, data_buffer->format.size.height-1 );
+
+   if( !get_colorspace_fill(data_buffer, color, &fill ) ) return;
+
+   if( y1>=0 )
    {
-      int t;
-      t = x2;
-      x2 = x1;
-      x1 = t;
+      draw_hline( data_buffer, color, fill, y1, xl, xr );
    }
-   if( y1 > y2 )
+   if( y2<data_buffer->format.size.height )
    {
-      int t;
-      t = y2;
-      y2 = y1;
-      y1 = t;
+      draw_hline( data_buffer, color, fill, y2, xl, xr );
    }
-   
-   switch( color->colorspace )
+   for( y = yt; y <= yb; y++ )
    {
-      default:
-	 TRACE( "color format not supported for this operation\n" );
-	 break;
-
-      case UCIL_COLORSPACE_Y8: 
+      if( x1>=0 )
       {
-	 unsigned int fill;
-	 int y;
-	 fill = color->y8.y | ( color->y8.y << 8 ) | ( color->y8.y << 16 ) | ( color->y8.y << 24 );
-	 draw_hline( data_buffer, color, fill, y1, x1, x2 );
-	 draw_hline( data_buffer, color, fill, y2, x1, x2 );
-	 for( y = y1; y < y2; y++ )
-	 {
-	    ucil_set_pixel( data_buffer, color, x1, y );
-	    ucil_set_pixel( data_buffer, color, x2, y );
-	 }
+         ucil_set_pixel( data_buffer, color, x1, y );
       }
-      break;
-
-      case UCIL_COLORSPACE_RGB24:
+      if( x2<data_buffer->format.size.width )
       {
-	 int x,y;
-	 for( y = y1; y < y2; y++ )
-	 {
-	    ucil_set_pixel( data_buffer, color, x1, y );
-	    ucil_set_pixel( data_buffer, color, x2, y );
-	 }
-	 for( x = x1; x < x2; x++ )
-	 {
-	    ucil_set_pixel( data_buffer, color, x, y1 );
-	    ucil_set_pixel( data_buffer, color, x, y2 );
-	 }
+         ucil_set_pixel( data_buffer, color, x2, y );
       }
-      break;
-      
-      case UCIL_COLORSPACE_RGB32: 
-      {
-	 unsigned int fill;
-	 int y;
-	 fill = color->rgb32.r | ( color->rgb32.g << 8 ) | ( color->rgb32.b << 16 ) | ( color->rgb32.a << 24 );
-	 draw_hline( data_buffer, color, fill, y1, x1, x2 );
-	 draw_hline( data_buffer, color, fill, y2, x1, x2 );
-	 for( y = y1; y < y2; y++ )
-	 {
-	    ucil_set_pixel( data_buffer, color, x1, y );
-	    ucil_set_pixel( data_buffer, color, x2, y );
-	 }
-      }
-      break;
-
-      case UCIL_COLORSPACE_YUV:
-      {
-	 switch( data_buffer->format.fourcc )
-	 {
-	    case FOURCC('U','Y','V','Y'):
-	    {
-	       unsigned int fill;
-	       int y;
-	       fill = color->yuv.u + ( color->yuv.y << 8 ) + ( color->yuv.v << 16 ) + ( color->yuv.y << 24 );
-	       draw_hline( data_buffer, color, fill, y1, x1, x2 );
-	       draw_hline( data_buffer, color, fill, y2, x1, x2 );
-	       for( y = y1; y < y2; y++ )
-	       {
-		  ucil_set_pixel( data_buffer, color, x1, y );
-		  ucil_set_pixel( data_buffer, color, x2, y );
-	       }
-	    }
-	    case FOURCC('Y','U','Y','V'):
-	    case FOURCC('Y','U','Y','2'):
-	    {
-	       unsigned int fill;
-	       int y;
-	       fill = (color->yuv.u<<8) + ( color->yuv.y ) + ( color->yuv.v << 24 ) + ( color->yuv.y << 16 );
-	       draw_hline( data_buffer, color, fill, y1, x1, x2 );
-	       draw_hline( data_buffer, color, fill, y2, x1, x2 );
-	       for( y = y1; y < y2; y++ )
-	       {
-		  ucil_set_pixel( data_buffer, color, x1, y );
-		  ucil_set_pixel( data_buffer, color, x2, y );
-	       }
-	    }
-	 }
-      }
-      break;
    }   
 }
 
 void ucil_draw_circle( unicap_data_buffer_t *dest, ucil_color_t *color, int cx, int cy, int r )
 {
-   double step = 1/(double)r;
-   double i;
+   int x = 0;
+   int y = r;
+   int e = 1-r;
+   int dx = 1;
+   int dy = -2*r;
 
-   for( i = 0; i < 2 * M_PI; i += step )
+   ucil_set_pixel( dest, color, cx, cy-r );
+   ucil_set_pixel( dest, color, cx, cy+r );
+   ucil_set_pixel( dest, color, cx-r, cy );
+   ucil_set_pixel( dest, color, cx+r, cy );
+
+   for( ;; )
    {
-      ucil_set_pixel( dest, color, cx + sin( i ) * r, cy + sin( i + M_PI_2 ) * r );
+      if( e>=0 )
+      {
+         y--;
+         dy += 2;
+         e += dy;
+      }
+      x++;
+      if( x>=y ) break;
+      dx += 2;
+      e += dx;
+
+      ucil_set_pixel( dest, color, cx+x, cy-y );
+      ucil_set_pixel( dest, color, cx+x, cy+y );
+      ucil_set_pixel( dest, color, cx-x, cy-y );
+      ucil_set_pixel( dest, color, cx-x, cy+y );
+      ucil_set_pixel( dest, color, cx+y, cy-x );
+      ucil_set_pixel( dest, color, cx+y, cy+x );
+      ucil_set_pixel( dest, color, cx-y, cy-x );
+      ucil_set_pixel( dest, color, cx-y, cy+x );
+   }
+
+   if( x==y )
+   {
+      ucil_set_pixel( dest, color, cx+x, cy-y );
+      ucil_set_pixel( dest, color, cx+x, cy+y );
+      ucil_set_pixel( dest, color, cx-x, cy-y );
+      ucil_set_pixel( dest, color, cx-x, cy+y );
    }
 }
 
+static __inline__
+void draw_hline_clipped( unicap_data_buffer_t *data_buffer, ucil_color_t *color, unsigned int fill, int y, int x1, int x2 )
+{
+   if( OOB( data_buffer, x1, y, x2, y ) ) return;
+
+   x1 = CLIP( x1, 0, data_buffer->format.size.width-1 );
+   x2 = CLIP( x2, 0, data_buffer->format.size.width-1 );
+
+   draw_hline( data_buffer, color, fill, y, x1, x2 );
+}
+
+void ucil_draw_filled_circle( unicap_data_buffer_t *dest, ucil_color_t *color, int cx, int cy, int r )
+{
+   unsigned int fill;
+   int x, y, e, dx, dy;
+
+   if( r<0 ) r = -r;
+   x = 0;
+   y = r;
+   e = 1-r;
+   dx = 1;
+   dy = -2*r;
+
+   if( !get_colorspace_fill( dest, color, &fill ) ) return;
+
+   draw_hline_clipped( dest, color, fill, cy, cx-r, cx+r );
+
+   for( ;; )
+   {
+      if( e>=0 )
+      {
+         draw_hline_clipped( dest, color, fill, cy-y, cx-x, cx+x );
+         draw_hline_clipped( dest, color, fill, cy+y, cx-x, cx+x );
+         y--;
+         dy += 2;
+         e += dy;
+      }
+      x++;
+      if( x>=y ) break;
+      dx += 2;
+      e += dx;
+
+      draw_hline_clipped( dest, color, fill, cy-x, cx-y, cx+y );
+      draw_hline_clipped( dest, color, fill, cy+x, cx-y, cx+y );
+   }
+
+   if( x==y )
+   {
+      draw_hline_clipped( dest, color, fill, cy-y, cx-x, cx+x );
+      draw_hline_clipped( dest, color, fill, cy+y, cx-x, cx+x );
+   }
+}

@@ -2086,6 +2086,65 @@ static struct euvccam_video_format_description formats_8207_mono[] =
    },
 };
 
+static double format_8208_framerates[] = {    30, 15, 7.5, 3.75 };
+static int    format_8208_framerate_map[] = {  0,  1,   2,    3 };
+
+static struct euvccam_video_format_description formats_8208_color[] =
+{
+   {
+      1,
+      1,
+      { identifier: "RGB24 1280x960",
+	size: {0,0,1280,960},
+	min_size: { 0,0,16,16 },
+	max_size: { 0,0,1280,960 },
+	h_stepping: 0,
+	v_stepping: 0, 
+	sizes: NULL,
+	size_count: 0,
+	bpp: 24,
+	buffer_size: 1280 * 960 * 3,
+	fourcc: FOURCC( 'R', 'G', 'B', '3' ),
+	flags: 0, 
+	buffer_types: UNICAP_BUFFER_TYPE_SYSTEM | UNICAP_BUFFER_TYPE_USER, 
+	system_buffer_count: EUVCCAM_SYSTEM_BUFFER_COUNT,
+	buffer_type: 0
+      },
+      N_ELEMENTS( format_8207_framerates ), 
+      format_8207_framerates,
+      format_8207_framerate_map,
+      1280 * 960, 
+      euvccam_colorproc_by8_gr_rgb24_nn/* euvccam_colorproc_by8_rgb24_nn_be */,
+      EUVCCAM_FORMAT_IS_PARTIAL_SCAN,
+   },
+   {
+      1,
+      1,
+      { identifier: "Y800 1280x960",
+	size: {0,0,1280,960},
+	min_size: { 0,0,16,16 },
+	max_size: { 0,0,1280,960 },
+	h_stepping: 0,
+	v_stepping: 0, 
+	sizes: NULL,
+	size_count: 0,
+	bpp: 8,
+	buffer_size: 1280 * 960,
+	fourcc: FOURCC( 'Y', '8', '0', '0' ),
+	flags: 0, 
+	buffer_types: UNICAP_BUFFER_TYPE_SYSTEM | UNICAP_BUFFER_TYPE_USER, 
+	system_buffer_count: EUVCCAM_SYSTEM_BUFFER_COUNT,
+	buffer_type: 0
+      },
+      N_ELEMENTS( format_8202_framerates ), 
+      format_8207_framerates,
+      format_8207_framerate_map,
+      1280 * 960, 
+      NULL,
+      EUVCCAM_FORMAT_IS_PARTIAL_SCAN,
+   },      
+};
+
 struct euvccam_devspec euvccam_devspec[] =
 {
    { 
@@ -2166,6 +2225,15 @@ struct euvccam_devspec euvccam_devspec[] =
       0,
       N_ELEMENTS( formats_8207_mono ),
       formats_8207_mono, 
+      N_ELEMENTS( properties_8206 ),
+      properties_8206,
+   },
+   { 
+      0x8208,
+      (6<<2)|2, 
+      0,
+      N_ELEMENTS( formats_8208_color ),
+      formats_8208_color, 
       N_ELEMENTS( properties_8206 ),
       properties_8206,
    },

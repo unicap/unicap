@@ -48,7 +48,7 @@
 static char *usb_path = NULL;
 static char *usb_search_path[]= { "/dev/bus/usb", "/proc/bus/usb", NULL };
 
-static uint16_t supported_pids[] = { 0x8201, 0x8202, 0x8203, 0x8204, 0x8205, 0x8206, 0x8207 };
+static uint16_t supported_pids[] = { 0x8201, 0x8202, 0x8203, 0x8204, 0x8205, 0x8206, 0x8207, 0x8208 };
 
 
 static char *get_usb_path( void )

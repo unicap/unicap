@@ -1,6 +1,6 @@
 /* unicap
  *
- * Copyright (C) 2004 Arne Caspari ( arne_caspari@users.sourceforge.net )
+ * Copyright (C) 2004-2011 Arne Caspari ( arne_caspari@users.sourceforge.net )
  *
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -465,8 +465,8 @@ static void new( UnicapgtkDeviceProperty *ugtk, unicap_property_t *property_spec
    }
    else
    {
-      memcpy( &ugtk->property, property_spec, sizeof( unicap_property_t ) );
-      unicapgtk_pack_device_property( ugtk, ugtk->property.identifier );
+	   unicap_copy_property( &ugtk->property, property_spec);
+	   unicapgtk_pack_device_property( ugtk, ugtk->property.identifier );
    }
 }
 
@@ -523,6 +523,7 @@ GtkWidget* unicapgtk_device_property_new( unicap_property_t *property_spec )
    return GTK_WIDGET( ugtk );
 }
 
+
 static void format_label( gchar *string, gint maxlen )
 {
    gchar *c;
@@ -541,6 +542,53 @@ static void format_label( gchar *string, gint maxlen )
    }
 }
 
+gboolean
+unicapgtk_device_property_set_device (UnicapgtkDeviceProperty *ugtk, unicap_device_t *device_spec)
+{
+	unicap_status_t status;
+	
+	status = unicap_enumerate_devices (device_spec, &ugtk->device, 0);
+	if (SUCCESS (status))
+	{
+		status = unicap_open (&ugtk->unicap_handle, &ugtk->device );
+		
+		if (SUCCESS (status)){
+			unicap_property_t property_spec;
+			gtk_container_foreach (GTK_CONTAINER(ugtk->hbox), (GtkCallback)gtk_widget_destroy, NULL);
+			ugtk->scale = NULL;
+			ugtk->one_push_button = NULL;
+			ugtk->auto_check_box = NULL;
+			ugtk->value_combo_box = NULL;
+			ugtk->menu_combo_box = NULL;
+			unicap_void_property (&property_spec);
+			strcpy (property_spec.identifier, ugtk->property.identifier);
+			if( SUCCESS( unicap_enumerate_properties( ugtk->unicap_handle, 
+								  &property_spec, 
+								  &ugtk->property_default, 
+								  0 ) ) ){
+				strcpy( ugtk->property.identifier, ugtk->property_default.identifier );
+				
+				if( SUCCESS( unicap_get_property( ugtk->unicap_handle, 
+								  &ugtk->property ) ) ){
+					unicapgtk_pack_device_property( ugtk, ugtk->property.identifier );
+				}else{
+					TRACE( "unicap_get_property failed [%s]\n", ugtk->property.identifier );
+				}
+			}
+		}
+	} else {
+		TRACE ("Failed to enumerate device");
+	}
+
+	return status == STATUS_SUCCESS;
+}
+
+
+	
+	
+	
+	
+
 /**
  * unicapgtk_device_property_set:
  * @ugtk: a #UnicapgtkDeviceProperty
@@ -553,7 +601,12 @@ gboolean unicapgtk_device_property_set( UnicapgtkDeviceProperty *ugtk, unicap_pr
 {
    if( strcmp( property->identifier, ugtk->property.identifier ) )
    {
-      return FALSE;
+	   if (!strcmp (ugtk->property.identifier, "")){
+		   unicap_copy_property( &ugtk->property, property);
+		   unicapgtk_pack_device_property( ugtk, ugtk->property.identifier );
+	   } else {
+		   return FALSE;
+	   }
    }
 
    if( ugtk->unicap_handle )

@@ -105,6 +105,8 @@ GType      unicapgtk_device_property_get_type          ( void );
 GtkWidget* unicapgtk_device_property_new               ( unicap_property_t *property_spec );
 GtkWidget* unicapgtk_device_property_new_by_handle     ( unicap_handle_t handle, 
 							 unicap_property_t *property_spec );
+gboolean   unicapgtk_device_property_set_device        ( UnicapgtkDeviceProperty *ugtk, 
+							 unicap_device_t *device_spec);
 gboolean   unicapgtk_device_property_set               ( UnicapgtkDeviceProperty *ugtk, 
 							 unicap_property_t *property );
 GtkWidget *unicapgtk_device_property_get_label         ( UnicapgtkDeviceProperty *ugtk );

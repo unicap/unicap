@@ -28,11 +28,51 @@
 #include "pyunicapgtk_device_selection.h"
 #include "pyunicapgtk_video_format_selection.h"
 #include "unicapimagebuffer.h"
+#include "utils.h"
+
+static PyObject *
+pyunicapgtk_property_from_gpointer ( PyTypeObject *type, PyObject *args, PyObject *kwargs);
+
+
 
 static PyMethodDef UnicapgtkMethods[] = 
 {
-      { NULL, NULL, 0, NULL }
+	{ "property_from_gpointer", pyunicapgtk_property_from_gpointer, METH_VARARGS | METH_KEYWORDS, 
+	  "Convert gpointer of type unicap_property_t to a python object" },
+	{ NULL, NULL, 0, NULL }
 };
+
+
+static PyObject *
+pyunicapgtk_property_from_gpointer ( PyTypeObject *type, PyObject *args, PyObject *kwargs)
+{
+	static char* kwlist[] = { "gpointer", NULL };
+	UnicapImageBuffer *self;
+	PyObject *gpointer = NULL;
+	if (!PyArg_ParseTupleAndKeywords(args, kwargs,
+					 "O:unicapgtk.ImageBuffer.__init__",
+					 kwlist, &gpointer ))
+		return NULL;
+	
+	PyObject *gobject_module = pygobject_init( -1, -1, -1 );
+      
+	 
+	if( !PyObject_TypeCheck(gpointer, &PyGPointer_Type) ){
+		PyErr_SetString( PyExc_ValueError, "Argument should be a gpointer" );
+		Py_XDECREF( gpointer );
+		return NULL;
+	}
+	
+	unicap_property_t *property = pyg_pointer_get( gpointer, unicap_property_t );
+
+	PyObject *obj = build_property (property);
+	
+	Py_XDECREF( gobject_module );
+
+	return obj;
+}
+
+
 
 
 PyMODINIT_FUNC

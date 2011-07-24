@@ -22,51 +22,68 @@ override unicapgtk_device_property_new kwargs
 static int
 _wrap_unicapgtk_device_property_new(PyGObject *self, PyObject *args, PyObject *kwargs)
 {
-   static char* kwlist[] = { "property", NULL };
-   PyObject *propertyobj = NULL;
-   unicap_property_t property;
+	static char* kwlist[] = { "property", "device", NULL };
+	PyObject *propertyobj = NULL;
+	unicap_property_t property;
+	unicap_device_t device_spec;
+	unicap_device_t device;
+	char *device_id = NULL;
    
-   unicap_void_property( &property );
+	unicap_void_property( &property );
 
-   if (!PyArg_ParseTupleAndKeywords(args, kwargs,
-				    "O:unicapgtk.DeviceProperty.__init__",
-				    kwlist, &propertyobj ))
-      return -1;
+	if (!PyArg_ParseTupleAndKeywords(args, kwargs,
+					 "O|O&:unicapgtk.DeviceProperty.__init__",
+					 kwlist, &propertyobj, conv_device_identifier, &device_id ))
+		return -1;
 
-   pygobject_constructv(self, 0, NULL);
+	pygobject_constructv(self, 0, NULL);
 
-   if( parse_property( &property, propertyobj ) < 0 ){
-      PyErr_SetString( PyExc_ValueError, "Invalid property specification" );
-      return -1;
-   }
+	if( parse_property( &property, propertyobj ) < 0 ){
+		PyErr_SetString( PyExc_ValueError, "Invalid property specification" );
+		return -1;
+	}
    
-   unicapgtk_device_property_set( UNICAPGTK_DEVICE_PROPERTY( self->obj ), &property );
+	if( device_id ){
+		unicap_void_device( &device );
+		unicap_void_device( &device_spec );
+		strcpy( device_spec.identifier, device_id );
+		
+		unicapgtk_device_property_set( UNICAPGTK_DEVICE_PROPERTY( self->obj ), &property );
+		
+		if( !SUCCESS( unicap_enumerate_devices( &device_spec, &device, 0 ) ) ){
+			PyErr_SetString( PyExc_RuntimeError, "failed to enumerate device" );
+			return -1;
+		}
+		unicapgtk_device_property_set_device( UNICAPGTK_DEVICE_PROPERTY( self->obj ), &device );
+	}
 
-   return 0;
+	unicapgtk_device_property_set( UNICAPGTK_DEVICE_PROPERTY( self->obj ), &property );
+
+	return 0;
 }
 %%
 override unicapgtk_device_property_set kwargs
 static int
 _wrap_unicapgtk_device_property_set(PyGObject *self, PyObject *args, PyObject *kwargs)
 {
-   static char* kwlist[] = { "property", NULL };
-   PyObject *propertyobj = NULL;
-   unicap_property_t property;
+	static char* kwlist[] = { "property", NULL };
+	PyObject *propertyobj = NULL;
+	unicap_property_t property;
    
-   unicap_void_property( &property );
+	unicap_void_property( &property );
 
-   if (!PyArg_ParseTupleAndKeywords(args, kwargs,
-				    "O:unicapgtk.DeviceProperty.__init__",
-				    kwlist, &propertyobj ))
-      return -1;
+	if (!PyArg_ParseTupleAndKeywords(args, kwargs,
+					 "O:unicapgtk.DeviceProperty.__init__",
+					 kwlist, &propertyobj ))
+		return -1;
 
-   if( parse_property( &property, propertyobj ) < 0 ){
-      PyErr_SetString( PyExc_ValueError, "Invalid property specification" );
-      return -1;
-   }
+	if( parse_property( &property, propertyobj ) < 0 ){
+		PyErr_SetString( PyExc_ValueError, "Invalid property specification" );
+		return -1;
+	}
    
-   unicapgtk_device_property_set( UNICAPGTK_DEVICE_PROPERTY( self->obj ), &property );
+	unicapgtk_device_property_set( UNICAPGTK_DEVICE_PROPERTY( self->obj ), &property );
 
-   return 0;
+	return 0;
 }
 %%

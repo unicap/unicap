@@ -309,6 +309,21 @@ int parse_property( unicap_property_t *property, PyObject *obj )
 {   
    PyObject *tmp = NULL;
 
+   tmp = PyDict_GetItemString (obj, "identifier");
+   if (tmp){
+	   strncpy (property->identifier, PyString_AsString(tmp), sizeof (property->identifier)-1);
+   }
+
+   tmp = PyDict_GetItemString (obj, "category");
+   if (tmp){
+	   strncpy (property->category, PyString_AsString(tmp), sizeof (property->category)-1);
+   }
+
+   tmp = PyDict_GetItemString (obj, "unit");
+   if (tmp){
+	   strncpy (property->unit, PyString_AsString(tmp), sizeof (property->unit)-1);
+   }
+
    tmp = PyDict_GetItemString( obj, "flags" );
    if (tmp){
       Py_ssize_t len,index;
@@ -342,26 +357,41 @@ int parse_property( unicap_property_t *property, PyObject *obj )
       case UNICAP_PROPERTY_TYPE_RANGE:
       case UNICAP_PROPERTY_TYPE_VALUE_LIST:
       {
-	 tmp = PyDict_GetItemString( obj, "value" );
-	 if( !tmp )
-	 {
-	    PyErr_SetString( PyExc_ValueError, "Object is missing 'value' key" );
-	    goto err;
-	 }
-	 if( PyFloat_Check( tmp ) )
-	 {
-	    property->value = PyFloat_AsDouble( tmp );
-	 }
-	 else if( PyInt_Check( tmp ) )
-	 {
-	    property->value = PyInt_AsLong( tmp );
-	 }
-	 else
-	 {
-	    goto err;
-	 }
+	      tmp = PyDict_GetItemString( obj, "value" );
+	      if( !tmp ){
+		      PyErr_SetString (PyExc_ValueError, "Object is missing 'value' key");
+		      goto err;
+	      }
+	      if (PyFloat_Check (tmp))
+		      property->value = PyFloat_AsDouble (tmp);
+	      else if (PyInt_Check (tmp))
+		      property->value = PyInt_AsLong (tmp);
+	      else
+		      goto err;
 
-	 
+	      tmp = PyDict_GetItemString (obj, "range");
+	      if (tmp){
+		      PyObject *minval = PyTuple_GetItem (tmp, 0);
+		      PyObject *maxval = PyTuple_GetItem (tmp, 1);
+		      
+		      if (minval){
+			      if (PyFloat_Check (minval))
+				      property->range.min = PyFloat_AsDouble (minval);
+			      else if (PyInt_Check (minval))
+				      property->range.min = PyInt_AsLong (minval);
+			      else
+				      goto err;
+		      }
+		      
+		      if (maxval){
+			      if (PyFloat_Check (maxval))
+				      property->range.max = PyFloat_AsDouble (maxval);
+			      else if (PyInt_Check (maxval))
+				      property->range.max = PyInt_AsLong (maxval);
+			      else
+				      goto err;
+		      }
+	      }
       }
       break;
       

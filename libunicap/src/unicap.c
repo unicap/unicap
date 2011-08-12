@@ -244,6 +244,20 @@ static void unicap_event_callback( unicap_handle_t handle, unicap_event_t event,
 	 handle->cb_info[event].func( event, handle, buffer, handle->cb_info[event].user_ptr );
       }
       break;
+
+      case UNICAP_EVENT_FORMAT_CHANGED:
+      {
+	 va_list ap;
+	 unicap_format_t *format;
+	 
+	 va_start( ap, event );
+	 format = va_arg(ap, unicap_format_t *);
+	 va_end( ap );
+
+	 handle->cb_info[event].func( event, handle, format, handle->cb_info[event].user_ptr );
+      }
+      break;
+      
       
       default:
       {
@@ -363,7 +377,7 @@ static unicap_status_t enumerate_devices( int *count )
       TRACE( "open cpi: %s\n", filename );
 		
       // load the cpi as a .so
-      dlhandle = dlopen( filename, RTLD_NOW );
+      dlhandle = dlopen( filename, RTLD_NOW | RTLD_NODELETE);
       if( !dlhandle ){
 /* 	 TRACE( "cpi load: %s\n", dlerror() ); */
 	 fprintf( stderr, "cpi load '%s': %s\n", filename, dlerror() );
@@ -482,7 +496,7 @@ static unicap_status_t open_cpi( unicap_handle_t *unicap_handle, unicap_device_t
    handle->lock = malloc( sizeof( struct unicap_device_lock ) );
    memset( handle->lock, 0x0, sizeof( struct unicap_device_lock ) );
 
-   dlhandle = dlopen( device->cpi_layer, RTLD_LAZY );
+   dlhandle = dlopen( device->cpi_layer, RTLD_LAZY | RTLD_NODELETE);
    if( !dlhandle ){
       free( handle );
       return STATUS_CPI_OPEN_FAILED;
@@ -823,6 +837,10 @@ unicap_status_t unicap_set_format( unicap_handle_t handle,
    _unicap_acquire_cpi_lock( handle->sem_id );
    status = handle->cpi.cpi_set_format( handle->cpi_data, format );
    _unicap_release_cpi_lock( handle->sem_id );
+
+   if( SUCCESS( status ) ){
+      unicap_event_callback( handle, UNICAP_EVENT_FORMAT_CHANGED, format );
+   }
 	
    return status;
 }

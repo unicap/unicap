@@ -670,7 +670,7 @@ void unicapgtk_device_property_set_label( UnicapgtkDeviceProperty *ugtk, GtkWidg
 static gboolean is_mapped_float_type( unicap_property_t *property )
 {
    if( ( !strcmp( property->unit, "s" ) ) && 
-       ( property->range.min <= 1/1000.0 ) &&
+       ( property->range.min <= 1/100.0 ) &&
        ( property->range.max >= 1.0 ) )
    {
       return TRUE;

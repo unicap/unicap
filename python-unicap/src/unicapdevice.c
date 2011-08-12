@@ -33,6 +33,29 @@
 
 PyTypeObject UnicapDeviceType;
 
+static void format_changed_callback (unicap_event_t event, unicap_handle_t handle, unicap_format_t *format, UnicapDevice *self )
+{
+   if( self->callbacks[CALLBACK_FORMAT_CHANGED] ){
+      PyObject *arglist;
+      PyObject *result;
+      PyObject *pyformat = NULL;
+      PyGILState_STATE gstate;
+      
+      gstate = PyGILState_Ensure();
+      pyformat = build_video_format (format);
+      if( self->callback_data[ CALLBACK_NEW_FRAME ] ){
+	 arglist = Py_BuildValue( "(OO)", pyformat, self->callback_data[CALLBACK_FORMAT_CHANGED] );
+      } else {
+	 arglist = Py_BuildValue( "(O)", pyformat );
+      }
+      result = PyEval_CallObject( self->callbacks[CALLBACK_FORMAT_CHANGED], arglist );
+      Py_DECREF( arglist );
+
+      Py_XDECREF( result );
+      Py_XDECREF( pyformat );
+      PyGILState_Release( gstate );
+   }      
+}
 
 static void new_frame_callback( unicap_event_t event, unicap_handle_t handle, unicap_data_buffer_t *buffer, UnicapDevice *self )
 {
@@ -195,6 +218,7 @@ static int UnicapDevice_init( UnicapDevice *self, PyObject *args, PyObject *kwds
    sem_init( &self->lock, 0, 1 );
    self->wait_buffer = 0;
    
+   unicap_register_callback( self->handle, UNICAP_EVENT_FORMAT_CHANGED, (unicap_callback_t)format_changed_callback, self );
 
    return 0;
 }

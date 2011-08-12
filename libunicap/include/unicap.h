@@ -1,6 +1,6 @@
 /*
     unicap
-    Copyright (C) 2004  Arne Caspari
+    Copyright (C) 2004-2011  Arne Caspari
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -391,15 +391,17 @@ typedef enum
 	UNICAP_EVENT_NEW_DEVICE,
 	UNICAP_EVENT_NEW_FRAME, 
 	UNICAP_EVENT_DROP_FRAME, 
+	UNICAP_EVENT_FORMAT_CHANGED,
 	UNICAP_EVENT_LAST
 } unicap_event_t;
 
 typedef struct _unicap_handle *unicap_handle_t;
 
-typedef void (*unicap_callback_t)( unicap_event_t event, ... );
-typedef void (*unicap_new_frame_callback_t)( unicap_event_t event, unicap_handle_t handle, unicap_data_buffer_t *buffer, void *user_ptr );
-typedef void (*unicap_drop_frame_callback_t)( unicap_event_t event, unicap_handle_t handle, void *user_ptr );
-typedef void (*unicap_new_device_callback_t)( unicap_event_t event, unicap_device_t *device, void *user_ptr );
+typedef void (*unicap_callback_t) (unicap_event_t event, ...);
+typedef void (*unicap_new_frame_callback_t) (unicap_event_t event, unicap_handle_t handle, unicap_data_buffer_t *buffer, void *user_ptr);
+typedef void (*unicap_drop_frame_callback_t) (unicap_event_t event, unicap_handle_t handle, void *user_ptr);
+typedef void (*unicap_new_device_callback_t) (unicap_event_t event, unicap_device_t *device, void *user_ptr);
+typedef void (*unicap_format_changed_callback_t) (unicap_event_t event, unicap_device_t *device, unicap_format_t *format, void *user_ptr);
 
 UNICAP_BEGIN_DECLS
 

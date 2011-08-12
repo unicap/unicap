@@ -20,10 +20,14 @@ if BUILD_EUVCCAM
 DIR_EUVCCAM = euvccam
 endif
 
+if BUILD_ARAVIS
+DIR_ARAVIS = aravis
+endif
+
 if BUILD_THING
 DIR_THING = thing
 endif
 
-SUBDIRS = $(DIR_VID21394) $(DIR_DCAM) $(DIR_V4L) $(DIR_V4L2) $(DIR_EUVCCAM) $(DIR_THING)
-DIST_SUBDIRS = vid21394 dcam v4l v4l2cpi euvccam thing include
+SUBDIRS = $(DIR_VID21394) $(DIR_DCAM) $(DIR_V4L) $(DIR_V4L2) $(DIR_EUVCCAM) $(DIR_ARAVIS) $(DIR_THING)
+DIST_SUBDIRS = vid21394 dcam v4l v4l2cpi euvccam aravis thing include
 MAINTAINERCLEANFILES = Makefile.in 

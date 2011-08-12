@@ -141,6 +141,14 @@ AC_SUBST(LIBRAW1394_PACKAGE_CFLAGS)
 AC_SUBST(LIBRAW1394_PACKAGE_LIBS)
 AC_SUBST(LIBRAW1394_VERSION)
 
+
+# Check for aravis
+PKG_CHECK_MODULES(ARAVIS_PACKAGE, "aravis-0.2", HAVE_ARAVIS="yes", HAVE_ARAVIS="no" )
+
+AC_SUBST(ARAVIS_PACKAGE_CFLAGS)
+AC_SUBST(ARAVIS_PACKAGE_LIBS)
+
+
 AC_ARG_ENABLE(debug-vid21394, 
 		     AS_HELP_STRING( [--enable-debug-vid21394],
 				     [Enable debug output] ), 
@@ -410,6 +418,51 @@ AC_ARG_ENABLE(euvccam,
 	      },
 	      EUVCCAM="yes" )
 
+
+AC_ARG_ENABLE(dcam, 
+	      AS_HELP_STRING( [--enable-dcam], 
+		              [build plugin for IIDC 1394 cameras \[default=yes\]] ),
+	      {
+	      	if test "x$enableval" != "xno"; then
+			DCAM="yes";
+	      	else
+			DCAM="no";
+	      	fi
+	      },
+	      DCAM="yes" )
+if test "x$DCAM" = "xyes"; then
+	if test "$HAVE_LIBRAW1394" != "yes"; then
+		AC_MSG_RESULT([ IIDC 1394 camera plugin requires recent libraw1394! ])
+		DCAM="no ( missing libraw1394 )"
+	fi
+fi
+
+if test "x$DCAM" = "xyes"; then
+   AC_DEFINE( BUILD_DCAM, 1, [Define to build dcam cpi] )
+fi
+
+
+AC_ARG_ENABLE(aravis, 
+		      AS_HELP_STRING( [--enable-aravis],
+		      		      [build plugin for cameras supported by aravis \[default=yes\]] ),
+		     {
+			if test "x$enabledval" != "xno"; then
+			   ARAVIS="yes";
+			else
+			   ARAVIS="no";
+			fi
+		     },
+		     ARAVIS="yes" )
+if test "x$ARAVIS" = "xyes"; then
+   	if test "$HAVE_ARAVIS" != "yes"; then
+	   	ARAVIS="no ( missing aravis library )"
+	fi
+fi
+
+if test "x$ARAVIS" = "xyes"; then
+   AC_DEFINE( BUILD_ARAVIS, 1, [Define to build aravis cpi] )
+fi
+
 AC_ARG_ENABLE(thing, 
 	      AS_HELP_STRING( [--enable-thing], 
 		              [build plugin for a dummy device ( usefull for debugging ) \[default=no\]] ),
@@ -459,6 +512,7 @@ AM_CONDITIONAL(BUILD_DCAM, test "x$DCAM" = xyes )
 AM_CONDITIONAL(BUILD_V4L, test "x$V4L" = xyes )
 AM_CONDITIONAL(BUILD_V4L2, test "x$V4L2" = xyes )
 AM_CONDITIONAL(BUILD_EUVCCAM, test "x$EUVCCAM" = xyes)
+AM_CONDITIONAL(BUILD_ARAVIS, test "x$ARAVIS" = xyes)
 AM_CONDITIONAL(BUILD_THING, test "x$THING" = xyes )
 
 AC_CONFIG_FILES([ include/unicap_version.h po/Makefile.in include/Makefile src/Makefile common/Makefile ])
@@ -468,6 +522,7 @@ AC_CONFIG_FILES([ cpi/dcam/Makefile ])
 AC_CONFIG_FILES([ cpi/v4l/Makefile ])
 AC_CONFIG_FILES([ cpi/v4l2cpi/Makefile ])
 AC_CONFIG_FILES([ cpi/euvccam/Makefile ])
+AC_CONFIG_FILES([ cpi/aravis/Makefile ])
 AC_CONFIG_FILES([ cpi/thing/Makefile ])
 AC_CONFIG_FILES([ cpi/Makefile cpi/include/Makefile ])
 AC_CONFIG_FILES([ doc/libunicap/Makefile doc/Makefile ])
@@ -506,6 +561,7 @@ AC_MSG_RESULT([  IIDC 1394 camera:   $DCAM ])
 AC_MSG_RESULT([  video-4-linux:      $V4L ])
 AC_MSG_RESULT([  video-4-linux v2:   $V4L2 ])
 AC_MSG_RESULT([  euvccam:            $EUVCCAM ])
+AC_MSG_RESULT([  aravis:             $ARAVIS ])
 AC_MSG_RESULT([])
 AC_MSG_RESULT([ ****************************************************** ])
 AC_MSG_RESULT([ ***  Please read the file README.troubleshooting   *** ])

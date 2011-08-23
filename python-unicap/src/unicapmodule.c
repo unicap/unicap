@@ -29,6 +29,7 @@
 PyObject *UnicapException = NULL;
 PyObject *UnicapTimeoutException = NULL;
 extern PyTypeObject UnicapDeviceType;
+extern PyTypeObject UnicapImageBufferType;
 
 static PyObject *pyunicap_enumerate_devices(PyObject *self, PyObject *args)
 {
@@ -102,6 +103,7 @@ initunicap(void)
    pyunicap_API[ pyunicap_device_get_handle_NUM ] = (void*) UnicapDevice_get_handle;
    pyunicap_API[ pyunicap_UnicapDeviceType_NUM ] = (void*) &UnicapDeviceType;
    pyunicap_API[ pyunicap_device_check_NUM ] = (void*) UnicapDevice_Check_impl;
+   pyunicap_API[ pyunicap_UnicapImageBufferType_NUM ] = (void*) &UnicapImageBufferType;
    c_api_object = PyCObject_FromVoidPtr((void*)pyunicap_API, NULL );
 
    if( c_api_object != NULL ){

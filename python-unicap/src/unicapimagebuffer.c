@@ -23,6 +23,7 @@
 #include <ucil.h>
 #include <ucil_png.h>
 
+#define UNICAP_MODULE
 #include "unicapmodule.h"
 #include "unicapimagebuffer.h"
 #include "utils.h"

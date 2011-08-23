@@ -47,10 +47,9 @@ static PyObject *
 pyunicapgtk_property_from_gpointer ( PyTypeObject *type, PyObject *args, PyObject *kwargs)
 {
 	static char* kwlist[] = { "gpointer", NULL };
-	UnicapImageBuffer *self;
 	PyObject *gpointer = NULL;
 	if (!PyArg_ParseTupleAndKeywords(args, kwargs,
-					 "O:unicapgtk.ImageBuffer.__init__",
+					 "O",
 					 kwlist, &gpointer ))
 		return NULL;
 	

@@ -34,11 +34,13 @@ typedef struct
    int free_data;
 }UnicapImageBuffer;
 
-extern PyTypeObject UnicapImageBufferType;
-
-void initunicapimagebuffer( PyObject *m );
 
 PyObject *UnicapImageBuffer_new_from_buffer( const unicap_data_buffer_t *data_buffer );
 PyObject *UnicapImageBuffer_new_from_buffer_no_copy( const unicap_data_buffer_t *data_buffer );
+
+#ifdef UNCIAP_MODULE
+
+void initunicapimagebuffer( PyObject *m );
+#endif
 
 #endif//__UNICAPIMAGEBUFFER_H__

@@ -41,7 +41,9 @@ extern "C" {
 #define pyunicap_device_check_RETURN           int
 #define pyunicap_device_check_PROTO            ( PyObject *obj )
 
-#define pyunicap_API_POINTERS                  4
+#define pyunicap_UnicapImageBufferType_NUM     4
+
+#define pyunicap_API_POINTERS                  5
 
 #ifdef UNICAP_MODULE
 #ifndef __HIDDEN__
@@ -56,14 +58,15 @@ __HIDDEN__ pyunicap_device_check_RETURN           UnicapDevice_Check_impl      p
 static void **pyunicap_API;
 
 #define UnicapDevice_new_from_handle \
-   (*(pyunicap_device_new_from_handle_RETURN (*)pyunicap_device_new_from_handle_PROTO) pyunicap_API[pyunicap_device_new_from_handle_NUM])
+	(*(pyunicap_device_new_from_handle_RETURN (*)pyunicap_device_new_from_handle_PROTO) pyunicap_API[pyunicap_device_new_from_handle_NUM])
 #define UnicapDevice_get_handle \
-   (*(pyunicap_device_get_handle_RETURN (*)pyunicap_device_get_handle_PROTO) pyunicap_API[pyunicap_device_get_handle_NUM])
+	(*(pyunicap_device_get_handle_RETURN (*)pyunicap_device_get_handle_PROTO) pyunicap_API[pyunicap_device_get_handle_NUM])
 #define UnicapDeviceType \
-   ((PyObject*)pyunicap_API[pyunicap_UnicapDeviceType_NUM])
+	(*(PyTypeObject*)pyunicap_API[pyunicap_UnicapDeviceType_NUM])
 #define UnicapDevice_Check \
-   (*(pyunicap_device_check_RETURN (*)pyunicap_device_check_PROTO) pyunicap_API[pyunicap_device_check_NUM])
-
+	(*(pyunicap_device_check_RETURN (*)pyunicap_device_check_PROTO) pyunicap_API[pyunicap_device_check_NUM])
+#define UnicapImageBufferType \
+	(*(PyTypeObject*)pyunicap_API[pyunicap_UnicapImageBufferType_NUM])
 
 /* Return -1 and set exception on error, 0 on success. */
 static int

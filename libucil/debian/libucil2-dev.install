@@ -1,0 +1,7 @@
+usr/include/unicap/ucil.h
+usr/include/unicap/ucil_alsa.h
+usr/include/unicap/ucil_version.h
+usr/include/unicap/ucil_png.h
+usr/lib/libucil.a
+usr/lib/libucil.so
+usr/lib/pkgconfig/libucil.pc

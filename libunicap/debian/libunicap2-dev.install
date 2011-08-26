@@ -1,0 +1,6 @@
+usr/include/unicap/unicap.h
+usr/include/unicap/unicap_status.h
+usr/include/unicap/unicap_version.h
+usr/lib/libunicap.a
+usr/lib/libunicap.so
+usr/lib/pkgconfig/libunicap.pc

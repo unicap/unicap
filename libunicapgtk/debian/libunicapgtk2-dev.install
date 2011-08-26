@@ -1,0 +1,4 @@
+usr/include/unicap/unicapgtk*.h
+usr/lib/libunicapgtk.a
+usr/lib/libunicapgtk.so
+usr/lib/pkgconfig/libunicapgtk.pc

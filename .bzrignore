@@ -23,8 +23,14 @@ m4/
 ltmain.sh
 config.h.in
 
+config.guess
+config.sub
+libunicap/po/Makefile.in.in
+libunicapgtk/po/Makefile.in.in
+
 patches/
 gst-unicap/
+
 
 unicap_version.h
 ucil_version.h
@@ -52,5 +58,20 @@ stamp-h1
 libunicap/doc/libunicap/html
 libunicap/doc/libunicap/xml
 build
+
+tests/
+
+libunicapgtk/doc/libunicapgtk/tmpl/
+libunicapgtk/doc/libunicapgtk/libunicapgtk-docs.sgml
+libucil/doc/libucil/xml/
+libucil/doc/libucil/tmpl/
+libucil/doc/libucil/html/
+
+examples/unicapgtk/videodisplaytest/
+examples/unicapgtk/smallapp/smallapp
+libucil/doc/libucil/libucil.*
+libucil/doc/libucil/libucil-*
+libunicap/doc/libunicap/libunicap-*
+libunicap/doc/libunicap/libunicap.*
 
 RE:python-unicap/src/pyunicapgtk_.*\.c

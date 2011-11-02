@@ -2,10 +2,10 @@ INCLUDES = -I../include -I../../include -I../../ -I../../common
 
 if ENABLE_STATIC_CPI
 noinst_LTLIBRARIES=libeuvccam_cpi.la
-libeuvccam_cpi_la_LIBADD=-lpthread 
+libeuvccam_cpi_la_LIBADD=-lpthread  -lrt
 else
 libcpi_LTLIBRARIES=libeuvccam_cpi.la
-libeuvccam_cpi_la_LIBADD=-lpthread -L../../src/.libs/ -lunicap
+libeuvccam_cpi_la_LIBADD=-lpthread -L../../src/.libs/ -lunicap -lrt
 endif
 libcpidir = $(libdir)/unicap$(pkg_version)/cpi
 

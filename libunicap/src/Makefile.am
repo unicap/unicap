@@ -35,11 +35,15 @@ if ENABLE_STATIC_CPI
 libunicap_la_LIBADD = \
 	@DL_LIBS@ \
 	@M_LIBS@ \
+	@RT_LIBS@ \
+	@PTHREAD_LIBS@ \
 	../$(LIBV4L2) ../$(LIBV4L) ../$(LIBDCAM) ../$(LIBVID21394)
 else
 libunicap_la_LIBADD = \
 	@DL_LIBS@ \
-	@M_LIBS@
+	@M_LIBS@ \
+	@RT_LIBS@ \
+	@PTHREAD_LIBS@
 endif
 
 

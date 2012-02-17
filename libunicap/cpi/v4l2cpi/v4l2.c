@@ -1084,6 +1084,7 @@ static unicap_status_t v4l2_enum_frameintervals( v4l2_handle_t handle, unicap_pr
 #ifdef VIDIOC_ENUM_FRAMEINTERVALS
    unicap_format_t format;
    struct v4l2_frmivalenum frmival;
+   int is_range = 0;
    
    
    TRACE( "v4l2_enum_frameintervals\n" );
@@ -1119,7 +1120,7 @@ static unicap_status_t v4l2_enum_frameintervals( v4l2_handle_t handle, unicap_pr
       }
       else
       {
-	 handle->frame_rates[ handle->frame_rate_count ] = 1/((double)frmival.stepwise.max.numerator / (double)frmival.stepwise.max.denominator);
+	 is_range = 1;
       }
 
       // Some devices enumerate the same frame interval over and over - filter out
@@ -1142,21 +1143,30 @@ static unicap_status_t v4l2_enum_frameintervals( v4l2_handle_t handle, unicap_pr
    {
       return STATUS_FAILURE;
    }
-   
-   property->value_list.values = handle->frame_rates;
-   property->value_list.value_count = handle->frame_rate_count;
-   strcpy( property->identifier, V4L2_VIDEO_FRAMERATE_PPTY_NAME );
-   strcpy( property->category, "video" );
-   strcpy( property->unit, "" );
+
    property->relations = 0;
    property->relations_count = 0;
-   property->value = property->value_list.values[0];
-   property->stepping = 0;
-   property->type = UNICAP_PROPERTY_TYPE_VALUE_LIST;
    property->flags = UNICAP_FLAGS_MANUAL;
    property->flags_mask = UNICAP_FLAGS_MANUAL;
    property->property_data = 0;
    property->property_data_size = 0;
+   strcpy( property->identifier, V4L2_VIDEO_FRAMERATE_PPTY_NAME );
+   strcpy( property->category, "video" );
+   strcpy( property->unit, "" );
+
+   if (is_range){
+	   handle->frame_rates[ handle->frame_rate_count ] = 1/((double)frmival.stepwise.max.numerator / (double)frmival.stepwise.max.denominator);
+	   property->range.min = 1/((double)frmival.stepwise.max.numerator / (double)frmival.stepwise.max.denominator);
+	   property->range.max = 1/((double)frmival.stepwise.min.numerator / (double)frmival.stepwise.min.denominator);
+	   /* property->stepping = 1/((double)frmival.stepwise.step.numerator / (double)frmival.stepwise.step.denominator); */
+	   property->stepping = (property->range.max - property->range.min) / 100.0;
+   } else {
+	   property->value_list.values = handle->frame_rates;
+	   property->value_list.value_count = handle->frame_rate_count;
+	   property->value = property->value_list.values[0];
+	   property->stepping = 0;
+	   property->type = UNICAP_PROPERTY_TYPE_VALUE_LIST;
+   }
 	
    return STATUS_SUCCESS;
 #else // ndef VIDIOC_ENUM_FRAMEINTERVALS
@@ -1335,6 +1345,50 @@ static char *get_category( char *identifier )
    
 }
 
+static unicap_status_t 
+default_override_property( v4l2_handle_t handle, struct v4l2_queryctrl *ctrl, unicap_property_t *property )
+{
+   unicap_status_t status = STATUS_NO_MATCH;
+
+   if( !ctrl )
+   {
+      return STATUS_NO_MATCH;
+   }
+   
+   switch( ctrl->id )
+   {
+      case V4L2_CID_EXPOSURE_ABSOLUTE:
+      {
+	 if( property )
+	 {
+	    strcpy( property->identifier, N_("shutter") );
+	    strcpy( property->category, N_("exposure") );
+	    strcpy( property->unit, N_("s") );
+	    property->flags_mask = UNICAP_FLAGS_MANUAL;
+	    property->flags = UNICAP_FLAGS_MANUAL;
+	    property->type = UNICAP_PROPERTY_TYPE_RANGE;
+	    property->range.min = (double)ctrl->minimum / 10000.0;
+	    property->range.max = (double)ctrl->maximum / 10000.0;
+	    property->value = (double)ctrl->default_value / 10000.0;
+	 }
+
+
+	 status = STATUS_SUCCESS;
+      }
+      break;
+
+      default:
+	 break;
+   }
+   
+   if( SUCCESS( status ) )
+   {
+      TRACE( "Using default override for property '%s'\n", property->identifier );
+   }
+
+
+   return status;
+}
 
 
 static unicap_status_t add_properties( v4l2_handle_t handle, int index_start, int index_end, int *ppty_index )
@@ -1344,6 +1398,8 @@ static unicap_status_t add_properties( v4l2_handle_t handle, int index_start, in
    int tmp_ppty_index = *ppty_index;
 
    memset( &v4l2ctrl, 0x0, sizeof( v4l2ctrl ) );
+   abort();
+   
    
    for( index = index_start; index < index_end; index++ )
    {
@@ -1360,25 +1416,23 @@ static unicap_status_t add_properties( v4l2_handle_t handle, int index_start, in
 	 return STATUS_FAILURE;
       }
 
-      if( handle->compat && !v4l2ctrl.flags & V4L2_CTRL_FLAG_DISABLED )
+      if( !(v4l2ctrl.flags & V4L2_CTRL_FLAG_DISABLED))
       {
-	 if( handle->compat->override_property_func )
+ 	 override_property_func_t override_func = default_override_property;
+	 if( handle->compat && handle->compat->override_property_func )
+	    override_func = handle->compat->override_property_func;
+	    
+	 unicap_status_t status = override_func( handle, &v4l2ctrl, &handle->unicap_properties[ tmp_ppty_index ] );
+	 if( status == STATUS_SUCCESS )
 	 {
-	    unicap_status_t status = handle->compat->override_property_func( handle, &v4l2ctrl, &handle->unicap_properties[ tmp_ppty_index ] );
-	    if( status == STATUS_SUCCESS )
-	    {
-	       tmp_ppty_index++;
-	       continue;
-	    }
-	    if( status == STATUS_SKIP_CTRL )
-	    {
-	       continue;
-	    }
+	    tmp_ppty_index++;
+	    continue;
 	 }
-      }      
+	 if( status == STATUS_SKIP_CTRL )
+	 {
+	    continue;
+	 }
 
-      if( !v4l2ctrl.flags & V4L2_CTRL_FLAG_DISABLED )
-      {
 	 TRACE( "add property: %s\n", v4l2ctrl.name );
 	 strcpy( handle->unicap_properties[ tmp_ppty_index ].identifier, 
 		 (char*)v4l2ctrl.name );
@@ -1466,11 +1520,15 @@ static unicap_status_t add_properties_ext( v4l2_handle_t handle, int *ppty_index
    v4l2ctrl.id = V4L2_CTRL_FLAG_NEXT_CTRL;
    while( ret = IOCTL( handle->fd, VIDIOC_QUERYCTRL, &v4l2ctrl ) == 0 )
    {
-	 TRACE( "++%s++\n", v4l2ctrl.name );
-
-      if( handle->compat && ( !v4l2ctrl.flags & V4L2_CTRL_FLAG_DISABLED ) && handle->compat->override_property_func )
+      TRACE( "++%s++\n", v4l2ctrl.name );
+      
+      override_property_func_t override_func = default_override_property;
+      if( handle->compat && handle->compat->override_property_func )
+	 override_func = handle->compat->override_property_func;
+      
+      if( !(v4l2ctrl.flags & V4L2_CTRL_FLAG_DISABLED) )
       {
-	 unicap_status_t status = handle->compat->override_property_func( handle, &v4l2ctrl, &handle->unicap_properties[ tmp_ppty_index ] );
+	 unicap_status_t status = override_func( handle, &v4l2ctrl, &handle->unicap_properties[ tmp_ppty_index ] );
 	 if( status == STATUS_SUCCESS )
 	 {
 	    v4l2ctrl.id |= V4L2_CTRL_FLAG_NEXT_CTRL;
@@ -1800,6 +1858,20 @@ static unicap_status_t v4l2_set_property( void *cpi_data, unicap_property_t *pro
       }
    }
 
+   if (!strcmp (property->identifier, "shutter"))
+   {
+      struct v4l2_control ctrl;
+
+      ctrl.id = V4L2_CID_EXPOSURE_ABSOLUTE;
+      ctrl.value = property->value * 10000;
+
+      if( IOCTL( handle->fd, VIDIOC_S_CTRL, &ctrl ) < 0 )
+      {
+	 TRACE( "VIDIOC_S_CTRL failed\n" );
+	 return STATUS_FAILURE;
+      }
+   }
+
    if( !strcmp( property->identifier, V4L2_VIDEO_IN_PPTY_NAME ) )
    {
       return v4l2_set_input( handle, property );
@@ -1903,6 +1975,22 @@ static unicap_status_t v4l2_get_property( void *cpi_data, unicap_property_t *pro
 	       return status;
 	    }   
 	 }
+
+	 if (!strcmp (property->identifier, "shutter"))
+	 {
+	    struct v4l2_control ctrl;
+	    ctrl.id = V4L2_CID_EXPOSURE_ABSOLUTE;
+   
+	    if( IOCTL( handle->fd, VIDIOC_G_CTRL, &ctrl ) < 0 )
+	    {
+	       TRACE( "VIDIOC_G_CTRL failed!\n" );
+	       return STATUS_FAILURE;
+	    }
+   
+	    property->value = (double)ctrl.value / 10000.0;
+	    
+	    return STATUS_SUCCESS;
+	 }   
 
 	 if( !strcmp( property->identifier, V4L2_VIDEO_IN_PPTY_NAME ) )
 	 {

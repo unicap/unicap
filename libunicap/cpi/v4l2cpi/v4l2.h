@@ -36,6 +36,8 @@
 #define V4L2_MAX_FRAME_RATES  32
 #define V4L2_NUM_BUFFERS      16
 
+
+
 struct v4l_cache_entry
 {
       char devpath[512];
@@ -55,6 +57,9 @@ enum _cpi_v4l2_io_method_enum
 typedef enum _cpi_v4l2_io_method_enum cpi_v4l2_io_method_enum_t;
 
 typedef struct _v4l2_handle *v4l2_handle_t;
+
+typedef unicap_status_t (*override_property_func_t) ( v4l2_handle_t handle, struct v4l2_queryctrl *ctrl, unicap_property_t *property );
+
 
 struct _cpi_v4l2_buffer
 {

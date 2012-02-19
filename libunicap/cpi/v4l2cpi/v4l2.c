@@ -1370,6 +1370,10 @@ default_override_property( v4l2_handle_t handle, struct v4l2_queryctrl *ctrl, un
 	    property->range.min = (double)ctrl->minimum / 10000.0;
 	    property->range.max = (double)ctrl->maximum / 10000.0;
 	    property->value = (double)ctrl->default_value / 10000.0;
+	    property->relations = NULL;
+	    property->relations_count = 0;
+	    property->property_data_size = 0;
+	    property->property_data = NULL;
 	 }
 
 

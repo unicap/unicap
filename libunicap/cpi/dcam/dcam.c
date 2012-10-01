@@ -320,10 +320,10 @@ int cpi_open( void **cpi_data, unicap_device_t *device )
 	 return status;
       }
    }
-      )
+	   )
 
 
-      dcamhandle->allocate_bandwidth = 0;
+	   dcamhandle->allocate_bandwidth = 1;
    if( ( env = getenv( "UNICAP_DCAM_BW_CONTROL" ) ) )
    {
       if( !strncasecmp( "enable", env, strlen( "enable" ) ) )
@@ -340,7 +340,13 @@ int cpi_open( void **cpi_data, unicap_device_t *device )
    dcamhandle->directory = directory;
    dcamhandle->current_frame_rate = -1;
 	
-   dcamhandle->use_dma = 1;
+   if (dcam_juju_probe (dcamhandle)){
+	   TRACE ("JuJu probe: Found JuJu stack\n");
+	   dcamhandle->use_dma = DCAM_DMA_JUJU;
+   } else {
+	   dcamhandle->use_dma = DCAM_DMA_VIDEO1394;
+   }
+
    dcamhandle->timeout_seconds = 1; // 1 Second timeout default
 
    raw1394_set_userdata( dcamhandle->raw1394handle, dcamhandle );
@@ -353,10 +359,10 @@ int cpi_open( void **cpi_data, unicap_device_t *device )
 								   directory ) );
 
    TIME("dcam_prepare_property_table", 
-   {
-      _dcam_prepare_property_table( dcamhandle, &dcamhandle->dcam_property_table );
-   }
-      );
+	{
+		_dcam_prepare_property_table( dcamhandle, &dcamhandle->dcam_property_table );
+	}
+	   );
 
 #if UNICAP_THREADS
    if( pthread_create( &dcamhandle->timeout_thread, NULL, wakeup_routine, dcamhandle ) < 0 )
@@ -594,6 +600,7 @@ int cpi_set_format( void *cpi_data, unicap_format_t *format )
 
    _dcam_set_mode_and_format( dcamhandle, index );
 
+   dcamhandle->current_iso_base_index = index * 6;
    dcamhandle->current_iso_index = index * 6 + dcamhandle->current_frame_rate;
 
 /* 	TRACE( "<-------- set format\n" ); */
@@ -860,9 +867,28 @@ unicap_status_t dcam_capture_start( void *cpi_data )
 	  channel,
 	  dcamhandle->current_frame_rate);
 
+   if (dcamhandle->use_dma == DCAM_DMA_JUJU){
+	   dcamhandle->buffer_size = 
+		   dcam_isoch_table[ dcamhandle->current_iso_index ].
+		   bytes_per_frame;
+	   if (!SUCCESS (dcam_juju_setup (dcamhandle))){
+		   TRACE ("Failed to setup juju\n");
+	   }
+	   
+	   if (!SUCCESS (dcam_juju_prepare_iso (dcamhandle))){
+		   TRACE ("Failed to prepare juju iso\n");		   
+	   }
 
-   if( dcamhandle->use_dma )
-   {
+	   if (!SUCCESS (dcam_juju_start_iso (dcamhandle))){
+		   TRACE ("Failed to start juju iso\n");		   
+	   }
+
+      dcamhandle->dma_capture_thread_quit = 0;
+#if UNICAP_THREADS		
+	   pthread_create( &dcamhandle->dma_capture_thread, NULL, 
+			   dcam_juju_capture_thread, dcamhandle );
+#endif
+   } else if( dcamhandle->use_dma == DCAM_DMA_VIDEO1394) {
       // use video1394 for isoch reception
 
       dcamhandle->buffer_size = 
@@ -963,9 +989,12 @@ unicap_status_t dcam_capture_stop( void *cpi_data )
 	 pthread_kill( dcamhandle->dma_capture_thread, SIGUSR1 );
 	 pthread_join( dcamhandle->dma_capture_thread, NULL );
 #endif
-
-	 _dcam_dma_unlisten( dcamhandle );
-	 _dcam_dma_free( dcamhandle );
+	 if( dcamhandle->use_dma == DCAM_DMA_VIDEO1394) {
+		 _dcam_dma_unlisten( dcamhandle );
+		 _dcam_dma_free( dcamhandle );
+	 } else {
+		 dcam_juju_shutdown (dcamhandle);
+	 }
       }
 
       if( dcamhandle->device_present )

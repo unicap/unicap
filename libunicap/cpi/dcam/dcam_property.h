@@ -144,6 +144,29 @@ unicap_status_t dcam_get_strobe_polarity_property( dcam_handle_t dcamhandle,
 						   unicap_property_t *property, 
 						   dcam_property_t *dcam_property );
 
+unicap_status_t dcam_init_frame_drop_property( dcam_handle_t dcamhandle,
+					       unicap_property_t *p,
+					       dcam_property_t *dcam_property );
+
+unicap_status_t dcam_get_frame_drop_property( dcam_handle_t dcamhandle,
+					      unicap_property_t *property,
+					      dcam_property_t *dcam_property );
+
+unicap_status_t dcam_set_frame_drop_property( dcam_handle_t dcamhandle,
+					      unicap_property_t *property,
+					      dcam_property_t *dcam_property );
+
+unicap_status_t dcam_init_enable_frame_drop_property( dcam_handle_t dcamhandle,
+						      unicap_property_t *p,
+						      dcam_property_t *dcam_property );
+
+unicap_status_t dcam_get_enable_frame_drop_property( dcam_handle_t dcamhandle,
+						     unicap_property_t *property,
+						     dcam_property_t *dcam_property );
+
+unicap_status_t dcam_set_enable_frame_drop_property( dcam_handle_t dcamhandle,
+						     unicap_property_t *property,
+						     dcam_property_t *dcam_property );
 
 
 int _dcam_check_frame_rate_available( quadlet_t quad, int rate );

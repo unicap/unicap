@@ -675,6 +675,72 @@ unicap_status_t dcam_set_timeout_property( dcam_handle_t dcamhandle,
    return status;
 }
 
+unicap_status_t dcam_init_frame_drop_property( dcam_handle_t dcamhandle, 
+					       unicap_property_t *p, 
+					       dcam_property_t *dcam_property )
+{
+   dcamhandle->frame_drop_count = 0;
+   return STATUS_SUCCESS;
+}
+
+unicap_status_t dcam_get_frame_drop_property( dcam_handle_t dcamhandle, 
+					      unicap_property_t *property, 
+					      dcam_property_t *dcam_property )
+{
+   unicap_copy_property( property, &dcam_property->unicap_property );
+   property->value = dcamhandle->frame_drop_count;
+   
+   return STATUS_SUCCESS;
+}
+
+
+unicap_status_t dcam_set_frame_drop_property( dcam_handle_t dcamhandle, 
+					      unicap_property_t *property, 
+					      dcam_property_t *dcam_property )
+{
+   unicap_status_t status = STATUS_SUCCESS;
+	
+   dcamhandle->frame_drop_count = property->value;
+	
+   return status;
+}
+
+unicap_status_t dcam_init_enable_frame_drop_property( dcam_handle_t dcamhandle, 
+						      unicap_property_t *p, 
+						      dcam_property_t *dcam_property )
+{
+   dcamhandle->enable_frame_drop = 0;
+   return STATUS_SUCCESS;
+}
+
+unicap_status_t dcam_get_enable_frame_drop_property( dcam_handle_t dcamhandle, 
+						     unicap_property_t *property, 
+						     dcam_property_t *dcam_property )
+{
+   unicap_copy_property( property, &dcam_property->unicap_property );
+   if (dcamhandle->enable_frame_drop)
+	   property->flags = UNICAP_FLAGS_MANUAL | UNICAP_FLAGS_ON_OFF;
+   else
+	   property->flags = UNICAP_FLAGS_MANUAL;
+   
+   return STATUS_SUCCESS;
+}
+
+
+unicap_status_t dcam_set_enable_frame_drop_property( dcam_handle_t dcamhandle, 
+						     unicap_property_t *property, 
+						     dcam_property_t *dcam_property )
+{
+   unicap_status_t status = STATUS_SUCCESS;
+	
+   if (property->flags & UNICAP_FLAGS_ON_OFF)
+	   dcamhandle->enable_frame_drop = 1;
+   else
+	   dcamhandle->enable_frame_drop = 0;
+	
+   return status;
+}
+
 static unicap_status_t dcam_set_shutter_abs( dcam_handle_t dcamhandle, 
 					     unicap_property_t *property, 
 					     dcam_property_t *dcam_property )
@@ -1203,6 +1269,8 @@ unicap_status_t dcam_set_frame_rate_property( dcam_handle_t dcamhandle,
 	 if( SUCCESS( status ) )
 	 {
 	    dcamhandle->current_frame_rate = GETVAL_FRAME_RATE( quad );
+	    dcamhandle->current_iso_index = dcamhandle->current_iso_base_index + 
+		    dcamhandle->current_frame_rate;
 	    if( was_running )
 	    {
 	       status = dcam_capture_start( dcamhandle );

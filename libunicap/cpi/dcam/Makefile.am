@@ -21,6 +21,7 @@ libdcam_la_SOURCES =  \
 	dcam.c dcam.h \
 	dcam_busreset.c dcam_busreset.h \
 	dcam_capture.c dcam_capture.h \
+	dcam_juju_capture.c dcam_juju.h \
 	dcam_defs.h \
 	dcam_format_table.h \
 	dcam_functions.c dcam_functions.h \

@@ -83,7 +83,7 @@ int _dcam_read_register( raw1394handle_t raw1394handle,
 	while( retries-- )
 	{
 		retval = raw1394_read( raw1394handle, 0xffc0 | node, address, 4, value );
-		TRACE( "read[%d] addr: %llx : %08x\n", node, address, *value );
+		/* TRACE( "read[%d] addr: %llx : %08x\n", node, address, *value ); */
 		if( !retval )
 		{
 			*value = ntohl( *value );
@@ -95,7 +95,7 @@ int _dcam_read_register( raw1394handle_t raw1394handle,
 			// invalid arg
 			return -1;
 		}
-		TRACE( "retval: %d, error: %d %s\n", retval, errno, strerror( errno ) )
+		/* TRACE( "retval: %d, error: %d %s\n", retval, errno, strerror( errno ) ) */
 		usleep( REGISTER_DELAY );
 	}
 	
@@ -133,7 +133,7 @@ int _dcam_write_register( raw1394handle_t raw1394handle,
 
 	while( retries-- )
 	{
-		TRACE( "write addr: %llx : %08x\n", address, value );
+		/* TRACE( "write addr: %llx : %08x\n", address, value ); */
 		retval = raw1394_write( raw1394handle, 0xffc0 | node, address, 4, &value );
 		if( !retval )
 		{

@@ -34,8 +34,14 @@
 #include <csr.h>
 #endif
 #include <pthread.h>
+#include <stdint.h>
 
 #include "queue.h"
+
+typedef struct _dcam_handle *dcam_handle_t;
+#include "dcam_juju.h"
+
+
 
 #define S100 0
 #define S200 1
@@ -45,6 +51,10 @@
 #define S3200 5
 
 #define DCAM_NUM_DMA_BUFFERS 8
+
+#define DCAM_DMA_NONE 0
+#define DCAM_DMA_VIDEO1394 1
+#define DCAM_DMA_JUJU 2
 
 enum dcam_property_enum
 {
@@ -84,12 +94,14 @@ enum dcam_property_enum
 	DCAM_PPTY_STROBE_DELAY,
 	DCAM_PPTY_STROBE_POLARITY,
 
+	DCAM_PPTY_ENABLE_FRAME_DROP,
+	DCAM_PPTY_FRAME_DROP_COUNT,
+
 	DCAM_PPTY_END
 };
 
 typedef enum dcam_property_enum dcam_property_enum_t;
 
-typedef struct _dcam_handle *dcam_handle_t;
 typedef struct _dcam_property dcam_property_t;
 
 typedef unicap_status_t (* dcam_property_func_t) ( dcam_handle_t dcamhandle, 
@@ -136,10 +148,14 @@ struct _dcam_handle
 		int current_dma_capture_buffer; // 
 		int use_dma; // flags: 1 == use video1394  0 == use raw1394
 		int dma_vmmap_frame_size;
-		int timeout_seconds;
-		
-		int current_format_index; // index of this format in the v_format_array
-		int current_iso_index;    // index of this format in the isoch table
+	uint32_t juju_iso_handle;
+	dcam_juju_buffer_t juju_buffers[DCAM_NUM_DMA_BUFFERS];
+	
+	int timeout_seconds;
+	
+	int current_format_index; // index of this format in the v_format_array
+	int current_iso_index;    // index of this format in the isoch table
+	int current_iso_base_index; // index in isoch_table without frame rate
 		int current_frame_rate;   // 
 		int channel_allocated;    // current channel
 		int bandwidth_allocated;  // current bandwidth
@@ -175,10 +191,13 @@ struct _dcam_handle
 
 		struct timeval last_register_access;
    struct timeval current_fill_end_time;
-   struct timeval current_Fill_start_time;
+   struct timeval current_fill_start_time;
 
 		unicap_event_callback_t event_callback;
 		unicap_handle_t unicap_handle;
+
+	unsigned int frame_drop_count;
+	int enable_frame_drop;
 };
 
 

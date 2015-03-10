@@ -1402,8 +1402,6 @@ static unicap_status_t add_properties( v4l2_handle_t handle, int index_start, in
    int tmp_ppty_index = *ppty_index;
 
    memset( &v4l2ctrl, 0x0, sizeof( v4l2ctrl ) );
-   abort();
-   
    
    for( index = index_start; index < index_end; index++ )
    {

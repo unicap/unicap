@@ -27,8 +27,12 @@ find -type f \( -name missing -o -name install-sh -o -name mkinstalldirs \
 echo Running autoreconf...
 autoreconf --force --install
 
+echo Running automake
+automake --add-missing
+
 echo Running intltoolize
-intltoolize --force
+intltoolize
+
 
 # For the Debian package build
 test -d debian && {

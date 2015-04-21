@@ -32,8 +32,7 @@
 
 
 #include "queue.h"
-#include "debayer.h"
-
+//#include "debayer.h"
 #if ARAVIS_DEBUG
 #define DEBUG
 #endif
@@ -45,9 +44,9 @@
 struct aravis_handle
 {
 	unsigned char type_flag;
-   
+
 	int removed;
-	
+
 	unicap_handle_t unicap_handle;
 	unicap_event_callback_t event_callback;
 
@@ -60,11 +59,11 @@ struct aravis_handle
 
 	struct aravis_property *properties;
 	int n_properties;
-	
+
 
 	ArvCamera *camera;
 	ArvStream *stream;
-	
+
 };
 
 

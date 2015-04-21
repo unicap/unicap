@@ -33,6 +33,10 @@
 #include "colorspace.h"
 #include "ucil.h"
 
+#ifdef __SSE2__
+#include <emmintrin.h>
+#endif
+
 #if UNICAPGTK_DEBUG
 #define DEBUG
 #endif
@@ -53,9 +57,9 @@
 
 //52474241-0000-0010-8000-00aa00389b71
 #define GUID_RGB32 { 0x52, 0x47, 0x42, 0x41, 0x00, 0x00, 0x00, 0x10, \
-                     0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71 } 
+                     0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71 }
 #define GUID_BGR32 { 0x41, 0x42, 0x47, 0x52, 0x00, 0x00, 0x00, 0x10, \
-                     0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71 } 
+                     0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71 }
 
 //55595659-0000-0010-8000-00aa00389b71
 #define GUID_UYVY  { 0x55, 0x59, 0x56, 0x59, 0x00, 0x00, 0x00, 0x10, \
@@ -129,6 +133,10 @@ static void bgr24tobgr32( __u8 *dest, __u8 *source, int width, int height );
 static void yuy2toyuyv( __u8 *dest, __u8 *source, int width, int height );
 static void by8touyvy( __u8 *dest, __u8* source, int width, int height );
 static void by8torgb24( __u8 *dest, __u8* source, int width, int height );
+static void debayer_ccm_rgb24( __u8 *dest, __u8* source, int width, int height );
+#ifdef __SSE2__
+static void debayer_sse2( __u8 *dest, __u8* source, int width, int height );
+#endif // __SSE2__
 static void by8torgb32( __u8 *dest, __u8* source, int width, int height );
 static void by8tobgr24( __u8 *dest, __u8* source, int width, int height );
 static void by8touyvy( __u8 *dest, __u8* source, int width, int height );
@@ -143,7 +151,7 @@ static void rggbtouyvy_debayer( __u8 *dest, __u8 *_source, int width, int height
 
 
 
-static xfm_info_t xfminfo = 
+static xfm_info_t xfminfo =
 {
    src_fourcc: 0xffffffff,
    dest_fourcc:   0xffffffff,
@@ -152,195 +160,195 @@ static xfm_info_t xfminfo =
 
 static xfm_info_t conversions[] =
 {
-   { 
-      src_fourcc: FOURCC('G','R','E','Y'), 
-      src_guid: { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-		  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, 
-      src_bpp: 8, 
+   {
+      src_fourcc: FOURCC('G','R','E','Y'),
+      src_guid: { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 },
+      src_bpp: 8,
 
-      dest_fourcc: FOURCC('Y','8','0','0'), 
-      dest_guid: GUID_Y800, 
+      dest_fourcc: FOURCC('Y','8','0','0'),
+      dest_guid: GUID_Y800,
       dest_bpp: 8,
-   
-      priority: 20, 
+
+      priority: 20,
 
       func: NULL,
 
       flags: XFM_PASSTHROUGH
    },
 
-   { 
-      src_fourcc: FOURCC('G','R','E','Y'), 
-      src_guid: { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-		  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, 
-      src_bpp: 8, 
-      
-      dest_fourcc: FOURCC('U','Y','V','Y'), 
-      dest_guid: GUID_UYVY, 
+   {
+      src_fourcc: FOURCC('G','R','E','Y'),
+      src_guid: { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 },
+      src_bpp: 8,
+
+      dest_fourcc: FOURCC('U','Y','V','Y'),
+      dest_guid: GUID_UYVY,
       dest_bpp: 16,
-      
-      priority: 5, 
+
+      priority: 5,
 
       func: (xfm_func_t) grey2uyvy,
 
       flags: 0
    },
-   { 
-      src_fourcc: FOURCC('Y','8','0','0'), 
-      src_guid: { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-		  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, 
-      src_bpp: 8, 
-      
-      dest_fourcc: FOURCC('U','Y','V','Y'), 
-      dest_guid: GUID_UYVY, 
+   {
+      src_fourcc: FOURCC('Y','8','0','0'),
+      src_guid: { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 },
+      src_bpp: 8,
+
+      dest_fourcc: FOURCC('U','Y','V','Y'),
+      dest_guid: GUID_UYVY,
       dest_bpp: 16,
-      
-      priority: 5, 
+
+      priority: 5,
 
       func: (xfm_func_t) grey2uyvy,
 
       flags: 0
    },
-   { 
-      src_fourcc: FOURCC('Y','8','0','0'), 
-      src_guid: { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-		  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, 
-      src_bpp: 8, 
-      
-      dest_fourcc: FOURCC('I','4','2','0'), 
-      dest_guid: GUID_UYVY, 
+   {
+      src_fourcc: FOURCC('Y','8','0','0'),
+      src_guid: { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 },
+      src_bpp: 8,
+
+      dest_fourcc: FOURCC('I','4','2','0'),
+      dest_guid: GUID_UYVY,
       dest_bpp: 12,
-      
-      priority: 5, 
+
+      priority: 5,
 
       func: (xfm_func_t) y8002y420,
 
       flags: 0
    },
-   { 
-      src_fourcc: FOURCC('G','R','E','Y'), 
-      src_guid: { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-		  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, 
-      src_bpp: 8, 
-      
-      dest_fourcc: FOURCC('I','4','2','0'), 
-      dest_guid: GUID_I420, 
+   {
+      src_fourcc: FOURCC('G','R','E','Y'),
+      src_guid: { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 },
+      src_bpp: 8,
+
+      dest_fourcc: FOURCC('I','4','2','0'),
+      dest_guid: GUID_I420,
       dest_bpp: 12,
-      
-      priority: 5, 
+
+      priority: 5,
 
       func: (xfm_func_t) y8002y420,
 
       flags: 0
    },
-   { 
-      src_fourcc: FOURCC('I','4','2','0'), 
-      src_guid: { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-		  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, 
-      src_bpp: 12, 
-      
-      dest_fourcc: FOURCC('Y','8','0','0'), 
-      dest_guid: { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-		  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, 
+   {
+      src_fourcc: FOURCC('I','4','2','0'),
+      src_guid: { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 },
+      src_bpp: 12,
+
+      dest_fourcc: FOURCC('Y','8','0','0'),
+      dest_guid: { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 },
       dest_bpp: 8,
-      
-      priority: 5, 
+
+      priority: 5,
 
       func: (xfm_func_t) y4202y800,
 
       flags: 0
    },
-   { 
-      src_fourcc: FOURCC('Y','8','0','0'), 
-      src_guid: { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-		  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, 
-      src_bpp: 8, 
-      
-      dest_fourcc: FOURCC('I','4','2','2'), 
-      dest_guid: GUID_UYVY, 
+   {
+      src_fourcc: FOURCC('Y','8','0','0'),
+      src_guid: { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 },
+      src_bpp: 8,
+
+      dest_fourcc: FOURCC('I','4','2','2'),
+      dest_guid: GUID_UYVY,
       dest_bpp: 16,
-      
-      priority: 5, 
+
+      priority: 5,
 
       func: (xfm_func_t) y8002y422,
 
       flags: 0
    },
-   { 
-      src_fourcc: FOURCC('G','R','E','Y'), 
-      src_guid: { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-		  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, 
-      src_bpp: 8, 
-      
-      dest_fourcc: FOURCC('I','4','2','2'), 
-      dest_guid: GUID_UYVY, 
+   {
+      src_fourcc: FOURCC('G','R','E','Y'),
+      src_guid: { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 },
+      src_bpp: 8,
+
+      dest_fourcc: FOURCC('I','4','2','2'),
+      dest_guid: GUID_UYVY,
       dest_bpp: 16,
-      
-      priority: 5, 
+
+      priority: 5,
 
       func: (xfm_func_t) y8002y422,
 
       flags: 0
    },
-   { 
-      src_fourcc: FOURCC('G','R','E','Y'), 
-      src_guid: { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-		  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, 
-      src_bpp: 8, 
-      
-      dest_fourcc: FOURCC('Y','U','Y','2'), 
-      dest_guid: GUID_UYVY, 
+   {
+      src_fourcc: FOURCC('G','R','E','Y'),
+      src_guid: { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 },
+      src_bpp: 8,
+
+      dest_fourcc: FOURCC('Y','U','Y','2'),
+      dest_guid: GUID_UYVY,
       dest_bpp: 16,
-      
-      priority: 5, 
+
+      priority: 5,
 
       func: (xfm_func_t) grey2yuy2,
 
       flags: 0
    },
-   { 
-      src_fourcc: FOURCC('Y','8','0','0'), 
-      src_guid: { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-		  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, 
-      src_bpp: 8, 
-      
-      dest_fourcc: FOURCC('Y','U','Y','2'), 
-      dest_guid: GUID_UYVY, 
+   {
+      src_fourcc: FOURCC('Y','8','0','0'),
+      src_guid: { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 },
+      src_bpp: 8,
+
+      dest_fourcc: FOURCC('Y','U','Y','2'),
+      dest_guid: GUID_UYVY,
       dest_bpp: 16,
-      
-      priority: 5, 
+
+      priority: 5,
 
       func: (xfm_func_t) grey2yuy2,
 
       flags: 0
    },
-   { 
-      src_fourcc: FOURCC('Y','8','0','0'), 
-      src_guid: { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-		  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, 
-      src_bpp: 8, 
-      
-      dest_fourcc: FOURCC('I','4','2','0'), 
-      dest_guid: GUID_I420, 
+   {
+      src_fourcc: FOURCC('Y','8','0','0'),
+      src_guid: { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 },
+      src_bpp: 8,
+
+      dest_fourcc: FOURCC('I','4','2','0'),
+      dest_guid: GUID_I420,
       dest_bpp: 12,
-      
-      priority: 5, 
+
+      priority: 5,
 
       func: (xfm_func_t) grey2yuv420p,
 
       flags: 0
    },
-   { 
-      src_fourcc: FOURCC('G','R','E','Y'), 
-      src_guid: { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-		  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, 
-      src_bpp: 8, 
-      
-      dest_fourcc: FOURCC('I','4','2','0'), 
-      dest_guid: GUID_I420, 
+   {
+      src_fourcc: FOURCC('G','R','E','Y'),
+      src_guid: { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 },
+      src_bpp: 8,
+
+      dest_fourcc: FOURCC('I','4','2','0'),
+      dest_guid: GUID_I420,
       dest_bpp: 12,
-      
-      priority: 5, 
+
+      priority: 5,
 
       func: (xfm_func_t) grey2yuv420p,
 
@@ -349,8 +357,8 @@ static xfm_info_t conversions[] =
    {
       src_fourcc: FOURCC('U','Y','V','Y'),
       src_guid: GUID_UYVY,
-      src_bpp: 16, 
-      
+      src_bpp: 16,
+
       dest_fourcc: FOURCC('I','4','2','2'),
       dest_guid: GUID_I422,
       dest_bpp: 16,
@@ -363,8 +371,8 @@ static xfm_info_t conversions[] =
    {
       src_fourcc: FOURCC('U','Y','V','Y'),
       src_guid: GUID_UYVY,
-      src_bpp: 16, 
-      
+      src_bpp: 16,
+
       dest_fourcc: FOURCC('I','4','2','0'),
       dest_guid: GUID_I420,
       dest_bpp: 12,
@@ -373,7 +381,7 @@ static xfm_info_t conversions[] =
       func: (xfm_func_t) uyvytoyuv420p,
       flags: 0
    },
-   
+
    {
       src_fourcc: FOURCC('I','4','2','0'),
       src_guid: GUID_I420,
@@ -381,11 +389,11 @@ static xfm_info_t conversions[] =
 
       dest_fourcc: FOURCC('R','G','B','3'),
       dest_guid: GUID_RGB24,
-      dest_bpp: 24, 
-      
+      dest_bpp: 24,
+
       priority: 15,
       func: (xfm_func_t) yuv420ptorgb24,
-      flags: 0      
+      flags: 0
    },
 
    {
@@ -395,11 +403,11 @@ static xfm_info_t conversions[] =
 
       dest_fourcc: FOURCC('R','G','B',0),
       dest_guid: GUID_RGB24,
-      dest_bpp: 24, 
-      
+      dest_bpp: 24,
+
       priority: 15,
       func: (xfm_func_t) yuv420ptorgb24,
-      flags: 0      
+      flags: 0
    },
 
    {
@@ -409,18 +417,18 @@ static xfm_info_t conversions[] =
 
       dest_fourcc: FOURCC('U','Y','V','Y'),
       dest_guid: GUID_UYVY,
-      dest_bpp: 16, 
-      
+      dest_bpp: 16,
+
       priority: 15,
       func: (xfm_func_t) yuv420ptouyvy,
-      flags: 0      
+      flags: 0
    },
 
    {
       src_fourcc: FOURCC('Y','U','Y','V'),
       src_guid: GUID_YUY2,
-      src_bpp: 16, 
-      
+      src_bpp: 16,
+
       dest_fourcc: FOURCC('I','4','2','0'),
       dest_guid: GUID_I420,
       dest_bpp: 12,
@@ -433,8 +441,8 @@ static xfm_info_t conversions[] =
    {
       src_fourcc: FOURCC('Y','U','Y','2'),
       src_guid: GUID_YUY2,
-      src_bpp: 16, 
-      
+      src_bpp: 16,
+
       dest_fourcc: FOURCC('I','4','2','0'),
       dest_guid: GUID_I420,
       dest_bpp: 12,
@@ -443,7 +451,7 @@ static xfm_info_t conversions[] =
       func: (xfm_func_t) yuyvtoyuv420p,
       flags: 0
    },
-   
+
    {
       src_fourcc: FOURCC('I','4','2','0'),
       src_guid: GUID_I420,
@@ -451,11 +459,11 @@ static xfm_info_t conversions[] =
 
       dest_fourcc: FOURCC('Y','U','Y','V'),
       dest_guid: GUID_UYVY,
-      dest_bpp: 16, 
-      
+      dest_bpp: 16,
+
       priority: 15,
       func: (xfm_func_t) yuv420ptoyuyv,
-      flags: 0      
+      flags: 0
    },
 
    {
@@ -465,11 +473,11 @@ static xfm_info_t conversions[] =
 
       dest_fourcc: FOURCC('R','G','B','3'),
       dest_guid: GUID_RGB24,
-      dest_bpp: 24, 
-      
+      dest_bpp: 24,
+
       priority: 15,
       func: (xfm_func_t) y4202rgb24,
-      flags: 0      
+      flags: 0
    },
 
    {
@@ -479,11 +487,11 @@ static xfm_info_t conversions[] =
 
       dest_fourcc: FOURCC('R','G','B',0),
       dest_guid: GUID_RGB24,
-      dest_bpp: 24, 
-      
+      dest_bpp: 24,
+
       priority: 15,
       func: (xfm_func_t) y4202rgb24,
-      flags: 0      
+      flags: 0
    },
 
    {
@@ -493,147 +501,147 @@ static xfm_info_t conversions[] =
 
       dest_fourcc: FOURCC('R','G','B','4'),
       dest_guid: GUID_RGB32,
-      dest_bpp: 32, 
-      
+      dest_bpp: 32,
+
       priority: 15,
       func: (xfm_func_t) y4202rgb32,
-      flags: 0      
+      flags: 0
    },
 
-   { 
-      src_fourcc: FOURCC('Y','U','Y','V'), 
-      src_guid: GUID_UYVY, 
-      src_bpp: 16, 
-      
-      dest_fourcc: FOURCC('Y','U','Y','2'), 
-      dest_guid: GUID_YUY2, 
+   {
+      src_fourcc: FOURCC('Y','U','Y','V'),
+      src_guid: GUID_UYVY,
+      src_bpp: 16,
+
+      dest_fourcc: FOURCC('Y','U','Y','2'),
+      dest_guid: GUID_YUY2,
       dest_bpp: 16,
-      
-      priority: 20, 
+
+      priority: 20,
 
       func: NULL,
 
       flags: XFM_PASSTHROUGH
    },
-   { 
-      src_fourcc: FOURCC('Y','U','Y','V'), 
-      src_guid: GUID_YUY2, 
-      src_bpp: 16, 
-      
-      dest_fourcc: FOURCC('U','Y','V','Y'), 
-      dest_guid: GUID_UYVY, 
+   {
+      src_fourcc: FOURCC('Y','U','Y','V'),
+      src_guid: GUID_YUY2,
+      src_bpp: 16,
+
+      dest_fourcc: FOURCC('U','Y','V','Y'),
+      dest_guid: GUID_UYVY,
       dest_bpp: 16,
-      
-      priority: 10, 
+
+      priority: 10,
 
       func: (xfm_func_t) uyvy2yuy2,
 
       flags: XFM_IN_PLACE
    },
-   { 
-      src_fourcc: FOURCC('U','Y','V','Y'), 
-      src_guid: GUID_UYVY, 
-      src_bpp: 16, 
-      
-      dest_fourcc: FOURCC('Y','U','Y','2'), 
-      dest_guid: GUID_YUY2, 
+   {
+      src_fourcc: FOURCC('U','Y','V','Y'),
+      src_guid: GUID_UYVY,
+      src_bpp: 16,
+
+      dest_fourcc: FOURCC('Y','U','Y','2'),
+      dest_guid: GUID_YUY2,
       dest_bpp: 16,
-      
-      priority: 10, 
+
+      priority: 10,
 
       func: (xfm_func_t) uyvy2yuy2,
 
       flags: XFM_IN_PLACE
    },
-   { 
-      src_fourcc: FOURCC('Y','U','Y','2'), 
-      src_guid: GUID_YUY2, 
-      src_bpp: 16, 
-      
-      dest_fourcc: FOURCC('Y','U','Y','V'), 
-      dest_guid: GUID_YUY2, 
+   {
+      src_fourcc: FOURCC('Y','U','Y','2'),
+      src_guid: GUID_YUY2,
+      src_bpp: 16,
+
+      dest_fourcc: FOURCC('Y','U','Y','V'),
+      dest_guid: GUID_YUY2,
       dest_bpp: 16,
-      
-      priority: 10, 
+
+      priority: 10,
 
       func: (xfm_func_t) yuy2toyuyv,
 
       flags: 0
    },
-   { 
-      src_fourcc: FOURCC('U','Y','V','Y'), 
-      src_guid: GUID_UYVY, 
-      src_bpp: 16, 
-      
-      dest_fourcc: FOURCC('Y','U','V',0), 
-      dest_guid: GUID_YUV, 
+   {
+      src_fourcc: FOURCC('U','Y','V','Y'),
+      src_guid: GUID_UYVY,
+      src_bpp: 16,
+
+      dest_fourcc: FOURCC('Y','U','V',0),
+      dest_guid: GUID_YUV,
       dest_bpp: 24,
-      
-      priority: 10, 
+
+      priority: 10,
 
       func: (xfm_func_t) uyvy2yuv,
 
       flags: 0,
    },
    // uyvy -> rgb24
-   { 
-      src_fourcc: FOURCC('U','Y','V','Y'), 
-      src_guid: GUID_UYVY, 
-      src_bpp: 16, 
-      
-      dest_fourcc: FOURCC('R','G','B',0), 
-      dest_guid: GUID_RGB24, 
+   {
+      src_fourcc: FOURCC('U','Y','V','Y'),
+      src_guid: GUID_UYVY,
+      src_bpp: 16,
+
+      dest_fourcc: FOURCC('R','G','B',0),
+      dest_guid: GUID_RGB24,
       dest_bpp: 24,
-      
-      priority: 5, 
+
+      priority: 5,
 
       func: (xfm_func_t) uyvy2rgb24,
 
       flags: 0
    },
    // uyvy -> rgb24
-   { 
-      src_fourcc: FOURCC('U','Y','V','Y'), 
-      src_guid: GUID_UYVY, 
-      src_bpp: 16, 
-      
-      dest_fourcc: FOURCC('R','G','B','3'), 
-      dest_guid: GUID_RGB24, 
+   {
+      src_fourcc: FOURCC('U','Y','V','Y'),
+      src_guid: GUID_UYVY,
+      src_bpp: 16,
+
+      dest_fourcc: FOURCC('R','G','B','3'),
+      dest_guid: GUID_RGB24,
       dest_bpp: 24,
-      
-      priority: 5, 
+
+      priority: 5,
 
       func: (xfm_func_t) uyvy2rgb24,
 
       flags: 0
    },
    // uyvy -> bgr24
-   { 
-      src_fourcc: FOURCC('U','Y','V','Y'), 
-      src_guid: GUID_UYVY, 
-      src_bpp: 16, 
-      
-      dest_fourcc: FOURCC('B','G','R',0), 
-      dest_guid: GUID_RGB24, 
+   {
+      src_fourcc: FOURCC('U','Y','V','Y'),
+      src_guid: GUID_UYVY,
+      src_bpp: 16,
+
+      dest_fourcc: FOURCC('B','G','R',0),
+      dest_guid: GUID_RGB24,
       dest_bpp: 24,
-      
-      priority: 5, 
+
+      priority: 5,
 
       func: (xfm_func_t) uyvy2bgr24,
 
       flags: 0
    },
    // uyvy -> bgr24
-   { 
-      src_fourcc: FOURCC('U','Y','V','Y'), 
-      src_guid: GUID_UYVY, 
-      src_bpp: 16, 
-      
-      dest_fourcc: FOURCC('B','G','R','3'), 
-      dest_guid: GUID_RGB24, 
+   {
+      src_fourcc: FOURCC('U','Y','V','Y'),
+      src_guid: GUID_UYVY,
+      src_bpp: 16,
+
+      dest_fourcc: FOURCC('B','G','R','3'),
+      dest_guid: GUID_RGB24,
       dest_bpp: 24,
-      
-      priority: 5, 
+
+      priority: 5,
 
       func: (xfm_func_t) uyvy2bgr24,
 
@@ -641,64 +649,64 @@ static xfm_info_t conversions[] =
    },
 
    // yuyv -> rgb24
-   { 
-      src_fourcc: FOURCC('Y','U','Y','V'), 
-      src_guid: GUID_YUY2, 
-      src_bpp: 16, 
-      
-      dest_fourcc: FOURCC('R','G','B',0), 
-      dest_guid: GUID_RGB24, 
+   {
+      src_fourcc: FOURCC('Y','U','Y','V'),
+      src_guid: GUID_YUY2,
+      src_bpp: 16,
+
+      dest_fourcc: FOURCC('R','G','B',0),
+      dest_guid: GUID_RGB24,
       dest_bpp: 24,
-      
-      priority: 5, 
+
+      priority: 5,
 
       func: (xfm_func_t) yuyv2rgb24,
 
       flags: 0
    },
    // yuyv -> rgb24
-   { 
-      src_fourcc: FOURCC('Y','U','Y','2'), 
-      src_guid: GUID_YUY2, 
-      src_bpp: 16, 
-      
-      dest_fourcc: FOURCC('R','G','B',0), 
-      dest_guid: GUID_RGB24, 
+   {
+      src_fourcc: FOURCC('Y','U','Y','2'),
+      src_guid: GUID_YUY2,
+      src_bpp: 16,
+
+      dest_fourcc: FOURCC('R','G','B',0),
+      dest_guid: GUID_RGB24,
       dest_bpp: 24,
-      
-      priority: 5, 
+
+      priority: 5,
 
       func: (xfm_func_t) yuyv2rgb24,
 
       flags: 0
    },
    // yuyv -> rgb24
-   { 
-      src_fourcc: FOURCC('Y','U','Y','2'), 
-      src_guid: GUID_YUY2, 
-      src_bpp: 16, 
-      
-      dest_fourcc: FOURCC('R','G','B','3'), 
-      dest_guid: GUID_RGB24, 
+   {
+      src_fourcc: FOURCC('Y','U','Y','2'),
+      src_guid: GUID_YUY2,
+      src_bpp: 16,
+
+      dest_fourcc: FOURCC('R','G','B','3'),
+      dest_guid: GUID_RGB24,
       dest_bpp: 24,
-      
-      priority: 5, 
+
+      priority: 5,
 
       func: (xfm_func_t) yuyv2rgb24,
 
       flags: 0
    },
    // yuyv -> rgb24
-   { 
-      src_fourcc: FOURCC('Y','U','Y','V'), 
-      src_guid: GUID_UYVY, 
-      src_bpp: 16, 
-      
-      dest_fourcc: FOURCC('R','G','B','3'), 
-      dest_guid: GUID_RGB24, 
+   {
+      src_fourcc: FOURCC('Y','U','Y','V'),
+      src_guid: GUID_UYVY,
+      src_bpp: 16,
+
+      dest_fourcc: FOURCC('R','G','B','3'),
+      dest_guid: GUID_RGB24,
       dest_bpp: 24,
-      
-      priority: 5, 
+
+      priority: 5,
 
       func: (xfm_func_t) yuyv2rgb24,
 
@@ -707,32 +715,32 @@ static xfm_info_t conversions[] =
 
 
    // yuyv -> rgb24
-   { 
-      src_fourcc: FOURCC('Y','U','Y','V'), 
-      src_guid: GUID_YUY2, 
-      src_bpp: 16, 
-      
-      dest_fourcc: FOURCC('B','G','R','4'), 
-      dest_guid: GUID_BGR32, 
+   {
+      src_fourcc: FOURCC('Y','U','Y','V'),
+      src_guid: GUID_YUY2,
+      src_bpp: 16,
+
+      dest_fourcc: FOURCC('B','G','R','4'),
+      dest_guid: GUID_BGR32,
       dest_bpp: 32,
-      
-      priority: 5, 
+
+      priority: 5,
 
       func: (xfm_func_t) yuyv2bgr32,
 
       flags: 0
    },
    // yuyv -> rgb24
-   { 
-      src_fourcc: FOURCC('Y','U','Y','2'), 
-      src_guid: GUID_YUY2, 
-      src_bpp: 16, 
-      
-      dest_fourcc: FOURCC('B','G','R','4'), 
-      dest_guid: GUID_BGR32, 
+   {
+      src_fourcc: FOURCC('Y','U','Y','2'),
+      src_guid: GUID_YUY2,
+      src_bpp: 16,
+
+      dest_fourcc: FOURCC('B','G','R','4'),
+      dest_guid: GUID_BGR32,
       dest_bpp: 32,
-      
-      priority: 5, 
+
+      priority: 5,
 
       func: (xfm_func_t) yuyv2bgr32,
 
@@ -741,32 +749,32 @@ static xfm_info_t conversions[] =
 
 
    // yuyv -> y800
-   { 
-      src_fourcc: FOURCC('Y','U','Y','V'), 
-      src_guid: GUID_UYVY, 
-      src_bpp: 16, 
-      
-      dest_fourcc: FOURCC('Y','8','0','0'), 
-      dest_guid: GUID_Y800, 
+   {
+      src_fourcc: FOURCC('Y','U','Y','V'),
+      src_guid: GUID_UYVY,
+      src_bpp: 16,
+
+      dest_fourcc: FOURCC('Y','8','0','0'),
+      dest_guid: GUID_Y800,
       dest_bpp: 8,
-      
-      priority: 5, 
+
+      priority: 5,
 
       func: (xfm_func_t) yuy22grey,
 
       flags: 0
    },
    // uyvy -> y800
-   { 
-      src_fourcc: FOURCC('U','Y','V','Y'), 
-      src_guid: GUID_UYVY, 
-      src_bpp: 16, 
-      
-      dest_fourcc: FOURCC('Y','8','0','0'), 
-      dest_guid: GUID_Y800, 
+   {
+      src_fourcc: FOURCC('U','Y','V','Y'),
+      src_guid: GUID_UYVY,
+      src_bpp: 16,
+
+      dest_fourcc: FOURCC('Y','8','0','0'),
+      dest_guid: GUID_Y800,
       dest_bpp: 8,
-      
-      priority: 5, 
+
+      priority: 5,
 
       func: (xfm_func_t) uyvy2grey,
 
@@ -776,75 +784,75 @@ static xfm_info_t conversions[] =
 
 
 
-   { 
-      src_fourcc: FOURCC('U','Y','V','Y'), 
-      src_guid: GUID_UYVY, 
-      src_bpp: 16, 
-      
-      dest_fourcc: FOURCC('R','G','B','A'), 
-      dest_guid: GUID_RGB32, 
+   {
+      src_fourcc: FOURCC('U','Y','V','Y'),
+      src_guid: GUID_UYVY,
+      src_bpp: 16,
+
+      dest_fourcc: FOURCC('R','G','B','A'),
+      dest_guid: GUID_RGB32,
       dest_bpp: 32,
-      
-      priority: 5, 
+
+      priority: 5,
 
       func: (xfm_func_t) uyvy2rgb32,
 
       flags: 0
-   },      
-   { 
-      src_fourcc: FOURCC('U','Y','V','Y'), 
-      src_guid: GUID_UYVY, 
-      src_bpp: 16, 
-      
-      dest_fourcc: FOURCC('R','G','B','4'), 
-      dest_guid: GUID_RGB32, 
+   },
+   {
+      src_fourcc: FOURCC('U','Y','V','Y'),
+      src_guid: GUID_UYVY,
+      src_bpp: 16,
+
+      dest_fourcc: FOURCC('R','G','B','4'),
+      dest_guid: GUID_RGB32,
       dest_bpp: 32,
-      
-      priority: 5, 
+
+      priority: 5,
 
       func: (xfm_func_t) uyvy2rgb32,
 
       flags: 0
-   },      
+   },
    {
       src_fourcc: FOURCC('Y','4','1','1'),
       src_guid: GUID_UYVY,
       src_bpp: 12,
-      
+
       dest_fourcc: FOURCC('R','G','B',0),
       dest_guid: GUID_RGB24,
       dest_bpp: 24,
-      
+
       priority: 5,
 
       func: (xfm_func_t) y4112rgb24,
 
       flags: 0
    },
-   { 
-      src_fourcc: FOURCC('Y','4','1','1'), 
-      src_guid: GUID_UYVY, 
-      src_bpp: 12, 
-      
-      dest_fourcc: FOURCC('R','G','B','A'), 
-      dest_guid: GUID_RGB32, 
+   {
+      src_fourcc: FOURCC('Y','4','1','1'),
+      src_guid: GUID_UYVY,
+      src_bpp: 12,
+
+      dest_fourcc: FOURCC('R','G','B','A'),
+      dest_guid: GUID_RGB32,
       dest_bpp: 32,
-      
-      priority: 5, 
+
+      priority: 5,
 
       func: (xfm_func_t) y4112rgb32,
 
       flags: 0
-   },      
+   },
    {
       src_fourcc: FOURCC('Y','8','0','0'),
       src_guid: GUID_UYVY,
       src_bpp: 8,
-      
+
       dest_fourcc: FOURCC('R','G','B',0),
       dest_guid: GUID_RGB24,
       dest_bpp: 24,
-      
+
       priority: 5,
 
       func: (xfm_func_t) y8002rgb24,
@@ -855,11 +863,11 @@ static xfm_info_t conversions[] =
       src_fourcc: FOURCC('Y','8','0','0'),
       src_guid: GUID_UYVY,
       src_bpp: 8,
-      
+
       dest_fourcc: FOURCC('R','G','B','3'),
       dest_guid: GUID_RGB24,
       dest_bpp: 24,
-      
+
       priority: 5,
 
       func: (xfm_func_t) y8002rgb24,
@@ -871,11 +879,11 @@ static xfm_info_t conversions[] =
       src_fourcc: FOURCC('G','R','E','Y'),
       src_guid: GUID_Y800,
       src_bpp: 8,
-      
+
       dest_fourcc: FOURCC('R','G','B',0),
       dest_guid: GUID_RGB24,
       dest_bpp: 24,
-      
+
       priority: 5,
 
       func: (xfm_func_t) y8002rgb24,
@@ -886,11 +894,11 @@ static xfm_info_t conversions[] =
       src_fourcc: FOURCC('G','R','E','Y'),
       src_guid: GUID_UYVY,
       src_bpp: 8,
-      
+
       dest_fourcc: FOURCC('R','G','B','3'),
       dest_guid: GUID_RGB24,
       dest_bpp: 24,
-      
+
       priority: 5,
 
       func: (xfm_func_t) y8002rgb24,
@@ -902,24 +910,24 @@ static xfm_info_t conversions[] =
       src_fourcc: FOURCC('R','A','W',' '),
       src_guid: GUID_UYVY,
       src_bpp: 8,
-      
+
       dest_fourcc: FOURCC('R','G','B',0),
       dest_guid: GUID_RGB24,
       dest_bpp: 24,
-      
+
       priority: 5,
 
       func: (xfm_func_t) y8002rgb24,
 
       flags: 0
    },
-   
+
    {
-      
+
       src_fourcc: FOURCC('R','G','B',0),
       src_guid: GUID_RGB24,
       src_bpp: 24,
-      
+
       dest_fourcc: FOURCC('Y','8','0','0'),
       dest_guid: GUID_UYVY,
       dest_bpp: 8,
@@ -930,11 +938,11 @@ static xfm_info_t conversions[] =
 
       flags: 0
    },
-   {      
+   {
       src_fourcc: FOURCC('R','G','B','3'),
       src_guid: GUID_RGB24,
       src_bpp: 24,
-      
+
       dest_fourcc: FOURCC('Y','8','0','0'),
       dest_guid: GUID_UYVY,
       dest_bpp: 8,
@@ -954,18 +962,18 @@ static xfm_info_t conversions[] =
       dest_fourcc: FOURCC('G','R','E','Y'),
       dest_guid: GUID_Y800,
       dest_bpp: 8,
-      
+
       priority: 5,
 
       func: (xfm_func_t) rgb242y800,
 
       flags: 0
    },
-   {     
+   {
       src_fourcc: FOURCC('R','G','B','3'),
       src_guid: GUID_RGB24,
       src_bpp: 24,
-      
+
       dest_fourcc: FOURCC('G','R','E','Y'),
       dest_guid: GUID_UYVY,
       dest_bpp: 8,
@@ -977,11 +985,11 @@ static xfm_info_t conversions[] =
       flags: 0
    },
    // Bt848 RAW, treat as Mono8
-   {     
+   {
       src_fourcc: FOURCC('R','G','B',0),
       src_guid: GUID_RGB24,
       src_bpp: 24,
-      
+
       dest_fourcc: FOURCC('R','A','W',' '),
       dest_guid: GUID_UYVY,
       dest_bpp: 8,
@@ -996,328 +1004,328 @@ static xfm_info_t conversions[] =
       src_fourcc: FOURCC('Y','8','0','0'),
       src_guid: GUID_UYVY,
       src_bpp: 8,
-      
+
       dest_fourcc: FOURCC('R','G','B','A'),
       dest_guid: GUID_RGB32,
       dest_bpp: 32,
-      
+
       priority: 5,
 
       func: (xfm_func_t) y8002rgb32,
 
       flags: 0
    },
-   { 
-      src_fourcc: FOURCC('R','G','B','4'), 
-      src_guid: GUID_RGB32, 
-      src_bpp: 32, 
-      
-      dest_fourcc: FOURCC('R','G','B','A'), 
-      dest_guid: GUID_RGB32, 
+   {
+      src_fourcc: FOURCC('R','G','B','4'),
+      src_guid: GUID_RGB32,
+      src_bpp: 32,
+
+      dest_fourcc: FOURCC('R','G','B','A'),
+      dest_guid: GUID_RGB32,
       dest_bpp: 32,
-      
-      priority: 20, 
+
+      priority: 20,
 
       func: NULL,
 
       flags: XFM_PASSTHROUGH
    },
    // bgr24 -> uyvy
-   { 
-      src_fourcc: FOURCC('B','G','R','3'), 
-      src_guid: GUID_RGB24, 
+   {
+      src_fourcc: FOURCC('B','G','R','3'),
+      src_guid: GUID_RGB24,
       src_bpp: 24,
-      
-      dest_fourcc: FOURCC('U','Y','V','Y'), 
-      dest_guid: GUID_UYVY, 
-      dest_bpp: 16, 
-      
-      priority: 5, 
+
+      dest_fourcc: FOURCC('U','Y','V','Y'),
+      dest_guid: GUID_UYVY,
+      dest_bpp: 16,
+
+      priority: 5,
 
       func: (xfm_func_t) bgr242uyvy,
 
       flags: 0
    },
    // bgr24 -> uyvy
-   { 
-      src_fourcc: FOURCC('B','G','R',0), 
-      src_guid: GUID_RGB24, 
+   {
+      src_fourcc: FOURCC('B','G','R',0),
+      src_guid: GUID_RGB24,
       src_bpp: 24,
-      
-      dest_fourcc: FOURCC('U','Y','V','Y'), 
-      dest_guid: GUID_UYVY, 
-      dest_bpp: 16, 
-      
-      priority: 5, 
+
+      dest_fourcc: FOURCC('U','Y','V','Y'),
+      dest_guid: GUID_UYVY,
+      dest_bpp: 16,
+
+      priority: 5,
 
       func: (xfm_func_t) bgr242uyvy,
 
       flags: 0
    },
    // rgb24 -> uyvy
-   { 
-      src_fourcc: FOURCC('R','G','B','3'), 
-      src_guid: GUID_RGB24, 
+   {
+      src_fourcc: FOURCC('R','G','B','3'),
+      src_guid: GUID_RGB24,
       src_bpp: 24,
-      
-      dest_fourcc: FOURCC('U','Y','V','Y'), 
-      dest_guid: GUID_UYVY, 
-      dest_bpp: 16, 
-      
-      priority: 5, 
+
+      dest_fourcc: FOURCC('U','Y','V','Y'),
+      dest_guid: GUID_UYVY,
+      dest_bpp: 16,
+
+      priority: 5,
 
       func: (xfm_func_t) rgb242uyvy,
 
       flags: 0
    },
    // rgb24 -> uyvy
-   { 
-      src_fourcc: FOURCC('R','G','B',0), 
-      src_guid: GUID_RGB24, 
+   {
+      src_fourcc: FOURCC('R','G','B',0),
+      src_guid: GUID_RGB24,
       src_bpp: 24,
-      
-      dest_fourcc: FOURCC('U','Y','V','Y'), 
-      dest_guid: GUID_UYVY, 
-      dest_bpp: 16, 
-      
-      priority: 5, 
+
+      dest_fourcc: FOURCC('U','Y','V','Y'),
+      dest_guid: GUID_UYVY,
+      dest_bpp: 16,
+
+      priority: 5,
 
       func: (xfm_func_t) rgb242uyvy,
 
       flags: 0
-   },      
+   },
    // rgb32 -> uyvy
-   { 
-      src_fourcc: FOURCC('R','G','B','A'), 
-      src_guid: GUID_RGB32, 
+   {
+      src_fourcc: FOURCC('R','G','B','A'),
+      src_guid: GUID_RGB32,
       src_bpp: 32,
-      
-      dest_fourcc: FOURCC('U','Y','V','Y'), 
-      dest_guid: GUID_UYVY, 
-      dest_bpp: 16, 
-      
-      priority: 5, 
+
+      dest_fourcc: FOURCC('U','Y','V','Y'),
+      dest_guid: GUID_UYVY,
+      dest_bpp: 16,
+
+      priority: 5,
 
       func: (xfm_func_t) rgb322uyvy,
 
       flags: 0
-   },      
+   },
    // rgb32 -> uyvy
-   { 
-      src_fourcc: FOURCC('R','G','B','4'), 
-      src_guid: GUID_RGB32, 
+   {
+      src_fourcc: FOURCC('R','G','B','4'),
+      src_guid: GUID_RGB32,
       src_bpp: 32,
-      
-      dest_fourcc: FOURCC('U','Y','V','Y'), 
-      dest_guid: GUID_UYVY, 
-      dest_bpp: 16, 
-      
-      priority: 5, 
+
+      dest_fourcc: FOURCC('U','Y','V','Y'),
+      dest_guid: GUID_UYVY,
+      dest_bpp: 16,
+
+      priority: 5,
 
       func: (xfm_func_t) rgb322uyvy,
 
       flags: 0
-   },      
+   },
    // rgb24 -> yuyv
-   { 
-      src_fourcc: FOURCC('R','G','B',0), 
-      src_guid: GUID_RGB24, 
+   {
+      src_fourcc: FOURCC('R','G','B',0),
+      src_guid: GUID_RGB24,
       src_bpp: 24,
-      
-      dest_fourcc: FOURCC('Y','U','Y','V'), 
-      dest_guid: GUID_YUY2, 
-      dest_bpp: 16, 
-      
-      priority: 5, 
+
+      dest_fourcc: FOURCC('Y','U','Y','V'),
+      dest_guid: GUID_YUY2,
+      dest_bpp: 16,
+
+      priority: 5,
 
       func: (xfm_func_t) rgb242yuyv,
 
       flags: 0
-   },      
+   },
    // rgb24 -> yuyv
-   { 
-      src_fourcc: FOURCC('R','G','B','3'), 
-      src_guid: GUID_RGB24, 
+   {
+      src_fourcc: FOURCC('R','G','B','3'),
+      src_guid: GUID_RGB24,
       src_bpp: 24,
-      
-      dest_fourcc: FOURCC('Y','U','Y','V'), 
-      dest_guid: GUID_YUY2, 
-      dest_bpp: 16, 
-      
-      priority: 5, 
+
+      dest_fourcc: FOURCC('Y','U','Y','V'),
+      dest_guid: GUID_YUY2,
+      dest_bpp: 16,
+
+      priority: 5,
 
       func: (xfm_func_t) rgb242yuyv,
 
       flags: 0
-   },      
+   },
    // rgb24 -> yuyv
-   { 
-      src_fourcc: FOURCC('R','G','B',0), 
-      src_guid: GUID_RGB24, 
+   {
+      src_fourcc: FOURCC('R','G','B',0),
+      src_guid: GUID_RGB24,
       src_bpp: 24,
-      
-      dest_fourcc: FOURCC('Y','U','Y','2'), 
-      dest_guid: GUID_YUY2, 
-      dest_bpp: 16, 
-      
-      priority: 5, 
+
+      dest_fourcc: FOURCC('Y','U','Y','2'),
+      dest_guid: GUID_YUY2,
+      dest_bpp: 16,
+
+      priority: 5,
 
       func: (xfm_func_t) rgb242yuyv,
 
       flags: 0
-   },      
+   },
    // rgb24 -> yuyv
-   { 
-      src_fourcc: FOURCC('R','G','B','3'), 
-      src_guid: GUID_RGB24, 
+   {
+      src_fourcc: FOURCC('R','G','B','3'),
+      src_guid: GUID_RGB24,
       src_bpp: 24,
-      
-      dest_fourcc: FOURCC('Y','U','Y','2'), 
-      dest_guid: GUID_YUY2, 
-      dest_bpp: 16, 
-      
-      priority: 5, 
+
+      dest_fourcc: FOURCC('Y','U','Y','2'),
+      dest_guid: GUID_YUY2,
+      dest_bpp: 16,
+
+      priority: 5,
 
       func: (xfm_func_t) rgb242yuyv,
 
       flags: 0
-   },      
+   },
    // rgb24 -> i420
-   { 
-      src_fourcc: FOURCC('R','G','B','3'), 
-      src_guid: GUID_RGB24, 
+   {
+      src_fourcc: FOURCC('R','G','B','3'),
+      src_guid: GUID_RGB24,
       src_bpp: 24,
-      
-      dest_fourcc: FOURCC('I','4','2','0'), 
-      dest_guid: GUID_UYVY, 
-      dest_bpp: 12, 
-      
-      priority: 5, 
+
+      dest_fourcc: FOURCC('I','4','2','0'),
+      dest_guid: GUID_UYVY,
+      dest_bpp: 12,
+
+      priority: 5,
 
       func: (xfm_func_t) rgb24toyuv420p,
 
       flags: 0
    },
    // rgb24 -> i420
-   { 
-      src_fourcc: FOURCC('R','G','B',0), 
-      src_guid: GUID_RGB24, 
+   {
+      src_fourcc: FOURCC('R','G','B',0),
+      src_guid: GUID_RGB24,
       src_bpp: 24,
-      
-      dest_fourcc: FOURCC('I','4','2','0'), 
-      dest_guid: GUID_I420, 
-      dest_bpp: 12, 
-      
-      priority: 5, 
+
+      dest_fourcc: FOURCC('I','4','2','0'),
+      dest_guid: GUID_I420,
+      dest_bpp: 12,
+
+      priority: 5,
 
       func: (xfm_func_t) rgb24toyuv420p,
 
       flags: 0
-   },      
+   },
    // bgr24 -> uyvy
-   { 
-      src_fourcc: FOURCC('B','G','R','3'), 
-      src_guid: GUID_RGB24, 
+   {
+      src_fourcc: FOURCC('B','G','R','3'),
+      src_guid: GUID_RGB24,
       src_bpp: 24,
-      
-      dest_fourcc: FOURCC('I','4','2','0'), 
-      dest_guid: GUID_I420, 
-      dest_bpp: 12, 
-      
-      priority: 5, 
+
+      dest_fourcc: FOURCC('I','4','2','0'),
+      dest_guid: GUID_I420,
+      dest_bpp: 12,
+
+      priority: 5,
 
       func: (xfm_func_t) bgr24toyuv420p,
 
       flags: 0
    },
    // bgr24 -> uyvy
-   { 
-      src_fourcc: FOURCC('B','G','R',0), 
-      src_guid: GUID_RGB24, 
+   {
+      src_fourcc: FOURCC('B','G','R',0),
+      src_guid: GUID_RGB24,
       src_bpp: 24,
-      
-      dest_fourcc: FOURCC('I','4','2','0'), 
-      dest_guid: GUID_I420, 
-      dest_bpp: 12, 
-      
-      priority: 5, 
+
+      dest_fourcc: FOURCC('I','4','2','0'),
+      dest_guid: GUID_I420,
+      dest_bpp: 12,
+
+      priority: 5,
 
       func: (xfm_func_t) bgr24toyuv420p,
 
       flags: 0
-   },      
-   { 
-      src_fourcc: FOURCC('B','G','R','3'), 
-      src_guid: GUID_RGB24, 
+   },
+   {
+      src_fourcc: FOURCC('B','G','R','3'),
+      src_guid: GUID_RGB24,
       src_bpp: 24,
-      
-      dest_fourcc: FOURCC('R','G','B','3'), 
-      dest_guid: GUID_RGB24, 
-      dest_bpp: 24, 
-      
-      priority: 5, 
+
+      dest_fourcc: FOURCC('R','G','B','3'),
+      dest_guid: GUID_RGB24,
+      dest_bpp: 24,
+
+      priority: 5,
 
       func: (xfm_func_t) bgr24torgb24,
 
       flags: 0
    },
-   { 
-      src_fourcc: FOURCC('R','G','B','4'), 
-      src_guid: GUID_RGB32, 
+   {
+      src_fourcc: FOURCC('R','G','B','4'),
+      src_guid: GUID_RGB32,
       src_bpp: 32,
-      
-      dest_fourcc: FOURCC('R','G','B','3'), 
-      dest_guid: GUID_RGB24, 
-      dest_bpp: 24, 
-      
-      priority: 5, 
+
+      dest_fourcc: FOURCC('R','G','B','3'),
+      dest_guid: GUID_RGB24,
+      dest_bpp: 24,
+
+      priority: 5,
 
       func: (xfm_func_t) rgb32torgb24,
 
       flags: 0
    },
 
-   { 
-      src_fourcc: FOURCC('B','G','R','3'), 
-      src_guid: GUID_RGB24, 
+   {
+      src_fourcc: FOURCC('B','G','R','3'),
+      src_guid: GUID_RGB24,
       src_bpp: 24,
-      
-      dest_fourcc: FOURCC('B','G','R','4'), 
-      dest_guid: GUID_RGB32, 
-      dest_bpp: 32, 
-      
-      priority: 5, 
+
+      dest_fourcc: FOURCC('B','G','R','4'),
+      dest_guid: GUID_RGB32,
+      dest_bpp: 32,
+
+      priority: 5,
 
       func: (xfm_func_t) bgr24tobgr32,
 
       flags: 0
    },
 
-   { 
-      src_fourcc: FOURCC('R','G','B',0), 
-      src_guid: GUID_RGB24, 
+   {
+      src_fourcc: FOURCC('R','G','B',0),
+      src_guid: GUID_RGB24,
       src_bpp: 24,
-      
-      dest_fourcc: FOURCC('R','G','B','3'), 
-      dest_guid: GUID_RGB24, 
-      dest_bpp: 24, 
-      
-      priority: 20, 
+
+      dest_fourcc: FOURCC('R','G','B','3'),
+      dest_guid: GUID_RGB24,
+      dest_bpp: 24,
+
+      priority: 20,
 
       func: NULL,
 
       flags: XFM_PASSTHROUGH
    },
-   { 
-      src_fourcc: FOURCC('R','G','B','3'), 
-      src_guid: GUID_RGB24, 
+   {
+      src_fourcc: FOURCC('R','G','B','3'),
+      src_guid: GUID_RGB24,
       src_bpp: 24,
-      
-      dest_fourcc: FOURCC('R','G','B',0), 
-      dest_guid: GUID_RGB24, 
-      dest_bpp: 24, 
-      
-      priority: 20, 
+
+      dest_fourcc: FOURCC('R','G','B',0),
+      dest_guid: GUID_RGB24,
+      dest_bpp: 24,
+
+      priority: 20,
 
       func: NULL,
 
@@ -1325,137 +1333,143 @@ static xfm_info_t conversions[] =
    },
 
 
-   { 
-      src_fourcc: FOURCC('B','Y','8',' '), 
-      src_guid: {0}, 
+   {
+      src_fourcc: FOURCC('B','Y','8',' '),
+      src_guid: {0},
       src_bpp: 8,
-      
-      dest_fourcc: FOURCC('U','Y','V','Y'), 
-      dest_guid: GUID_UYVY, 
-      dest_bpp: 16, 
-      
-      priority: 5, 
+
+      dest_fourcc: FOURCC('U','Y','V','Y'),
+      dest_guid: GUID_UYVY,
+      dest_bpp: 16,
+
+      priority: 5,
 
       func: (xfm_func_t) by8touyvy,
 
       flags: 0
    },
-   { 
-      src_fourcc: FOURCC('B','A','8','1'), 
-      src_guid: {0}, 
+   {
+      src_fourcc: FOURCC('B','A','8','1'),
+      src_guid: {0},
       src_bpp: 8,
-      
-      dest_fourcc: FOURCC('U','Y','V','Y'), 
-      dest_guid: GUID_UYVY, 
-      dest_bpp: 16, 
-      
-      priority: 5, 
+
+      dest_fourcc: FOURCC('U','Y','V','Y'),
+      dest_guid: GUID_UYVY,
+      dest_bpp: 16,
+
+      priority: 5,
 
       func: (xfm_func_t) by8touyvy,
 
       flags: 0
    },
-   { 
-      src_fourcc: FOURCC('B','A','8','1'), 
-      src_guid: {0}, 
+   {
+      src_fourcc: FOURCC('B','A','8','1'),
+      src_guid: {0},
       src_bpp: 8,
-      
-      dest_fourcc: FOURCC('R','G','B','3'), 
-      dest_guid: GUID_RGB24, 
-      dest_bpp: 24, 
-      
-      priority: 5, 
+
+      dest_fourcc: FOURCC('R','G','B','3'),
+      dest_guid: GUID_RGB24,
+      dest_bpp: 24,
+
+      priority: 5,
 
       func: (xfm_func_t) y8002rgb24,
 
       flags: 0
    },
-   { 
-      src_fourcc: FOURCC('B','Y','8',' '), 
-      src_guid: {0}, 
+   {
+      src_fourcc: FOURCC('B','Y','8',' '),
+      src_guid: {0},
       src_bpp: 8,
-      
-      dest_fourcc: FOURCC('R','G','B','3'), 
-      dest_guid: GUID_RGB24, 
-      dest_bpp: 24, 
-      
-      priority: 5, 
 
+      dest_fourcc: FOURCC('R','G','B','3'),
+      dest_guid: GUID_RGB24,
+      dest_bpp: 24,
+
+      priority: 5,
+      //willy
+      //func: (xfm_func_t) y8002rgb24,
+      #ifdef __SSE2__
+      func: (xfm_func_t) debayer_sse2,
+      #else
       func: (xfm_func_t) y8002rgb24,
-
+      #endif // __SSE2__
+      //func: (xfm_func_t) debayer_ccm_rgb24,
       flags: 0
    },
-   { 
-      src_fourcc: FOURCC('B','Y','8',' '), 
-      src_guid: {0}, 
+   {
+      src_fourcc: FOURCC('B','Y','8',' '),
+      src_guid: {0},
       src_bpp: 8,
-      
-      dest_fourcc: FOURCC('B','G','R','3'), 
-      dest_guid: GUID_BGR24, 
-      dest_bpp: 24, 
-      
-      priority: 5, 
+
+      dest_fourcc: FOURCC('B','G','R','3'),
+      dest_guid: GUID_BGR24,
+      dest_bpp: 24,
+
+      priority: 5,
 
       func: (xfm_func_t) by8tobgr24,
 
       flags: 0
    },
-   { 
-      src_fourcc: FOURCC('B','Y','8',' '), 
-      src_guid: {0}, 
+   {
+      src_fourcc: FOURCC('B','Y','8',' '),
+      src_guid: {0},
       src_bpp: 8,
-      
-      dest_fourcc: FOURCC('R','G','B','A'), 
-      dest_guid: GUID_RGB32, 
-      dest_bpp: 32, 
-      
-      priority: 5, 
+
+      dest_fourcc: FOURCC('R','G','B','A'),
+      dest_guid: GUID_RGB32,
+      dest_bpp: 32,
+
+      priority: 5,
+
+      //func: (xfm_func_t) y8002rgb32,
+      func: (xfm_func_t) by8torgb32,
+
+      flags: 0
+   },
+   {
+      src_fourcc: FOURCC('B','A','8','1'),
+      src_guid: {0},
+      src_bpp: 8,
+
+      dest_fourcc: FOURCC('R','G','B','A'),
+      dest_guid: GUID_RGB32,
+      dest_bpp: 32,
+
+      priority: 5,
 
       func: (xfm_func_t) y8002rgb32,
 
       flags: 0
    },
-   { 
-      src_fourcc: FOURCC('B','A','8','1'), 
-      src_guid: {0}, 
+
+   {
+      src_fourcc: FOURCC('B','Y','8',' '),
+      src_guid: {0},
       src_bpp: 8,
-      
-      dest_fourcc: FOURCC('R','G','B','A'), 
-      dest_guid: GUID_RGB32, 
-      dest_bpp: 32, 
-      
-      priority: 5, 
 
-      func: (xfm_func_t) y8002rgb32,
+      dest_fourcc: FOURCC('B','Y','8','P'),
+      dest_guid: {0},
+      dest_bpp: 8,
 
-      flags: 0
-   },
-
-   { 
-      src_fourcc: FOURCC('B','Y','8',' '), 
-      src_guid: {0}, 
-      src_bpp: 8,
-      
-      dest_fourcc: FOURCC('B','Y','8','P'), 
-      dest_guid: {0}, 
-      dest_bpp: 8, 
-      
-      priority: 5, 
+      priority: 5,
 
       func: (xfm_func_t) by8toby8p,
 
       flags: 0
    },
-   { 
-      src_fourcc: FOURCC('B','A','8','1'), 
-      src_guid: {0}, 
+   {
+      src_fourcc: FOURCC('B','A','8','1'),
+      src_guid: {0},
       src_bpp: 8,
-      
-      dest_fourcc: FOURCC('B','Y','8','P'), 
-      dest_guid: {0}, 
-      dest_bpp: 8, 
-      
-      priority: 5, 
+
+      dest_fourcc: FOURCC('B','Y','8','P'),
+      dest_guid: {0},
+      dest_bpp: 8,
+
+      priority: 5,
 
       func: (xfm_func_t) by8toby8p,
 
@@ -1468,11 +1482,11 @@ static xfm_info_t conversions[] =
       src_fourcc: FOURCC('R','G','G','B'),
       src_guid: {0},
       src_bpp: 16,
-      
+
       dest_fourcc: FOURCC('U','Y','V','Y'),
       dest_guid: GUID_UYVY,
       dest_bpp: 16,
-      
+
       priority: 5,
 
       func: (xfm_func_t) rggbtouyvy_debayer,
@@ -1480,31 +1494,31 @@ static xfm_info_t conversions[] =
       flags: 0
    },
 
-   { 
-      src_fourcc: FOURCC('Y','1','6',' '), 
-      src_guid: {0}, 
+   {
+      src_fourcc: FOURCC('Y','1','6',' '),
+      src_guid: {0},
       src_bpp: 16,
-      
-      dest_fourcc: FOURCC('U','Y','V','Y'), 
-      dest_guid: GUID_UYVY, 
-      dest_bpp: 16, 
-      
-      priority: 5, 
+
+      dest_fourcc: FOURCC('U','Y','V','Y'),
+      dest_guid: GUID_UYVY,
+      dest_bpp: 16,
+
+      priority: 5,
 
       func: (xfm_func_t) y16touyvy,
 
       flags: 0
-   },      
+   },
 
 /*    {  */
 /*       src_fourcc: FOURCC('R','G','G','B'),  */
 /*       src_guid: {0},  */
 /*       src_bpp: 16, */
-      
+
 /*       dest_fourcc: FOURCC('Y','U','Y','2'),  */
 /*       dest_guid: GUID_UYVY,  */
 /*       dest_bpp: 16,  */
-      
+
 /*       priority: 5,  */
 
 /*       func: (xfm_func_t) rggbtoyuy2, */
@@ -1512,31 +1526,31 @@ static xfm_info_t conversions[] =
 /*       flags: 0 */
 /*    },       */
 
-   { 
-      src_fourcc: FOURCC('Y','1','6',' '), 
-      src_guid: {0}, 
+   {
+      src_fourcc: FOURCC('Y','1','6',' '),
+      src_guid: {0},
       src_bpp: 16,
-      
-      dest_fourcc: FOURCC('Y','U','Y','2'), 
-      dest_guid: GUID_UYVY, 
-      dest_bpp: 16, 
-      
-      priority: 10, 
+
+      dest_fourcc: FOURCC('Y','U','Y','2'),
+      dest_guid: GUID_UYVY,
+      dest_bpp: 16,
+
+      priority: 10,
 
       func: (xfm_func_t) y16toyuy2,
 
       flags: 0
-   },      
+   },
 
 /*    {  */
 /*       src_fourcc: FOURCC('R','G','G','B'),  */
 /*       src_guid: {0},  */
 /*       src_bpp: 16, */
-      
+
 /*       dest_fourcc: FOURCC('Y','U','Y','V'),  */
 /*       dest_guid: GUID_UYVY,  */
 /*       dest_bpp: 16,  */
-      
+
 /*       priority: 5,  */
 
 /*       func: (xfm_func_t) y16toyuy2, */
@@ -1544,31 +1558,31 @@ static xfm_info_t conversions[] =
 /*       flags: 0 */
 /*    },       */
 
-   { 
-      src_fourcc: FOURCC('Y','1','6',' '), 
-      src_guid: {0}, 
+   {
+      src_fourcc: FOURCC('Y','1','6',' '),
+      src_guid: {0},
       src_bpp: 16,
-      
-      dest_fourcc: FOURCC('Y','U','Y','V'), 
-      dest_guid: GUID_UYVY, 
-      dest_bpp: 16, 
-      
-      priority: 10, 
+
+      dest_fourcc: FOURCC('Y','U','Y','V'),
+      dest_guid: GUID_UYVY,
+      dest_bpp: 16,
+
+      priority: 10,
 
       func: (xfm_func_t) y16toyuy2,
 
       flags: 0
-   },      
+   },
 
 /*    {  */
 /*       src_fourcc: FOURCC('R','G','G','B'),  */
 /*       src_guid: {0},  */
 /*       src_bpp: 16, */
-      
+
 /*       dest_fourcc: FOURCC('R','G','B','3'),  */
 /*       dest_guid: GUID_RGB24,  */
 /*       dest_bpp: 24,  */
-      
+
 /*       priority: 5,  */
 
 /*       func: (xfm_func_t) rggbtorgb24, */
@@ -1580,11 +1594,11 @@ static xfm_info_t conversions[] =
 /*       src_fourcc: FOURCC('R','G','G','B'),  */
 /*       src_guid: {0},  */
 /*       src_bpp: 16, */
-      
+
 /*       dest_fourcc: FOURCC('R','G','B',0),  */
 /*       dest_guid: GUID_RGB24,  */
 /*       dest_bpp: 24,  */
-      
+
 /*       priority: 5,  */
 
 /*       func: (xfm_func_t) rggbtorgb24, */
@@ -1592,37 +1606,37 @@ static xfm_info_t conversions[] =
 /*       flags: 0 */
 /*    },       */
 
-   { 
-      src_fourcc: FOURCC('Y','1','6',' '), 
-      src_guid: {0}, 
+   {
+      src_fourcc: FOURCC('Y','1','6',' '),
+      src_guid: {0},
       src_bpp: 16,
-      
-      dest_fourcc: FOURCC('R','G','B','3'), 
-      dest_guid: GUID_RGB24, 
-      dest_bpp: 24, 
-      
-      priority: 5, 
+
+      dest_fourcc: FOURCC('R','G','B','3'),
+      dest_guid: GUID_RGB24,
+      dest_bpp: 24,
+
+      priority: 5,
 
       func: (xfm_func_t) y16torgb24,
 
       flags: 0
-   },      
+   },
 
-   { 
-      src_fourcc: FOURCC('Y','1','6',' '), 
-      src_guid: {0}, 
+   {
+      src_fourcc: FOURCC('Y','1','6',' '),
+      src_guid: {0},
       src_bpp: 16,
-      
-      dest_fourcc: FOURCC('R','G','B',0), 
-      dest_guid: GUID_RGB24, 
-      dest_bpp: 24, 
-      
-      priority: 5, 
+
+      dest_fourcc: FOURCC('R','G','B',0),
+      dest_guid: GUID_RGB24,
+      dest_bpp: 24,
+
+      priority: 5,
 
       func: (xfm_func_t) y16torgb24,
 
       flags: 0
-   },      
+   },
 };
 
 #if HAVE_AVCODEC
@@ -1672,7 +1686,7 @@ typedef struct PixelFormatFourccMap
       int pix_fmt;
 } PixelFormatFourccMap;
 
-PixelFormatFourccMap PixelFormatFourccs[] = 
+PixelFormatFourccMap PixelFormatFourccs[] =
 {
    { UCIL_FOURCC( 'Y','U','Y','V' ), PIX_FMT_YUYV422 },
    { UCIL_FOURCC( 'R','G','B','3' ), PIX_FMT_RGB24 },
@@ -1687,7 +1701,7 @@ const int ucil_NumPixelFormatFourccs = sizeof( PixelFormatFourccs ) / sizeof( Pi
 static int get_av_pix_fmt_from_fourcc( unsigned int fourcc )
 {
    int i;
-   
+
 
    for( i = 0; i < ucil_NumPixelFormatFourccs; i++ )
    {
@@ -1704,8 +1718,8 @@ static int get_av_pix_fmt_from_fourcc( unsigned int fourcc )
 
 
 
-void ucil_get_xfminfo_from_fourcc( unsigned int src_fourcc, 
-				   unsigned int dest_fourcc, 
+void ucil_get_xfminfo_from_fourcc( unsigned int src_fourcc,
+				   unsigned int dest_fourcc,
 				   xfm_info_t *info )
 {
    int nconvs = sizeof( conversions ) / sizeof( xfm_info_t );
@@ -1714,15 +1728,15 @@ void ucil_get_xfminfo_from_fourcc( unsigned int src_fourcc,
 
    for( i = 0; i < nconvs; i++ )
    {
-      if( ( conversions[i].src_fourcc == src_fourcc ) && 
-	  ( conversions[i].dest_fourcc == dest_fourcc ) && 
+      if( ( conversions[i].src_fourcc == src_fourcc ) &&
+	  ( conversions[i].dest_fourcc == dest_fourcc ) &&
 	  ( conversions[i].priority > priority ) )
       {
 	 priority = conversions[i].priority;
 	 found = i;
       }
    }
-   
+
    if( found == -1 )
    {
       info->src_fourcc = src_fourcc;
@@ -1750,7 +1764,7 @@ void ucil_get_xfminfo_from_fourcc( unsigned int src_fourcc,
 
 /* unicap_status_t ucil_convert_buffer_with_xfm_info( xfm_info_t *info, unicap_data_buffer_t *dest, unicap_data_buffer_t *src ) */
 /* { */
-   
+
 /* } */
 
 unicap_status_t ucil_convert_buffer( unicap_data_buffer_t *dest, unicap_data_buffer_t *src )
@@ -1765,12 +1779,12 @@ unicap_status_t ucil_convert_buffer( unicap_data_buffer_t *dest, unicap_data_buf
    else
    {
       if( ( xfminfo.src_fourcc != src->format.fourcc ) ||
-	  ( xfminfo.dest_fourcc != src->format.fourcc ) || 
+	  ( xfminfo.dest_fourcc != src->format.fourcc ) ||
 	  ( xfminfo.flags & XFM_NO_CONVERSION ) )
       {
-	 ucil_get_xfminfo_from_fourcc( src->format.fourcc, dest->format.fourcc, &xfminfo );      
+	 ucil_get_xfminfo_from_fourcc( src->format.fourcc, dest->format.fourcc, &xfminfo );
       }
-      
+
       if( !(xfminfo.flags & XFM_NO_CONVERSION) )
       {
 	 dest->format.bpp = xfminfo.dest_bpp;
@@ -1794,7 +1808,7 @@ unicap_status_t ucil_convert_buffer( unicap_data_buffer_t *dest, unicap_data_buf
       }
       else
       {
-	 g_message( "Could not convert format: %c%c%c%c %08x to %c%c%c%c %08x\n", 
+	 g_message( "Could not convert format: %c%c%c%c %08x to %c%c%c%c %08x\n",
 		    (src->format.fourcc >>  0) & 0xFF,
 		    (src->format.fourcc >>  8) & 0xFF,
 		    (src->format.fourcc >> 16) & 0xFF,
@@ -1806,7 +1820,7 @@ unicap_status_t ucil_convert_buffer( unicap_data_buffer_t *dest, unicap_data_buf
 		    (dest->format.fourcc >> 24) & 0xFF,
                     dest->format.fourcc );
       }
-      
+
    }
    return status;
 }
@@ -1814,7 +1828,7 @@ unicap_status_t ucil_convert_buffer( unicap_data_buffer_t *dest, unicap_data_buf
 int ucil_conversion_supported( unsigned int dest_fourcc, unsigned int src_fourcc )
 {
    int ret = 0;
-   
+
    if( dest_fourcc == src_fourcc )
    {
       ret = 1;
@@ -1822,14 +1836,14 @@ int ucil_conversion_supported( unsigned int dest_fourcc, unsigned int src_fourcc
    else
    {
       xfm_info_t tmpinfo;
-      
+
       ucil_get_xfminfo_from_fourcc( src_fourcc, dest_fourcc, &tmpinfo );
       if( !(tmpinfo.flags & XFM_NO_CONVERSION ) )
       {
 	 ret = 1;
       }
    }
-   
+
    return ret;
 }
 
@@ -1852,7 +1866,7 @@ static void uyvytoyuv420p( __u8 *dest, __u8 *src, int width, int height )
    dest_y = dest;
    dest_u = dest + size;
    dest_v = dest + size + size / 4;
-   
+
    for( y = 0; y < height; y += 2 )
    {
       int hoff = y * stride;
@@ -1892,7 +1906,7 @@ static void yuv420ptouyvy( __u8 *dest, __u8 *src, int width, int height )
    {
       int hoff = stride * y;
       int x;
-      
+
       for( x = 0; x < stride; x+=4 )
       {
 	 __u8 u = src_u[ offu++ ];
@@ -1903,9 +1917,9 @@ static void yuv420ptouyvy( __u8 *dest, __u8 *src, int width, int height )
 
 	 dest[ hoff + x + 2 ] = v;
 	 dest[ hoff + stride + x + 2 ] = v;
-	 
+
       }
-      
+
 
       for( x = 0; x < stride; x += 2 )
       {
@@ -1934,7 +1948,7 @@ static void uyvytoyuv422p( __u8 *dest, __u8 *src, int width, int height )
    dest_y = dest;
    dest_u = dest + size;
    dest_v = dest + size + size / 2;
-   
+
    while( offsrc < (size*2)  )
    {
       dest_u[offu++] = src[offsrc++];
@@ -1963,7 +1977,7 @@ static void yuyvtoyuv420p( __u8 *dest, __u8 *src, int width, int height )
    dest_y = dest;
    dest_u = dest + size;
    dest_v = dest + size + size / 4;
-   
+
    for( y = 0; y < height; y += 2 )
    {
       int hoff = y * stride;
@@ -2003,7 +2017,7 @@ static void yuv420ptoyuyv( __u8 *dest, __u8 *src, int width, int height )
    {
       int hoff = stride * y;
       int x;
-      
+
       for( x = 0; x < stride; x+=4 )
       {
 	 __u8 u = src_u[ offu++ ];
@@ -2069,7 +2083,7 @@ static void grey2yuy2( __u8 *dest, __u8 *source, int width, int height )
 
    for( i = 0, j = 0; i < source_size; i+=2, j+=4 )
    {
-      __u32 tmp = 0x007f007f + 
+      __u32 tmp = 0x007f007f +
 	 ( ((unsigned int)source[i])<<24 ) +
 	 (((unsigned int)source[i+1])<<8);
       *(int*)(dest+j) = GINT32_FROM_BE( tmp );
@@ -2087,7 +2101,7 @@ static void yuy22grey( __u8 *dest, __u8 *source, int width, int height )
       dest[j] = source[i];
    }
 }
-		
+
 static void y8002y420( __u8 *dest, __u8 *source, int width, int height )
 {
    memcpy( dest, source, width * height );
@@ -2116,7 +2130,7 @@ static void uyvy2yuy2( __u8 *dest, __u8 *source, int width, int height )
       register __u32 tmp = *((int*)source);
       tmp = ( ( tmp & 0xff00ff00 ) >> 8 ) | ( ( tmp & 0xff00ff ) << 8 );
       *((__u32*)dest) = tmp;
-   }   
+   }
 }
 
 static void uyvy2yuv( __u8 *dest, __u8 *source, int width, int height )
@@ -2126,12 +2140,12 @@ static void uyvy2yuv( __u8 *dest, __u8 *source, int width, int height )
    while( source < end )
    {
       __u8 y1, y2, u, v;
-      
+
       u = *source++;
       y1 = *source++;
       v = *source++;
       y2 = *source++;
-      
+
       *dest++ = y1;
       *dest++ = u;
       *dest++ = v;
@@ -2151,12 +2165,12 @@ static void uyvy2bgr24( __u8 *dest, __u8 *source, int width, int height )
       __u8 y1, y2, u, v;
       int c1, c2, d, dg, db, e, er, eg;
       int ir, ig, ib;
-		
+
       u = *source++;
       y1 = *source++;
       v = *source++;
       y2 = *source++;
-      
+
       c1 = (y1-16)*298;
       c2 = (y2-16)*298;
       d = u-128;
@@ -2169,12 +2183,12 @@ static void uyvy2bgr24( __u8 *dest, __u8 *source, int width, int height )
       ir = (c1 + er + 128)>>8;
       ig = (c1 - dg - eg + 128 )>>8;
       ib = (c1 + db)>>8;
-      
+
 
       *dest++ = (__u8) ( ib > 255 ? 255 : ( ib < 0 ? 0 : ib ) );
       *dest++ = (__u8) ( ig > 255 ? 255 : ( ig < 0 ? 0 : ig ) );
       *dest++ = (__u8) ( ir > 255 ? 255 : ( ir < 0 ? 0 : ir ) );
-		
+
       ir = (c2 + er + 128)>>8;
       ig = (c2 - dg - eg + 128 )>>8;
       ib = (c2 + db)>>8;
@@ -2194,12 +2208,12 @@ static void uyvy2rgb24( __u8 *dest, __u8 *source, int width, int height )
       __u8 y1, y2, u, v;
       int c1, c2, d, dg, db, e, er, eg;
       int ir, ig, ib;
-		
+
       u = *source++;
       y1 = *source++;
       v = *source++;
       y2 = *source++;
-      
+
       c1 = (y1-16)*298;
       c2 = (y2-16)*298;
       d = u-128;
@@ -2212,12 +2226,12 @@ static void uyvy2rgb24( __u8 *dest, __u8 *source, int width, int height )
       ir = (c1 + er + 128)>>8;
       ig = (c1 - dg - eg + 128 )>>8;
       ib = (c1 + db)>>8;
-      
+
 
       *dest++ = (__u8) ( ir > 255 ? 255 : ( ir < 0 ? 0 : ir ) );
       *dest++ = (__u8) ( ig > 255 ? 255 : ( ig < 0 ? 0 : ig ) );
       *dest++ = (__u8) ( ib > 255 ? 255 : ( ib < 0 ? 0 : ib ) );
-		
+
       ir = (c2 + er + 128)>>8;
       ig = (c2 - dg - eg + 128 )>>8;
       ib = (c2 + db)>>8;
@@ -2237,12 +2251,12 @@ static void yuyv2rgb24( __u8 *dest, __u8 *source, int width, int height )
       __u8 y1, y2, u, v;
       int c1, c2, d, dg, db, e, er, eg;
       int ir, ig, ib;
-		
+
       y1 = *source++;
       u = *source++;
       y2 = *source++;
       v = *source++;
-      
+
       c1 = (y1-16)*298;
       c2 = (y2-16)*298;
       d = u-128;
@@ -2255,12 +2269,12 @@ static void yuyv2rgb24( __u8 *dest, __u8 *source, int width, int height )
       ir = (c1 + er + 128)>>8;
       ig = (c1 - dg - eg + 128 )>>8;
       ib = (c1 + db)>>8;
-      
+
 
       *dest++ = (__u8) ( ir > 255 ? 255 : ( ir < 0 ? 0 : ir ) );
       *dest++ = (__u8) ( ig > 255 ? 255 : ( ig < 0 ? 0 : ig ) );
       *dest++ = (__u8) ( ib > 255 ? 255 : ( ib < 0 ? 0 : ib ) );
-		
+
       ir = (c2 + er + 128)>>8;
       ig = (c2 - dg - eg + 128 )>>8;
       ib = (c2 + db)>>8;
@@ -2280,12 +2294,12 @@ static void yuyv2bgr32( __u8 *dest, __u8 *source, int width, int height )
       __u8 y1, y2, u, v;
       int c1, c2, d, dg, db, e, er, eg;
       int ir, ig, ib;
-		
+
       y1 = *source++;
       u = *source++;
       y2 = *source++;
       v = *source++;
-      
+
       c1 = (y1-16)*298;
       c2 = (y2-16)*298;
       d = u-128;
@@ -2298,12 +2312,12 @@ static void yuyv2bgr32( __u8 *dest, __u8 *source, int width, int height )
       ir = (c1 + er + 128)>>8;
       ig = (c1 - dg - eg + 128 )>>8;
       ib = (c1 + db)>>8;
-      
+
       *dest++ = (__u8) ( ib > 255 ? 255 : ( ib < 0 ? 0 : ib ) );
       *dest++ = (__u8) ( ig > 255 ? 255 : ( ig < 0 ? 0 : ig ) );
       *dest++ = (__u8) ( ir > 255 ? 255 : ( ir < 0 ? 0 : ir ) );
       *dest++ = 0; // Alpha
-		
+
       ir = (c2 + er + 128)>>8;
       ig = (c2 - dg - eg + 128 )>>8;
       ib = (c2 + db)>>8;
@@ -2321,26 +2335,26 @@ static void yuyv2bgr32( __u8 *dest, __u8 *source, int width, int height )
 /* { */
 /*    int i; */
 /*    int dest_offset = 0; */
-	
+
 /*    int source_size = width * height * 2; */
 
 /*    for( i = 0; i < source_size; i+=4 ) */
 /*    { */
 /*       __u8 *r, *b, *g; */
 /*       __u8 *y1, *y2, *u, *v; */
-		
+
 /*       float fr, fg, fb; */
 /*       float fy1, fy2, fu, fur, fug, fub, fv, fvr, fvg, fvb; */
 
 /*       r = dest + dest_offset; */
 /*       g = r + 1; */
 /*       b = g + 1; */
-		
+
 /*       u = source + i; */
 /*       y1 = u + 1; */
 /*       v = y1 + 1; */
 /*       y2 = v + 1; */
-		
+
 /*       fu = *u - 128; */
 /*       fur = fu * 0.0009267; */
 /*       fug = fu * 0.3436954; */
@@ -2361,13 +2375,13 @@ static void yuyv2bgr32( __u8 *dest, __u8 *source, int width, int height )
 /*       *b = (__u8) ( fb > 255 ? 255 : ( fb < 0 ? 0 : fb ) ); */
 
 
-		
+
 /*       dest_offset += 3; */
-		
+
 /*       r = dest + dest_offset; */
 /*       g = r + 1; */
 /*       b = g + 1; */
-		
+
 /*       fr = fy2 - fur + fvr; */
 /*       fg = fy2 - fug - fvg; */
 /*       fb = fy2 + fub + fvb; */
@@ -2385,9 +2399,9 @@ size_t __y4112rgb24( __u8 *dest, __u8 *source, size_t dest_size, size_t source_s
 {
    int i;
    int dest_offset = 0;
-	
+
    long co1, co2, co3, co4, co5, co6;
-	
+
    co1 = 0.0009267 * 65536;
    co2 = 1.4016868 * 65536;
    co3 = 0.3436954 * 65536;
@@ -2408,7 +2422,7 @@ size_t __y4112rgb24( __u8 *dest, __u8 *source, size_t dest_size, size_t source_s
       r = dest + dest_offset;
       g = r + 1;
       b = g + 1;
-		
+
       u =  ( ( *( source + i++ ) ) << 16 ) - ( 128 << 16 );
       y1 = ( *( source + i++ ) ) << 16;
       y2 = ( *( source + i++ ) ) << 16;
@@ -2419,13 +2433,13 @@ size_t __y4112rgb24( __u8 *dest, __u8 *source, size_t dest_size, size_t source_s
       *r = ( ( y1 - co1 * u + co2 * v ) >> 16 );
       *g = ( ( y1 - co3 * u - co4 * v ) >> 16 );
       *b = ( ( y1 + co5 * u + co6 * v ) >> 16 );
-		
+
       dest_offset += 3;
 
       r = dest + dest_offset;
       g = r + 1;
       b = g + 1;
-		
+
       *r = ( ( y2 - co1 * u + co2 * v ) >> 16 );
       *g = ( ( y2 - co3 * u - co4 * v ) >> 16 );
       *b = ( ( y2 + co5 * u + co6 * v ) >> 16 );
@@ -2435,7 +2449,7 @@ size_t __y4112rgb24( __u8 *dest, __u8 *source, size_t dest_size, size_t source_s
       r = dest + dest_offset;
       g = r + 1;
       b = g + 1;
-		
+
       *r = ( y3 - co1 * u + co2 * v ) >> 16;
       *g = ( y3 - co3 * u - co4 * v ) >> 16;
       *b = ( y3 + co5 * u + co6 * v ) >> 16;
@@ -2452,7 +2466,7 @@ size_t __y4112rgb24( __u8 *dest, __u8 *source, size_t dest_size, size_t source_s
 
       dest_offset += 3;
    }
-	
+
    return source_size * 2;
 }
 
@@ -2461,21 +2475,21 @@ static void y4112rgb24( __u8 *dest, __u8 *source, int width, int height )
 {
    int i;
    int dest_offset = 0;
-	
+
    int source_size = width * height * 1.5;
 
    for( i = 0; i < source_size; i+=6 )
    {
       __u8 *r, *b, *g;
       __u8 *y1, *y2, *y3, *y4, *u, *v;
-		
+
       double fr, fg, fb;
       double fy1, fy2, fy3, fy4, fu, fur, fug, fub, fv, fvr, fvg, fvb;
 
       r = dest + dest_offset;
       g = r + 1;
       b = g + 1;
-		
+
       u = source + i;
       y1 = u + 1;
       y2 = y1 + 1;
@@ -2503,14 +2517,14 @@ static void y4112rgb24( __u8 *dest, __u8 *source, int width, int height )
       *r = (__u8) ( fr > 255 ? 255 : ( fr < 0 ? 0 : fr ) );
       *g = (__u8) ( fg > 255 ? 255 : ( fg < 0 ? 0 : fg ) );
       *b = (__u8) ( fb > 255 ? 255 : ( fb < 0 ? 0 : fb ) );
-		
-		
+
+
       dest_offset += 3;
-		
+
       r = dest + dest_offset;
       g = r + 1;
       b = g + 1;
-		
+
       fr = fy2 - fur + fvr;
       fg = fy2 - fug - fvg;
       fb = fy2 + fub + fvb;
@@ -2524,7 +2538,7 @@ static void y4112rgb24( __u8 *dest, __u8 *source, int width, int height )
       r = dest + dest_offset;
       g = r + 1;
       b = g + 1;
-		
+
       fr = fy3 - fur + fvr;
       fg = fy3 - fug - fvg;
       fb = fy3 + fub + fvb;
@@ -2538,7 +2552,7 @@ static void y4112rgb24( __u8 *dest, __u8 *source, int width, int height )
       r = dest + dest_offset;
       g = r + 1;
       b = g + 1;
-		
+
       fr = fy4 - fur + fvr;
       fg = fy4 - fug - fvg;
       fb = fy4 + fub + fvb;
@@ -2555,14 +2569,14 @@ static void y4112rgb32( __u8 *dest, __u8 *source, int width, int height )
 {
    int i;
    int dest_offset = 0;
-	
+
    int source_size = width * height * 1.5;
 
    for( i = 0; i < source_size; i+=6 )
    {
       __u8 *r, *b, *g, *a;
       __u8 *y1, *y2, *y3, *y4, *u, *v;
-		
+
       double fr, fg, fb;
       double fy1, fy2, fy3, fy4, fu, fur, fug, fub, fv, fvr, fvg, fvb;
 
@@ -2570,7 +2584,7 @@ static void y4112rgb32( __u8 *dest, __u8 *source, int width, int height )
       g = r + 1;
       b = g + 1;
       a = b + 1;
-		
+
       u = source + i;
       y1 = u + 1;
       y2 = y1 + 1;
@@ -2599,15 +2613,15 @@ static void y4112rgb32( __u8 *dest, __u8 *source, int width, int height )
       *g = (__u8) ( fg > 255 ? 255 : ( fg < 0 ? 0 : fg ) );
       *b = (__u8) ( fb > 255 ? 255 : ( fb < 0 ? 0 : fb ) );
       *a = 0xff;
-		
-		
+
+
       dest_offset += 4;
-		
+
       r = dest + dest_offset;
       g = r + 1;
       b = g + 1;
       a = b + 1;
-		
+
       fr = fy2 - fur + fvr;
       fg = fy2 - fug - fvg;
       fb = fy2 + fub + fvb;
@@ -2623,7 +2637,7 @@ static void y4112rgb32( __u8 *dest, __u8 *source, int width, int height )
       g = r + 1;
       b = g + 1;
       a = b + 1;
-		
+
       fr = fy3 - fur + fvr;
       fg = fy3 - fug - fvg;
       fb = fy3 + fub + fvb;
@@ -2639,7 +2653,7 @@ static void y4112rgb32( __u8 *dest, __u8 *source, int width, int height )
       g = r + 1;
       b = g + 1;
       a = b + 1;
-		
+
       fr = fy4 - fur + fvr;
       fg = fy4 - fug - fvg;
       fb = fy4 + fub + fvb;
@@ -2661,8 +2675,8 @@ static void uyvy2rgb32( __u8 *dest, __u8 *source, int width, int height )
    {
       __u8 y1, y2, u, v;
       int c1, c2, d, dg, db, e, er, eg;
-      int ir, ig, ib;		
-		
+      int ir, ig, ib;
+
       u = *source++;
       y1 = *source++;
       v = *source++;
@@ -2680,24 +2694,24 @@ static void uyvy2rgb32( __u8 *dest, __u8 *source, int width, int height )
       ir = (c1 + er + 128)>>8;
       ig = (c1 - dg - eg + 128 )>>8;
       ib = (c1 + db)>>8;
-      
+
 
       *dest++ = (__u8) ( ir > 255 ? 255 : ( ir < 0 ? 0 : ir ) );
       *dest++ = (__u8) ( ig > 255 ? 255 : ( ig < 0 ? 0 : ig ) );
       *dest++ = (__u8) ( ib > 255 ? 255 : ( ib < 0 ? 0 : ib ) );
-      *dest++ = 0;		
+      *dest++ = 0;
 
       ir = (c2 + er + 128)>>8;
       ig = (c2 - dg - eg + 128 )>>8;
       ib = (c2 + db)>>8;
-      
+
       *dest++ = (__u8) ( ir > 255 ? 255 : ( ir < 0 ? 0 : ir ) );
       *dest++ = (__u8) ( ig > 255 ? 255 : ( ig < 0 ? 0 : ig ) );
       *dest++ = (__u8) ( ib > 255 ? 255 : ( ib < 0 ? 0 : ib ) );
-      *dest++ = 0;		
+      *dest++ = 0;
 
    }
-	
+
 }
 
 static void y4202rgb24( __u8 *dest, __u8 *source, int width, int height )
@@ -2706,7 +2720,7 @@ static void y4202rgb24( __u8 *dest, __u8 *source, int width, int height )
    __u8 *ybase = source;
    __u8 *ubase = source + width * height;
    __u8 *vbase = ubase + ( ( width * height ) / 4 );
-	
+
    for( j = 0; j < height; j++ )
    {
       for( i = 0; i < width; i+=2 )
@@ -2716,11 +2730,11 @@ static void y4202rgb24( __u8 *dest, __u8 *source, int width, int height )
 	 int ir, ig, ib;
 
 	 int uvidx = j /2 * width /2 + i /2;
-			
+
 	 y = *(ybase + ( j * width ) + i);
 	 u = *(ubase + uvidx );
 	 v = *(vbase + uvidx );
-			
+
 	 c = (y-16)*298;
 	 d = u-128;
 	 dg = 100 * d;
@@ -2759,7 +2773,7 @@ static void y4202rgb32( __u8 *dest, __u8 *source, int width, int height )
    __u8 *ybase = source;
    __u8 *ubase = source + width * height;
    __u8 *vbase = ubase + ( ( width * height ) / 4 );
-	
+
    for( j = 0; j < height; j++ )
    {
       for( i = 0; i < width; i+=2 )
@@ -2769,11 +2783,11 @@ static void y4202rgb32( __u8 *dest, __u8 *source, int width, int height )
 	 int ir, ig, ib;
 
 	 int uvidx = j /2 * width /2 + i /2;
-			
+
 	 y = *(ybase + ( j * width ) + i);
 	 u = *(ubase + uvidx );
 	 v = *(vbase + uvidx );
-			
+
 	 c = (y-16)*298;
 	 d = u-128;
 	 dg = 100 * d;
@@ -2811,27 +2825,27 @@ static void y4202rgb32( __u8 *dest, __u8 *source, int width, int height )
 static void y8002rgb24( __u8 *dest, __u8 *source, int width, int height )
 {
    int i;
-   int dest_offset = 0;	
+   int dest_offset = 0;
    int source_size = width * height;
-	
+
    for( i = 0; i < source_size; i++ )
    {
       __u8 *y;
       __u8 *r, *b, *g;
-		
+
       r = dest + dest_offset;
       g = r + 1;
       b = g + 1;
-		
+
       y = source + i;
-		
+
       *r = *y;
       *g = *y;
       *b = *y;
-		
+
       dest_offset +=3;
    }
-	
+
 }
 
 static void rgb242y800( __u8 *dest, __u8 *source, int width, int height )
@@ -2839,7 +2853,7 @@ static void rgb242y800( __u8 *dest, __u8 *source, int width, int height )
    int i;
    int dest_offset = 0;
    int source_size = width * height * 3;
-   
+
    for( i = 0; i < source_size; i += 3 ){
       __u8 y;
       y = source[i];
@@ -2852,7 +2866,7 @@ static void rgb322y800( __u8 *dest, __u8 *source, int width, int height )
    int i;
    int dest_offset = 0;
    int source_size = width * height * 4;
-   
+
    for( i = 1; i < source_size; i += 4 ){
       __u8 y;
       y = source[i];
@@ -2866,52 +2880,52 @@ static void y8002rgb32( __u8 *dest, __u8 *source, int width, int height )
    int i;
    int dest_offset = 0;
    int source_size = width * height;
-	
+
    for( i = 0; i < source_size; i++ )
    {
       __u8 *y;
       __u8 *r, *b, *g, *a;
-		
+
       r = dest + dest_offset;
       g = r + 1;
       b = g + 1;
       a = b + 1;
-		
+
       y = source + i;
-		
+
       *r = *y;
       *g = *y;
       *b = *y;
       *a = 0;
-		
+
       dest_offset +=4;
    }
 }
 
 //y =  0.2990 * R + 0.5870 * G + 0.1140 * B
 //U = -0.1687 * R - 0.3313 * G + 0.5000 * B
-//V =  0.5000 * R - 0.4187 * G - 0.0813 * B	
+//V =  0.5000 * R - 0.4187 * G - 0.0813 * B
 static void rgb242uyvy( __u8 *dest, __u8 *source, int width, int height )
 {
    int offset;
    int dest_offset = 0;
    int source_size = width * height * 3;
-   
+
    for( offset = 0; offset < source_size; )
    {
       int r, b, g;
-      
+
       r = source[offset++];
       g = source[offset++];
       b = source[offset++];
-      
+
       dest[dest_offset++] = ( ( -38 * r -  74 * g + 112 * b + 128) >> 8) + 128;
       dest[dest_offset++] = ( (  66 * r + 129 * g +  25 * b + 128) >> 8) +  16;
 
       r = source[offset++];
       g = source[offset++];
       b = source[offset++];
-      
+
       dest[dest_offset++] = ( ( 112 * r -  94 * g -  18 * b + 128) >> 8) + 128;
       dest[dest_offset++] = ( (  66 * r + 129 * g +  25 * b + 128) >> 8) +  16;
    }
@@ -2922,22 +2936,22 @@ static void bgr242uyvy( __u8 *dest, __u8 *source, int width, int height )
    int offset;
    int dest_offset = 0;
    int source_size = width * height * 3;
-   
+
    for( offset = 0; offset < source_size; )
    {
       int r, b, g;
-      
+
       b = source[offset++];
       g = source[offset++];
       r = source[offset++];
-      
+
       dest[dest_offset++] = ( ( -38 * r -  74 * g + 112 * b + 128) >> 8) + 128;
       dest[dest_offset++] = ( (  66 * r + 129 * g +  25 * b + 128) >> 8) +  16;
 
       b = source[offset++];
       g = source[offset++];
       r = source[offset++];
-      
+
       dest[dest_offset++] = ( ( 112 * r -  94 * g -  18 * b + 128) >> 8) + 128;
       dest[dest_offset++] = ( (  66 * r + 129 * g +  25 * b + 128) >> 8) +  16;
    }
@@ -2948,16 +2962,16 @@ static void rgb322uyvy( __u8 *dest, __u8 *source, int width, int height )
    int offset;
    int dest_offset = 0;
    int source_size = width * height * 4;
-   
+
    for( offset = 0; offset < source_size; )
    {
       int r, b, g;
-      
+
       r = source[offset++];
       g = source[offset++];
       b = source[offset++];
       offset++;
-      
+
       dest[dest_offset++] = ( ( -38 * r -  74 * g + 112 * b + 128) >> 8) + 128;
       dest[dest_offset++] = ( (  66 * r + 129 * g +  25 * b + 128) >> 8) +  16;
 
@@ -2965,7 +2979,7 @@ static void rgb322uyvy( __u8 *dest, __u8 *source, int width, int height )
       g = source[offset++];
       b = source[offset++];
       offset++;
-      
+
       dest[dest_offset++] = ( ( 112 * r -  94 * g -  18 * b + 128) >> 8) + 128;
       dest[dest_offset++] = ( (  66 * r + 129 * g +  25 * b + 128) >> 8) +  16;
    }
@@ -2976,22 +2990,22 @@ static void rgb242yuyv( __u8 *dest, __u8 *source, int width, int height )
    int offset;
    int dest_offset = 0;
    int source_size = width * height * 3;
-   
+
    for( offset = 0; offset < source_size; )
    {
       int r, b, g;
-      
+
       r = source[offset++];
       g = source[offset++];
       b = source[offset++];
-      
+
       dest[dest_offset++] = ( (  66 * r + 129 * g +  25 * b + 128) >> 8) +  16;
       dest[dest_offset++] = ( ( -38 * r -  74 * g + 112 * b + 128) >> 8) + 128;
- 
+
       r = source[offset++];
       g = source[offset++];
       b = source[offset++];
-      
+
       dest[dest_offset++] = ( (  66 * r + 129 * g +  25 * b + 128) >> 8) +  16;
       dest[dest_offset++] = ( ( 112 * r -  94 * g -  18 * b + 128) >> 8) + 128;
    }
@@ -3008,21 +3022,21 @@ static void rgb24toyuv420p( __u8 *dest, __u8 *source, int width, int height )
    __u8 *dest_y;
    __u8 *dest_u;
    __u8 *dest_v;
-   
+
    dest_y = dest;
    dest_u = dest_y + ( width * height );
    dest_v = dest_u + ( width * height ) / 4;
-   
+
    for( y = 0; y < height; y +=2 )
    {
       for( x = 0; x < width; x+= 2 )
       {
 	 int r, b, g;
-	 
+
 	 r = source[offset++];
 	 g = source[offset++];
 	 b = source[offset++];
-	 
+
 	 dest_y[dest_y_offset++] = ( (  66 * r + 129 * g +  25 * b + 128) >> 8) +  16;
 	 dest_u[dest_u_offset++] = ( ( -38 * r -  74 * g + 112 * b + 128) >> 8) + 128;
 	 dest_v[dest_v_offset++] = ( ( 112 * r -  94 * g -  18 * b + 128) >> 8) + 128;
@@ -3030,24 +3044,24 @@ static void rgb24toyuv420p( __u8 *dest, __u8 *source, int width, int height )
 	 r = source[offset++];
 	 g = source[offset++];
 	 b = source[offset++];
-	 
+
 	 dest_y[dest_y_offset++] = ( (  66 * r + 129 * g +  25 * b + 128) >> 8) +  16;
       }
-      
+
       for( x = 0; x < width; x+=2 )
       {
 	 int r, b, g;
-	 
+
 	 r = source[offset++];
 	 g = source[offset++];
 	 b = source[offset++];
-	 
+
 	 dest_y[dest_y_offset++] = ( (  66 * r + 129 * g +  25 * b + 128) >> 8) +  16;
-	 
+
 	 r = source[offset++];
 	 g = source[offset++];
 	 b = source[offset++];
-	 
+
 	 dest_y[dest_y_offset++] = ( (  66 * r + 129 * g +  25 * b + 128) >> 8) +  16;
       }
    }
@@ -3064,21 +3078,21 @@ static void bgr24toyuv420p( __u8 *dest, __u8 *source, int width, int height )
    __u8 *dest_y;
    __u8 *dest_u;
    __u8 *dest_v;
-   
+
    dest_y = dest;
    dest_u = dest_y + ( width * height );
    dest_v = dest_u + ( width * height ) / 4;
-   
+
    for( y = 0; y < height; y +=2 )
    {
       for( x = 0; x < width; x+= 2 )
       {
 	 int r, b, g;
-	 
+
 	 b = source[offset++];
 	 g = source[offset++];
 	 r = source[offset++];
-	 
+
 	 dest_y[dest_y_offset++] = ( (  66 * r + 129 * g +  25 * b + 128) >> 8) +  16;
 	 dest_u[dest_u_offset++] = ( ( -38 * r -  74 * g + 112 * b + 128) >> 8) + 128;
 	 dest_v[dest_v_offset++] = ( ( 112 * r -  94 * g -  18 * b + 128) >> 8) + 128;
@@ -3086,24 +3100,24 @@ static void bgr24toyuv420p( __u8 *dest, __u8 *source, int width, int height )
 	 b = source[offset++];
 	 g = source[offset++];
 	 r = source[offset++];
-	 
+
 	 dest_y[dest_y_offset++] = ( (  66 * r + 129 * g +  25 * b + 128) >> 8) +  16;
       }
-      
+
       for( x = 0; x < width; x+=2 )
       {
 	 int r, b, g;
-	 
+
 	 b = source[offset++];
 	 g = source[offset++];
 	 r = source[offset++];
-	 
+
 	 dest_y[dest_y_offset++] = ( (  66 * r + 129 * g +  25 * b + 128) >> 8) +  16;
-	 
+
 	 b = source[offset++];
 	 g = source[offset++];
 	 r = source[offset++];
-	 
+
 	 dest_y[dest_y_offset++] = ( (  66 * r + 129 * g +  25 * b + 128) >> 8) +  16;
       }
    }
@@ -3124,12 +3138,12 @@ static void yuv420ptorgb24( __u8 *dest, __u8 *source, int width, int height )
 	 __u8 y1, y2, u, v;
 	 int c1, c2, d, dg, db, e, er, eg;
 	 int ir, ig, ib;
-		
+
 	 y1 = src_y[ y * width + x ];
 	 y2 = src_y[ y * width + x + 1 ];
 	 u = src_u[ ( ( y * width ) / 4 ) + x / 2 ];
 	 v = src_v[ ( ( y * width ) / 4 ) + x / 2 ];
-      
+
 	 c1 = (y1-16)*298;
 	 c2 = (y2-16)*298;
 	 d = u-128;
@@ -3146,7 +3160,7 @@ static void yuv420ptorgb24( __u8 *dest, __u8 *source, int width, int height )
 	 *dest++ = (__u8) ( ir > 255 ? 255 : ( ir < 0 ? 0 : ir ) );
 	 *dest++ = (__u8) ( ig > 255 ? 255 : ( ig < 0 ? 0 : ig ) );
 	 *dest++ = (__u8) ( ib > 255 ? 255 : ( ib < 0 ? 0 : ib ) );
-		
+
 	 ir = (c2 + er + 128)>>8;
 	 ig = (c2 - dg - eg + 128 )>>8;
 	 ib = (c2 + db)>>8;
@@ -3156,21 +3170,21 @@ static void yuv420ptorgb24( __u8 *dest, __u8 *source, int width, int height )
 	 *dest++ = (__u8) ( ib > 255 ? 255 : ( ib < 0 ? 0 : ib ) );
       }
    }
-   
+
 }
 
 static void bgr24torgb24( __u8 *dest, __u8 *source, int width, int height )
 {
    int size = width * height;
    int i;
-   
+
    for( i = 0; i < size; i++ )
    {
       unsigned char r, g, b;
       b = *source++;
       g = *source++;
       r = *source++;
-      
+
       *dest++ = r;
       *dest++ = g;
       *dest++ = b;
@@ -3181,17 +3195,17 @@ static void rgb32torgb24( __u8 *dest, __u8 *source, int width, int height )
 {
    int size = width * height;
    int i;
-   
+
 
    for( i = 0; i < size; i++ )
    {
       unsigned char r,g,b;
-      
+
       r = *source++;
       g = *source++;
       b = *source++;
       source++;
-      
+
       *dest++ = r;
       *dest++ = g;
       *dest++ = b;
@@ -3204,16 +3218,16 @@ static void bgr24tobgr32( __u8 *dest, __u8 *source, int width, int height )
 {
    int size = width * height;
    int i;
-   
+
 
    for( i = 0; i < size; i++ )
    {
       unsigned char r,g,b;
-      
+
       b = *source++;
       g = *source++;
       r = *source++;
-      
+
       *dest++ = b;
       *dest++ = g;
       *dest++ = r;
@@ -3229,12 +3243,11 @@ static void yuy2toyuyv( __u8 *dest, __u8 *source, int width, int height )
 
 
 
-
-static void by8torgb24( __u8 *dest, __u8* source, int width, int height )
+static  void by8torgb24( __u8 *dest, __u8* source, int width, int height )
 {
    int i,j;
-   int dest_offset = 0;      
-   
+   int dest_offset = 0;
+
    for( j = 2; j < height - 2; j+=2 )
    {
       int lineoffset = j * width;
@@ -3247,16 +3260,16 @@ static void by8torgb24( __u8 *dest, __u8* source, int width, int height )
 	 int g2 = source[ lineoffset + i + 1 ];
 	 int g3 = source[ ( lineoffset + i ) - width ];
 	 int g4 = source[ lineoffset + i + width ];
-	 
+
 	 int d1 = ABS( g1 - g2 );
 	 int d2 = ABS( g3 - g4 );
 
 	 b = source[ lineoffset + i ];
-	 r = ( ( (int)source[ ( ( lineoffset + i ) - width ) + 1 ] + 
-		 (int)source[ ( lineoffset + i + width ) + 1 ] + 
-		 (int)source[ ( ( lineoffset + i ) - width ) - 1 ] + 
+	 r = ( ( (int)source[ ( ( lineoffset + i ) - width ) + 1 ] +
+		 (int)source[ ( lineoffset + i + width ) + 1 ] +
+		 (int)source[ ( ( lineoffset + i ) - width ) - 1 ] +
 		 (int)source[ ( lineoffset + i + width ) - 1 ] ) / 4 );
-	 
+
 	 if( d1 < d2 )
 	 {
 	    g = ( g1 + g2 ) / 2;
@@ -3264,14 +3277,14 @@ static void by8torgb24( __u8 *dest, __u8* source, int width, int height )
 	 else
 	 {
 	    g = ( g3 + g4 ) / 2;
-	 }	    
+	 }
 
 	 dest[dest_offset++] = r;
 	 dest[dest_offset++] = g;
 	 dest[dest_offset++] = b;
-	 
+
 	 i++;
-	 
+
 	 g = g2;
 	 b = ( (int)source[ ( lineoffset + i ) - 1 ] + (int)source[ ( lineoffset + i ) + 1 ] ) / 2;
 	 r = ( (int)source[ ( lineoffset + i ) - width ] + (int)source[ lineoffset + i + width ] ) / 2;
@@ -3279,13 +3292,13 @@ static void by8torgb24( __u8 *dest, __u8* source, int width, int height )
 	 dest[dest_offset++] = r;
 	 dest[dest_offset++] = g;
 	 dest[dest_offset++] = b;
-	 
+
 	 i++;
       }
-    
+
       lineoffset += width;
       dest_offset = (j+1) * width * 3 + 6;
-      
+
       for( i = 2; i < width - 3; )
       {
 	 int r, g, b;
@@ -3293,7 +3306,7 @@ static void by8torgb24( __u8 *dest, __u8* source, int width, int height )
 	 int g2 = source[ lineoffset + i + 1 ];
 	 int g3 = source[ ( lineoffset + i ) - width ];
 	 int g4 = source[ lineoffset + i + width ];
-	 
+
 	 int d1 = ABS( g1 - g2 );
 	 int d2 = ABS( g3 - g4 );
 
@@ -3303,37 +3316,218 @@ static void by8torgb24( __u8 *dest, __u8* source, int width, int height )
 	 {
 	    g = ( g1 + g2 ) / 2;
 	 }
-	    
+
 	 else
 	 {
 	    g = ( g3 + g4 ) / 2;
 	 }
 
-	 b = ( ( (int)source[ ( ( lineoffset + i ) - width ) + 1 ] + 
-		 (int)source[ ( lineoffset + i + width ) + 1 ] + 
-		 (int)source[ ( ( lineoffset + i ) - width ) - 1 ] + 
+	 b = ( ( (int)source[ ( ( lineoffset + i ) - width ) + 1 ] +
+		 (int)source[ ( lineoffset + i + width ) + 1 ] +
+		 (int)source[ ( ( lineoffset + i ) - width ) - 1 ] +
 		 (int)source[ ( lineoffset + i + width ) - 1 ] ) / 4 );
-	 
+
 
 	 dest[dest_offset++] = r;
 	 dest[dest_offset++] = g;
 	 dest[dest_offset++] = b;
-	 
+
 	 i++;
-	 
+
 	 g = g2;
 	 r = ( (int)source[ ( lineoffset + i ) - 1 ] + (int)source[ ( lineoffset + i ) + 1 ] ) / 2;
 	 b = ( (int)source[ ( lineoffset + i ) - width ] + (int)source[ lineoffset + i + width ] ) / 2;
-	 
+
 	 dest[dest_offset++] = r;
 	 dest[dest_offset++] = g;
 	 dest[dest_offset++] = b;
 
-	 i++; 
+	 i++;
       }
    }
-   
+
 }
+// willy
+#define CLIP(x) (x>255?255:x<0?0:x)
+
+
+//void debayer_ccm_rgb24_gr_nn( unicap_data_buffer_t *destbuf, unicap_data_buffer_t *srcbuf, debayer_data_t *data )
+static void debayer_ccm_rgb24( __u8 *dest, __u8* source, int width, int height )
+{
+   int i, j;
+   int dest_offset = 0;
+   //unsigned char *dest = destbuf->data;
+   //unsigned char *source = srcbuf->data;
+   //int width = srcbuf->format.size.width;
+   //int height = srcbuf->format.size.height;
+   int rgain, bgain;
+//
+//   if( data->use_rbgain )
+//   {
+//      rgain = data->rgain;
+//      bgain = data->bgain;
+//   }
+//   else
+//   {
+      rgain = 4096;
+      bgain = 4096;
+//   }
+
+   for( j = 1; j < height-1; j+=2 )
+   {
+      int lineoffset = j*width;
+
+      //RGRGR
+      //GBGBG
+      //RGRGR
+
+      for( i = 0; i < width -1;  )
+      {
+	 unsigned char r,b;
+	 b = CLIP(( (unsigned int)source[ lineoffset + i ] * bgain ) / 4096);
+	 r = CLIP(( (unsigned int)source[ lineoffset + i + width + 1] * rgain ) / 4096);
+
+	 *dest++ = r;
+	 *dest++ = ( (unsigned int)source[ lineoffset + i + width ] + (unsigned int)source[ lineoffset + i + 1]) / 2;
+	 *dest++ = b;
+
+	 i++;
+
+	 *dest++ = r;
+	 *dest++ = ( (unsigned int)source[ lineoffset + i + width + 1 ] + (int)source[ lineoffset + i ]) / 2;
+	 *dest++ = b;
+
+	 i++;
+      }
+
+      lineoffset = (j+1)*width;
+
+      //GBGBG
+      //RGRGR
+      //GBGBG
+
+      for( i = 0; i < width -1;  )
+      {
+	 unsigned char r,b;
+	 b = CLIP(( (unsigned int)source[ lineoffset + i + width ] * bgain ) / 4096);
+	 r = CLIP(( (unsigned int)source[ lineoffset + i + 1 ] * rgain ) / 4096);
+
+	 *dest++ = r;
+	 *dest++ = ( (unsigned int)source[ lineoffset + i + width + 1 ] + (int)source[ lineoffset + i ]) / 2;
+	 *dest++ = b;
+
+	 i++;
+
+	 *dest++ = r;
+	 *dest++ = ( (unsigned int)source[ lineoffset + i + width ] + (int)source[ lineoffset + i + 1 ]) / 2;
+	 *dest++ = b;
+
+
+	 i++;
+      }
+   }
+}
+
+
+
+#ifdef __SSE2__
+
+typedef union
+{
+   __m128i m128i;
+   unsigned char i8[16];
+}m128iu;
+
+//void debayer_sse2( unicap_data_buffer_t *destbuf, unicap_data_buffer_t* srcbuf, debayer_data_t *data )
+static void debayer_sse2( __u8 *dest, __u8* source, int width, int height )
+{
+   //unsigned char *dest = destbuf->data;
+   //unsigned char *source = srcbuf->data;
+   //int width = srcbuf->format.size.width;
+   //int height = srcbuf->format.size.height;
+   int i,j;
+   int dest_offset = 0;
+   int imgwidth = width;
+
+   for( j = 2; j < (height); j += 2 )
+   {
+      int lineoffset = j * imgwidth;
+      dest_offset = (j) * width * 3;
+
+      // RGRGRGRGRGRG
+      // GBGBGBGBGBGB <<-
+      // RGRGRGRGRGRG
+      for( i = 0; i < (width ); i += 16)
+      {
+	 int k;
+	 m128iu b1, b2, r1, r2;
+	 m128iu avg1, avg2, avg3;
+
+	 r1.m128i = _mm_loadu_si128( (__m128i*)(source + lineoffset - imgwidth + i) );
+	 r2.m128i = _mm_loadu_si128( (__m128i*)(source + lineoffset + imgwidth + i) );
+	 // r1 = RG
+	 avg1.m128i = _mm_avg_epu8( b1.m128i, b2.m128i );
+	 // avg1 = RG'
+	 b1.m128i = _mm_loadu_si128( (__m128i*)(source + lineoffset + i - 1) );
+	 b2.m128i = _mm_loadu_si128( (__m128i*)(source + lineoffset + i + 1) );
+	 // b1 = BG
+	 avg2.m128i = _mm_avg_epu8( b1.m128i, b2.m128i );
+	 // avg2 = B'G'
+	 avg3.m128i = _mm_avg_epu8( avg1.m128i, avg2.m128i );
+	 // avg3 = XG
+
+	 for( k = 0; k < 16; k+=2 ){
+	    dest[dest_offset++] = r1.i8[k];
+	    dest[dest_offset++] = b1.i8[k+1];
+	    dest[dest_offset++] = avg2.i8[k];
+
+	    dest[dest_offset++] = r1.i8[k];
+	    dest[dest_offset++] = avg2.i8[k+1];
+	    dest[dest_offset++] = b2.i8[k];
+	 }
+      }
+
+      lineoffset += imgwidth;
+      dest_offset = ( j + 1 ) * width * 3;
+
+      // GBGBGBGBGBGB
+      // RGRGRGRGRGRG <<-
+      // GBGBGBGBGBGB
+      for( i = 0; i < (width); i += 16)
+      {
+	 m128iu b1, b2, r1, r2;
+	 m128iu avg1, avg2, avg3;
+	 int k;
+
+	 b1.m128i = _mm_loadu_si128( (__m128i*)(source + lineoffset - imgwidth + i) );
+	 b2.m128i = _mm_loadu_si128( (__m128i*)(source + lineoffset + imgwidth + i) );
+	 avg1.m128i = _mm_avg_epu8( b1.m128i, b2.m128i );
+	 // avg1 = G'B
+	 r1.m128i = _mm_loadu_si128( (__m128i*)(source + lineoffset + i - 1) );
+	 r2.m128i = _mm_loadu_si128( (__m128i*)(source +lineoffset + i + 1 ) );
+	 // r1 = GRGR
+	 // r2 = GRGR
+	 avg2.m128i = _mm_avg_epu8( r1.m128i, r2.m128i );
+	 // avg2 = G'R'
+	 avg3.m128i = _mm_avg_epu8( avg1.m128i, avg2.m128i );
+	 // avg3 = GX
+
+	 for( k = 0; k < 16; k += 2 ){
+	    dest[dest_offset++] = r1.i8[k+1];
+	    dest[dest_offset++] = avg3.i8[k];
+	    dest[dest_offset++] = avg1.i8[k+1];
+
+	    dest[dest_offset++] = avg2.i8[k+1];
+	    dest[dest_offset++] = r2.i8[k];
+	    dest[dest_offset++] = avg1.i8[k+1];
+	 }
+      }
+   }
+
+}
+#endif
+
+//
 
 static void by8toby8p( __u8 *dest, __u8* source, int width, int height )
 {
@@ -3351,7 +3545,7 @@ static void by8toby8p( __u8 *dest, __u8* source, int width, int height )
       for( i = 0; i < width; i++ ){
 	 *destr++ = *source++;
 	 *destg++ = *source++;
-      }      
+      }
    }
 }
 
@@ -3359,8 +3553,8 @@ static void by8toby8p( __u8 *dest, __u8* source, int width, int height )
 static void by8tobgr24( __u8 *dest, __u8* source, int width, int height )
 {
    int i,j;
-   int dest_offset = 0;      
-   
+   int dest_offset = 0;
+
    for( j = 2; j < height - 2; j+=2 )
    {
       int lineoffset = j * width;
@@ -3373,16 +3567,16 @@ static void by8tobgr24( __u8 *dest, __u8* source, int width, int height )
 	 int g2 = source[ lineoffset + i + 1 ];
 	 int g3 = source[ ( lineoffset + i ) - width ];
 	 int g4 = source[ lineoffset + i + width ];
-	 
+
 	 int d1 = ABS( g1 - g2 );
 	 int d2 = ABS( g3 - g4 );
 
 	 b = source[ lineoffset + i ];
-	 r = ( ( (int)source[ ( ( lineoffset + i ) - width ) + 1 ] + 
-		 (int)source[ ( lineoffset + i + width ) + 1 ] + 
-		 (int)source[ ( ( lineoffset + i ) - width ) - 1 ] + 
+	 r = ( ( (int)source[ ( ( lineoffset + i ) - width ) + 1 ] +
+		 (int)source[ ( lineoffset + i + width ) + 1 ] +
+		 (int)source[ ( ( lineoffset + i ) - width ) - 1 ] +
 		 (int)source[ ( lineoffset + i + width ) - 1 ] ) / 4 );
-	 
+
 	 if( d1 < d2 )
 	 {
 	    g = ( g1 + g2 ) / 2;
@@ -3390,14 +3584,14 @@ static void by8tobgr24( __u8 *dest, __u8* source, int width, int height )
 	 else
 	 {
 	    g = ( g3 + g4 ) / 2;
-	 }	    
+	 }
 
 	 dest[dest_offset++] = b;
 	 dest[dest_offset++] = g;
 	 dest[dest_offset++] = r;
-	 
+
 	 i++;
-	 
+
 	 g = g2;
 	 b = ( (int)source[ ( lineoffset + i ) - 1 ] + (int)source[ ( lineoffset + i ) + 1 ] ) / 2;
 	 r = ( (int)source[ ( lineoffset + i ) - width ] + (int)source[ lineoffset + i + width ] ) / 2;
@@ -3405,13 +3599,13 @@ static void by8tobgr24( __u8 *dest, __u8* source, int width, int height )
 	 dest[dest_offset++] = b;
 	 dest[dest_offset++] = g;
 	 dest[dest_offset++] = r;
-	 
+
 	 i++;
       }
-    
+
       lineoffset += width;
       dest_offset = (j+1) * width * 3 + 6;
-      
+
       for( i = 2; i < width - 3; )
       {
 	 int r, g, b;
@@ -3419,7 +3613,7 @@ static void by8tobgr24( __u8 *dest, __u8* source, int width, int height )
 	 int g2 = source[ lineoffset + i + 1 ];
 	 int g3 = source[ ( lineoffset + i ) - width ];
 	 int g4 = source[ lineoffset + i + width ];
-	 
+
 	 int d1 = ABS( g1 - g2 );
 	 int d2 = ABS( g3 - g4 );
 
@@ -3429,42 +3623,42 @@ static void by8tobgr24( __u8 *dest, __u8* source, int width, int height )
 	 {
 	    g = ( g1 + g2 ) / 2;
 	 }
-	    
+
 	 else
 	 {
 	    g = ( g3 + g4 ) / 2;
 	 }
 
-	 b = ( ( (int)source[ ( ( lineoffset + i ) - width ) + 1 ] + 
-		 (int)source[ ( lineoffset + i + width ) + 1 ] + 
-		 (int)source[ ( ( lineoffset + i ) - width ) - 1 ] + 
+	 b = ( ( (int)source[ ( ( lineoffset + i ) - width ) + 1 ] +
+		 (int)source[ ( lineoffset + i + width ) + 1 ] +
+		 (int)source[ ( ( lineoffset + i ) - width ) - 1 ] +
 		 (int)source[ ( lineoffset + i + width ) - 1 ] ) / 4 );
-	 
+
 
 	 dest[dest_offset++] = b;
 	 dest[dest_offset++] = g;
 	 dest[dest_offset++] = r;
-	 
+
 	 i++;
-	 
+
 	 g = g2;
 	 r = ( (int)source[ ( lineoffset + i ) - 1 ] + (int)source[ ( lineoffset + i ) + 1 ] ) / 2;
 	 b = ( (int)source[ ( lineoffset + i ) - width ] + (int)source[ lineoffset + i + width ] ) / 2;
-	 
+
 	 dest[dest_offset++] = b;
 	 dest[dest_offset++] = g;
 	 dest[dest_offset++] = r;
 
-	 i++; 
+	 i++;
       }
-   }   
+   }
 }
 
 static void by8torgb32( __u8 *dest, __u8* source, int width, int height )
 {
    int i,j;
-   int dest_offset = 0;      
-   
+   int dest_offset = 0;
+
    for( j = 2; j < height - 2; j+=2 )
    {
       int lineoffset = j * width;
@@ -3485,16 +3679,16 @@ static void by8torgb32( __u8 *dest, __u8* source, int width, int height )
 	 g1 = source[ li - 1 ];
 	 g2 = source[ li + 1 ];
 	 g3 = source[ li - width ];
-	 g4 = source[ li + width ];	 
+	 g4 = source[ li + width ];
 	 d1 = ABS( g1 - g2 );
 	 d2 = ABS( g3 - g4 );
 
 	 b = source[ li ];
-	 r = ( ( (int)source[ ( li - width ) + 1 ] + 
-		 (int)source[ ( li + width ) + 1 ] + 
-		 (int)source[ ( li - width ) - 1 ] + 
+	 r = ( ( (int)source[ ( li - width ) + 1 ] +
+		 (int)source[ ( li + width ) + 1 ] +
+		 (int)source[ ( li - width ) - 1 ] +
 		 (int)source[ ( li + width ) - 1 ] ) / 4 );
-	 
+
 	 if( d1 < d2 )
 	 {
 	    g = ( g1 + g2 ) / 2;
@@ -3502,15 +3696,15 @@ static void by8torgb32( __u8 *dest, __u8* source, int width, int height )
 	 else
 	 {
 	    g = ( g3 + g4 ) / 2;
-	 }	    
+	 }
 
 	 dest[dest_offset++] = r;
 	 dest[dest_offset++] = g;
 	 dest[dest_offset++] = b;
 	 dest[dest_offset++] = 0xff;
-	 
+
 	 li++;
-	 
+
 	 g = g2;
 	 b = ( (int)source[ li - 1 ] + (int)source[ li + 1 ] ) / 2;
 	 r = ( (int)source[ li - width ] + (int)source[ li + width ] ) / 2;
@@ -3519,12 +3713,12 @@ static void by8torgb32( __u8 *dest, __u8* source, int width, int height )
 	 dest[dest_offset++] = g;
 	 dest[dest_offset++] = b;
 	 dest[dest_offset++] = 0xff;
-	 
+
       }
-    
+
       lineoffset += width;
       dest_offset = (j+1) * width * 3 + 6;
-      
+
       for( i = 2; i < width - 3; i += 2 )
       {
 	 int r, g, b;
@@ -3550,29 +3744,29 @@ static void by8torgb32( __u8 *dest, __u8* source, int width, int height )
 	 {
 	    g = ( g1 + g2 ) / 2;
 	 }
-	    
+
 	 else
 	 {
 	    g = ( g3 + g4 ) / 2;
 	 }
 
-	 b = ( ( (int)source[ ( li - width ) + 1 ] + 
-		 (int)source[ li + width + 1 ] + 
-		 (int)source[ ( li - width ) - 1 ] + 
+	 b = ( ( (int)source[ ( li - width ) + 1 ] +
+		 (int)source[ li + width + 1 ] +
+		 (int)source[ ( li - width ) - 1 ] +
 		 (int)source[ ( li + width ) - 1 ] ) / 4 );
-	 
+
 
 	 dest[dest_offset++] = r;
 	 dest[dest_offset++] = g;
 	 dest[dest_offset++] = b;
 	 dest[dest_offset++] = 0xff;
-	 
+
 	 li++;
-	 
+
 	 g = g2;
 	 r = ( (int)source[ li - 1 ] + (int)source[ li + 1 ] ) / 2;
 	 b = ( (int)source[ li - width ] + (int)source[ li + width ] ) / 2;
-	 
+
 	 dest[dest_offset++] = r;
 	 dest[dest_offset++] = g;
 	 dest[dest_offset++] = b;
@@ -3580,7 +3774,7 @@ static void by8torgb32( __u8 *dest, __u8* source, int width, int height )
 
       }
    }
-   
+
 }
 
 // ROUNDED
@@ -3595,25 +3789,25 @@ __s8 rytab[256] = {-128, -127, -126, -125, -124, -124, -123, -122, -121, -120, -
 
 __s8 bytab[256] = { -128, -128, -127, -127, -126, -126, -125, -125, -124, -124, -123, -123, -122, -122, -121, -121, -120, -120, -119, -119, -118, -118, -117, -117, -116, -116, -115, -115, -114, -114, -113, -113, -112, -112, -111, -111, -110, -110, -109, -109, -108, -108, -107, -107, -106, -106, -105, -105, -104, -104, -103, -103, -102, -102, -101, -101, -100, -100, -99, -99, -98, -98, -97, -97, -97, -96, -96, -95, -95, -94, -94, -93, -93, -92, -92, -91, -91, -90, -90, -89, -89, -88, -88, -87, -87, -86, -86, -85, -85, -84, -84, -83, -83, -82, -82, -81, -81, -80, -80, -79, -79, -78, -78, -77, -77, -76, -76, -75, -75, -74, -74, -73, -73, -72, -72, -71, -71, -70, -70, -69, -69, -68, -68, -67, -67, -66, -66, -66, -65, -65, -64, -64, -63, -63, -62, -62, -61, -61, -60, -60, -59, -59, -58, -58, -57, -57, -56, -56, -55, -55, -54, -54, -53, -53, -52, -52, -51, -51, -50, -50, -49, -49, -48, -48, -47, -47, -46, -46, -45, -45, -44, -44, -43, -43, -42, -42, -41, -41, -40, -40, -39, -39, -38, -38, -37, -37, -36, -36, -36, -35, -35, -34, -34, -33, -33, -32, -32, -31, -31, -30, -30, -29, -29, -28, -28, -27, -27, -26, -26, -25, -25, -24, -24, -23, -23, -22, -22, -21, -21, -20, -20, -19, -19, -18, -18, -17, -17, -16, -16, -15, -15, -14, -14, -13, -13, -12, -12, -11, -11, -10, -10, -9, -9, -8, -8, -7, -7, -6, -6, -5, -5, -5, -4, -4, -3, -3 };
 
-   
 
 
 
-   
+
+
 /* // not rounded */
 /* __u8 rtab[256] = */
 
 static void by8touyvy( __u8 *dest, __u8* source, int width, int height )
 {
    int i,j;
-   int dest_offset = 0;   
+   int dest_offset = 0;
    int x = 1;
    int y = 2;
    int imgwidth = width;
-   
-   
 
-   
+
+
+
    for( j = y; j < (y+height); j += 2 )
    {
       int lineoffset = j * width;
@@ -3627,27 +3821,27 @@ static void by8touyvy( __u8 *dest, __u8* source, int width, int height )
 	 int g2;
 	 int g3;
 	 int g4;
-	 
+
 	 int d1;
 	 int d2;
 
 	 __u8 y,u,v;
 
-	 g1 = source[ li - 1 ];		  	 
-	 g2 = source[ li + 1 ];		  
+	 g1 = source[ li - 1 ];
+	 g2 = source[ li + 1 ];
 	 g3 = source[ li - imgwidth ];
-	 g4 = source[ li + imgwidth ];    
+	 g4 = source[ li + imgwidth ];
 
 	 d1 = ABS( g1 - g2 );
 	 d2 = ABS( g3 - g4 );
 
 
 	 b = source[ li ];
-	 r = ( ( (int)source[ ( li - imgwidth ) + 1 ] + 
-		 (int)source[ ( li + imgwidth ) + 1 ] + 
-		 (int)source[ ( li - imgwidth ) - 1 ] + 
+	 r = ( ( (int)source[ ( li - imgwidth ) + 1 ] +
+		 (int)source[ ( li + imgwidth ) + 1 ] +
+		 (int)source[ ( li - imgwidth ) - 1 ] +
 		 (int)source[ ( li + imgwidth ) - 1 ] ) / 4 );
-	 
+
 	 if( d1 < d2 )
 	 {
 	    g = ( g1 + g2 ) / 2;
@@ -3655,7 +3849,7 @@ static void by8touyvy( __u8 *dest, __u8* source, int width, int height )
 	 else
 	 {
 	    g = ( g3 + g4 ) / 2;
-	 }	    
+	 }
 
 	 y = rtab[r] + gtab[g] + btab[b];
 	 v = ( 0.877 * (float)(r-y) - 127 );
@@ -3665,23 +3859,23 @@ static void by8touyvy( __u8 *dest, __u8* source, int width, int height )
 	 i++;
 
 	 li = lineoffset + i;
-	 
+
 	 g = g2;
 	 b = ( (int)source[ li - 1 ] + (int)source[ li + 1 ] ) / 2;
 	 r = ( (int)source[ li - imgwidth ] + (int)source[ li + imgwidth ] ) / 2;
 
 	 y = rtab[r] + gtab[g] + btab[b];
 	 u = ( 0.492 * (float)(b-y) -127 );
-	 
+
 	 dest[dest_offset++] = u;
 	 dest[dest_offset++] = y;
-	 
+
 	 i++;
       }
-    
+
       lineoffset += imgwidth;
       dest_offset = ( (j-y) + 1 ) * width * 2 + 4;
-      
+
       for( i = x+1; i < (width+x) - 3; )
       {
 	 int r, g, b;
@@ -3689,7 +3883,7 @@ static void by8touyvy( __u8 *dest, __u8* source, int width, int height )
 	 int g2;
 	 int g3;
 	 int g4;
-	 
+
 	 int d1;
 	 int d2;
 
@@ -3701,7 +3895,7 @@ static void by8touyvy( __u8 *dest, __u8* source, int width, int height )
 	 g2 = source[ li + 1 ];
 	 g3 = source[ li - imgwidth ];
 	 g4 = source[ li + imgwidth ];
-	 
+
 	 d1 = ABS( g1 - g2 );
 	 d2 = ABS( g3 - g4 );
 
@@ -3711,17 +3905,17 @@ static void by8touyvy( __u8 *dest, __u8* source, int width, int height )
 	 {
 	    g = ( g1 + g2 ) / 2;
 	 }
-	    
+
 	 else
 	 {
 	    g = ( g3 + g4 ) / 2;
 	 }
 
-	 b = ( ( (int)source[ ( li - imgwidth ) + 1 ] + 
-		 (int)source[ ( li + imgwidth ) + 1 ] + 
-		 (int)source[ ( li - imgwidth ) - 1 ] + 
+	 b = ( ( (int)source[ ( li - imgwidth ) + 1 ] +
+		 (int)source[ ( li + imgwidth ) + 1 ] +
+		 (int)source[ ( li - imgwidth ) - 1 ] +
 		 (int)source[ ( li + imgwidth ) - 1 ] ) / 4 );
-	 
+
 
 /* 	 y = 0.299 * (float)r + 0.587 * (float)g + 0.114 * (float)b; */
 	 y = rtab[r] + gtab[g] + btab[b];
@@ -3729,26 +3923,26 @@ static void by8touyvy( __u8 *dest, __u8* source, int width, int height )
 
 	 dest[dest_offset++] = u;
 	 dest[dest_offset++] = y;
-	 
+
 	 i++;
 	 li = lineoffset + i;
-	 
+
 	 g = g2;
 	 r = ( (int)source[ li - 1 ] + (int)source[ li + 1 ] ) / 2;
 	 b = ( (int)source[ li - imgwidth ] + (int)source[ li + imgwidth ] ) / 2;
-	 
+
 /* 	 y = 0.299 * (float)r + 0.587 * (float)g + 0.114 * (float)b; */
 	 y = rtab[r] + gtab[g] + btab[b];
 	 v = (0.877 * (float)(r-y)-128);
-	 
+
 
 	 dest[dest_offset++] = v;
 	 dest[dest_offset++] = y;
 
-	 i++; 
+	 i++;
       }
-   }   
-   
+   }
+
 }
 
 
@@ -3762,7 +3956,7 @@ static void y16touyvy( __u8 *dest, __u8* _source, int width, int height, int shi
    {
       dest[offset] = 0x7f;
       dest[offset+1] = (source[offset/2]>>shift );
-   }   
+   }
 }
 
 static void y16toyuy2( __u8 *dest, __u8* _source, int width, int height, int shift )
@@ -3775,14 +3969,14 @@ static void y16toyuy2( __u8 *dest, __u8* _source, int width, int height, int shi
    {
       dest[offset+1] = (source[offset/2]>>6 );
       dest[offset] = 0x7f;
-   }   
+   }
 }
 
 static void y16torgb24( __u8 *dest, __u8* _source, int width, int height, int shift )
 {
    int dest_size = width * height * 3;
    int offset;
-   
+
    __u16 *source = (__u16*)_source;
 
    for( offset = 0; offset < dest_size; offset += 3 )
@@ -3798,12 +3992,12 @@ static void y16torgb24( __u8 *dest, __u8* _source, int width, int height, int sh
 static void rggbtouyvy_debayer( __u8 *dest, __u8 *_source, int width, int height, int shift )
 {
    int i,j;
-   int dest_offset = 0;   
+   int dest_offset = 0;
    int x = 1;
    int y = 2;
    int imgwidth = width;
    __u16 *source = (__u16*)_source;
-   
+
    for( j = y; j < (y+height); j += 2 )
    {
       int lineoffset = j * width;
@@ -3816,7 +4010,7 @@ static void rggbtouyvy_debayer( __u8 *dest, __u8 *_source, int width, int height
 	 int g2;
 	 int g3;
 	 int g4;
-	 
+
 	 int d1;
 	 int d2;
 
@@ -3828,7 +4022,7 @@ static void rggbtouyvy_debayer( __u8 *dest, __u8 *_source, int width, int height
 	 g2 = SHIFT(source[ li + 1 ]);
 	 g3 = SHIFT(source[ li - imgwidth ]);
 	 g4 = SHIFT(source[ li + imgwidth ]);
-	 
+
 	 d1 = ABS( g1 - g2 );
 	 d2 = ABS( g3 - g4 );
 
@@ -3837,7 +4031,7 @@ static void rggbtouyvy_debayer( __u8 *dest, __u8 *_source, int width, int height
 	 if( d1 < d2 )
 	 {
 	    g = ( g1 + g2 ) / 2;
-	 }	    
+	 }
 	 else
 	 {
 	    g = ( g3 + g4 ) / 2;
@@ -3853,27 +4047,27 @@ static void rggbtouyvy_debayer( __u8 *dest, __u8 *_source, int width, int height
 
 	 dest[dest_offset++] = u;
 	 dest[dest_offset++] = y;
-	 
+
 	 i++;
 	 li = lineoffset + i;
-	 
+
 	 g = g2;
 	 r = ( (int)SHIFT(source[ li - 1 ]) + (int)SHIFT(source[ li + 1 ]) ) / 2;
-	 b = ( (int)SHIFT(source[ li - imgwidth ]) + (int)SHIFT(source[ li + imgwidth ]) ) / 2;	 
-	 
+	 b = ( (int)SHIFT(source[ li - imgwidth ]) + (int)SHIFT(source[ li + imgwidth ]) ) / 2;
+
 	 y = ( (  66 * r + 129 * g +  25 * b + 128) >> 8) +  16;
 	 v = ( ( 112 * r -  94 * g -  18 * b + 128) >> 8) + 128;
-	 
+
 
 	 dest[dest_offset++] = v;
 	 dest[dest_offset++] = y;
 
-	 i++; 
+	 i++;
       }
-    
+
       lineoffset += imgwidth;
       dest_offset = ( (j-y) + 1 ) * width * 2 + 2;
-      
+
       for( i = x; i < (width + x); )
       {
 	 int r, g, b;
@@ -3882,14 +4076,14 @@ static void rggbtouyvy_debayer( __u8 *dest, __u8 *_source, int width, int height
 	 int g2;
 	 int g3;
 	 int g4;
-	 
+
 	 int d1;
 	 int d2;
 
 	 __u8 y,u,v;
 
-	 g1 = SHIFT(source[ li - 1 ]);		  	 
-	 g2 = SHIFT(source[ li + 1 ]);		  
+	 g1 = SHIFT(source[ li - 1 ]);
+	 g2 = SHIFT(source[ li + 1 ]);
 	 g3 = SHIFT(source[ li - imgwidth ]);
 	 g4 = SHIFT(source[ li + imgwidth ]);
 
@@ -3902,7 +4096,7 @@ static void rggbtouyvy_debayer( __u8 *dest, __u8 *_source, int width, int height
 		 (int)SHIFT(source[ ( li + imgwidth ) + 1 ]) +
 		 (int)SHIFT(source[ ( li - imgwidth ) - 1 ]) +
 		 (int)SHIFT(source[ ( li + imgwidth ) - 1 ]) ) / 4 );
-	 
+
 	 if( d1 < d2 )
 	 {
 	    g = ( g1 + g2 ) / 2;
@@ -3911,7 +4105,7 @@ static void rggbtouyvy_debayer( __u8 *dest, __u8 *_source, int width, int height
 	 {
 	    g = ( g3 + g4 ) / 2;
 	 }
-	 
+
 
 	 y = ( (  66 * r + 129 * g +  25 * b + 128) >> 8) +  16;
 	 v = ( ( 112 * r -  94 * g -  18 * b + 128) >> 8) + 128;
@@ -3921,7 +4115,7 @@ static void rggbtouyvy_debayer( __u8 *dest, __u8 *_source, int width, int height
 	 i++;
 
 	 li = lineoffset + i;
-	 
+
 	 g = g2;
 	 b = ( (int)SHIFT(source[ li - 1 ]) + (int)SHIFT(source[ li + 1 ]) ) / 2;
 	 r = ( (int)SHIFT(source[ li - imgwidth ]) + (int)SHIFT(source[ li + imgwidth ] )) / 2;
@@ -3929,11 +4123,11 @@ static void rggbtouyvy_debayer( __u8 *dest, __u8 *_source, int width, int height
 
 	 y = ( (  66 * r + 129 * g +  25 * b + 128) >> 8) +  16;
 	 u = ( ( -38 * r -  74 * g + 112 * b + 128) >> 8) + 128;
-	 
+
 	 dest[dest_offset++] = u;
 	 dest[dest_offset++] = y;
-	 
+
 	 i++;
       }
-   }      
+   }
 }

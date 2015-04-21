@@ -56,10 +56,20 @@ static struct aravis_pixel_format pixel_fmt_desc[] = {
 	},
 	{
 		ARV_PIXEL_FORMAT_MONO_16,
-		FOURCC ('Y', '1', '6', 0),
+		FOURCC ('Y', '1', '6', ' '),
 		16,
 		"Mono16"
 	},
+	{
+		ARV_PIXEL_FORMAT_BAYER_GB_8,
+		//FOURCC ('B', 'Y', '8', 0),
+		FOURCC('B','Y','8',' '),
+		8,
+		"Bayer GB 8"
+	},
+
+
+
 	/* { */
 	/* 	ARV_PIXEL_FORMAT_BAYER_GR_8, */
 	/* 	FOURCC ('B', 'Y', '8', 0), */
@@ -119,7 +129,7 @@ static struct aravis_pixel_format pixel_fmt_desc[] = {
 unsigned int aravis_tools_get_fourcc (ArvPixelFormat fmt)
 {
 	int i;
-	
+
 	for (i = 0; i < N_ELEMENTS (pixel_fmt_desc); i++){
 		if (pixel_fmt_desc [i].pixel_format == fmt)
 			return pixel_fmt_desc [i].fourcc;
@@ -131,7 +141,7 @@ unsigned int aravis_tools_get_fourcc (ArvPixelFormat fmt)
 const char *aravis_tools_get_pixel_format_string (ArvPixelFormat fmt)
 {
 	int i;
-	
+
 	for (i = 0; i < N_ELEMENTS (pixel_fmt_desc); i++){
 		if (pixel_fmt_desc [i].pixel_format == fmt)
 			return pixel_fmt_desc [i].desc;
@@ -143,7 +153,7 @@ const char *aravis_tools_get_pixel_format_string (ArvPixelFormat fmt)
 int aravis_tools_get_bpp (ArvPixelFormat fmt)
 {
 	int i;
-	
+
 	for (i = 0; i < N_ELEMENTS (pixel_fmt_desc); i++){
 		if (pixel_fmt_desc [i].pixel_format == fmt)
 			return pixel_fmt_desc [i].bpp;
@@ -156,7 +166,7 @@ ArvPixelFormat aravis_tools_get_pixel_format (unicap_format_t *format)
 {
 	ArvPixelFormat ret = 0;
 	int i;
-	
+
 	for (i = 0; i < N_ELEMENTS (pixel_fmt_desc); i++){
 		if ((pixel_fmt_desc[i].fourcc == format->fourcc) ||
 		    (!strcmp (pixel_fmt_desc [i].desc, format->identifier))){
@@ -164,7 +174,7 @@ ArvPixelFormat aravis_tools_get_pixel_format (unicap_format_t *format)
 			break;
 		}
 	}
-	
+
 	return ret;
 }
 

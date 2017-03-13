@@ -488,6 +488,7 @@ aravis_properties_create_table(ArvCamera *cam, struct aravis_property **properti
                     int n_menus=0;
                     int k=0;
                     const char *mnu_entry;
+		    int mnu_entry_len=0;	
                     char **menu_itms;
 
                     //printf("Category %s : %s is Enumeration \n",categories[j],iter->data);
@@ -504,8 +505,9 @@ aravis_properties_create_table(ArvCamera *cam, struct aravis_property **properti
                     for (iter_enums = enums; iter_enums != NULL; iter_enums = iter_enums->next){
                         //printf("Category %s : EnumEntry '%s' \n",categories[j],  arv_gc_feature_node_get_name (iter_enums->data));
                         mnu_entry=arv_gc_feature_node_get_name (iter_enums->data);
-                        menu_itms[k]=malloc(sizeof(mnu_entry)+1);
-                        memset(menu_itms[k],0x0,sizeof(mnu_entry)+1);
+			mnu_entry_len=strlen(mnu_entry);
+			menu_itms[k]=malloc((mnu_entry_len+1) * sizeof(char *));			
+                        memset(menu_itms[k],0x0,sizeof((mnu_entry_len+1) * sizeof(char *)));
                         strcpy(menu_itms[k],mnu_entry);
                         k++;
                     }

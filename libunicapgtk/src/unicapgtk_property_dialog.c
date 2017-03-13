@@ -61,13 +61,13 @@ static void unicapgtk_property_dialog_class_init          (UnicapgtkPropertyDial
 static void unicapgtk_property_dialog_init                (UnicapgtkPropertyDialog      *ugtk);
 static void unicapgtk_property_dialog_finalize            (GObject                      *object);
 static void unicapgtk_property_dialog_destroy             (GtkObject                    *object);
-static void unicapgtk_property_dialog_set_property        ( GObject       *object, 
-							    guint          property_id, 
-							    const GValue  *value, 
+static void unicapgtk_property_dialog_set_property        ( GObject       *object,
+							    guint          property_id,
+							    const GValue  *value,
 							    GParamSpec    *pspec );
-static void unicapgtk_property_dialog_get_property        ( GObject       *object, 
-							    guint          property_id, 
-							    GValue        *value, 
+static void unicapgtk_property_dialog_get_property        ( GObject       *object,
+							    guint          property_id,
+							    GValue        *value,
 							    GParamSpec    *pspec );
 
 static gboolean property_update_timeout_cb( UnicapgtkPropertyDialog *ugtk );
@@ -86,17 +86,17 @@ G_DEFINE_TYPE( UnicapgtkPropertyDialog, unicapgtk_property_dialog, GTK_TYPE_DIAL
 static gchar *uri_escape_string (const gchar *unescaped)
 {
    static const gchar hex[16] = "0123456789ABCDEF";
-   
+
    GString    *string;
    const char *end;
    guchar      c;
-   
+
    g_return_val_if_fail (unescaped != NULL, NULL);
 
    string = g_string_sized_new (strlen (unescaped));
-   
+
    end = unescaped + strlen (unescaped);
-   
+
    while ((c = *unescaped) != 0)
    {
       if (g_ascii_isalnum (c) ||
@@ -116,7 +116,7 @@ static gchar *uri_escape_string (const gchar *unescaped)
          unescaped++;
       }
    }
-   
+
    return g_string_free (string, FALSE);
 }
 
@@ -158,9 +158,9 @@ static void unicapgtk_property_dialog_class_init( UnicapgtkPropertyDialogClass *
 
 }
 
-static void unicapgtk_property_dialog_set_property( GObject *object, 
-						    guint property_id, 
-						    const GValue *value, 
+static void unicapgtk_property_dialog_set_property( GObject *object,
+						    guint property_id,
+						    const GValue *value,
 						    GParamSpec *pspec )
 {
    UnicapgtkPropertyDialog *ugtk = UNICAPGTK_PROPERTY_DIALOG( object );
@@ -186,9 +186,9 @@ static void unicapgtk_property_dialog_set_property( GObject *object,
    }
 }
 
-static void unicapgtk_property_dialog_get_property( GObject *object, 
-						    guint property_id, 
-						    GValue *value, 
+static void unicapgtk_property_dialog_get_property( GObject *object,
+						    guint property_id,
+						    GValue *value,
 						    GParamSpec *pspec )
 {
    UnicapgtkPropertyDialog *ugtk = UNICAPGTK_PROPERTY_DIALOG( object );
@@ -226,14 +226,14 @@ static void unicapgtk_property_dialog_destroy( GtkObject *object )
       guint timeout_id = 0;
 
       rel = (struct ppty_relation *) entry->data;
-      
+
 
       timeout_id = (guint)g_object_get_data( G_OBJECT( rel->widget ), "update lock" );
       if( timeout_id )
       {
 	 g_source_remove( timeout_id );
       }
-      
+
       g_free( entry->data );
    }
 
@@ -254,14 +254,14 @@ static void unicapgtk_property_dialog_destroy( GtkObject *object )
 static void format_label( gchar *string, gint maxlen )
 {
    gchar *c;
-   
+
    for( c = string; c != NULL; c = g_strstr_len( c, maxlen, " " ) )
    {
       if( *c == ' ' )
       {
 	 c++;
       }
-      
+
       if( *c )
       {
 	 *c = g_ascii_toupper( *c );
@@ -273,7 +273,7 @@ static void format_label( gchar *string, gint maxlen )
 static gboolean remove_update_lock_timeout_cb( GtkWidget *widget )
 {
    g_object_set_data( G_OBJECT( widget ), "update lock", NULL );
-   
+
    return FALSE;
 }
 
@@ -286,14 +286,14 @@ static gboolean property_update_timeout_cb( UnicapgtkPropertyDialog *ugtk )
    {
       return TRUE;
    }
-   
+
    rel = ugtk->update_entry->data;
 
    if( !g_object_get_data( G_OBJECT( rel->widget ), "update lock" ) )
    {
       unicapgtk_device_property_update( UNICAPGTK_DEVICE_PROPERTY( rel->widget ) );
    }
-   
+
    if( ugtk->update_entry->next )
    {
       ugtk->update_entry = ugtk->update_entry->next;
@@ -309,10 +309,10 @@ static gboolean property_update_timeout_cb( UnicapgtkPropertyDialog *ugtk )
 static void update_lock_destroy_cb( gpointer _id )
 {
    guint id = ( guint ) _id;
-   
+
    if( id )
    {
-      g_source_remove( id );
+      //g_source_remove( id );
    }
 }
 
@@ -326,15 +326,15 @@ static void property_changed_cb( GtkWidget *widget, unicap_property_t *property,
    {
       g_source_remove( timeout_id );
    }
-   
+
    // block the update of this property for the next 5 seconds to
    // avoid confusion when the property takes some time to reflect the
    // new setting ( eg. zoom )
    timeout_id = g_timeout_add( 5000, (GSourceFunc)remove_update_lock_timeout_cb, widget );
    g_object_set_data_full( G_OBJECT( widget ), "update lock", (gpointer)timeout_id, update_lock_destroy_cb );
-   
+
    unicap_set_property( ugtk->unicap_handle, property );
- 
+
    for( i = 0; i < property->relations_count; i++ )
    {
       GList *entry;
@@ -364,17 +364,17 @@ static GtkWidget *create_category_vbox( UnicapgtkPropertyDialog *ugtk, unicap_ha
 
    unicap_void_property( &ppty_spec );
    strcpy( ppty_spec.category, category );
-   
-   
+
+
    size_group = gtk_size_group_new( GTK_SIZE_GROUP_HORIZONTAL );
 
-   for( i = 0; SUCCESS( unicap_enumerate_properties( unicap_handle, 
-						     &ppty_spec, 
-						     &ppty, 
+   for( i = 0; SUCCESS( unicap_enumerate_properties( unicap_handle,
+						     &ppty_spec,
+						     &ppty,
 						     i ) ); i++ )
    {
       struct ppty_relation *rel;
-	   
+
       widget = unicapgtk_device_property_new_by_handle( unicap_handle, &ppty );
       gtk_box_pack_start( GTK_BOX( vbox ), widget,FALSE, FALSE, 0 );
       g_signal_connect( G_OBJECT( widget ),
@@ -386,7 +386,7 @@ static GtkWidget *create_category_vbox( UnicapgtkPropertyDialog *ugtk, unicap_ha
       {
 	 gtk_size_group_add_widget( size_group, label );
       }
-	   
+
       rel = g_malloc( sizeof( struct ppty_relation ) );
       unicap_copy_property( &rel->property, &ppty );
       rel->widget = widget;
@@ -407,7 +407,7 @@ static void append_pages( UnicapgtkPropertyDialog *ugtk, unicap_handle_t unicap_
    GList *entry;
    gchar *label;
    int i;
-   
+
    for( i = 0; SUCCESS( unicap_enumerate_properties( unicap_handle, NULL, &property, i ) ); i++ )
    {
       if( !g_list_find_custom( categories, property.category, (GCompareFunc)strcmp ) )
@@ -415,7 +415,7 @@ static void append_pages( UnicapgtkPropertyDialog *ugtk, unicap_handle_t unicap_
 	 categories = g_list_append( categories, g_strdup(property.category) );
       }
    }
-   
+
    for( entry = g_list_first( categories ); entry; entry=entry->next )
    {
 
@@ -426,7 +426,7 @@ static void append_pages( UnicapgtkPropertyDialog *ugtk, unicap_handle_t unicap_
                                 create_category_vbox( ugtk, unicap_handle, entry->data ),
 				gtk_label_new( label ) );
       g_free( label );
-   }  
+   }
 
    g_list_foreach( categories, (GFunc)g_free, NULL );
    g_list_free( categories );
@@ -443,7 +443,7 @@ static gboolean save_device_defaults( UnicapgtkPropertyDialog *ugtk, gboolean ov
    GKeyFile *keyfile;
    gboolean result = FALSE;
    gchar *tmp;
-   
+
    if( !ugtk->unicap_handle )
    {
       return FALSE;
@@ -459,14 +459,14 @@ static gboolean save_device_defaults( UnicapgtkPropertyDialog *ugtk, gboolean ov
    {
       return FALSE;
    }
-   
+
    tmp = g_strconcat( device.identifier, ".ini", NULL );
    ini_filename = uri_escape_string( tmp );
    ini_path = g_build_path( G_DIR_SEPARATOR_S, config_path, ini_filename, NULL );
    g_free( tmp );
    g_free( ini_filename );
    g_free( config_path );
-   
+
    if( !overwrite )
    {
       if( g_file_test( ini_path, G_FILE_TEST_EXISTS ) )
@@ -475,14 +475,14 @@ static gboolean save_device_defaults( UnicapgtkPropertyDialog *ugtk, gboolean ov
 	 return FALSE;
       }
    }
-   
+
    keyfile = unicapgtk_save_device_state( ugtk->unicap_handle, UNICAPGTK_DEVICE_STATE_PROPERTIES );
    if( keyfile )
    {
       FILE *f;
       gchar *data;
       gsize size;
-      
+
       data = g_key_file_to_data( keyfile, &size, NULL );
 
       f = fopen( ini_path, "w" );
@@ -494,11 +494,11 @@ static gboolean save_device_defaults( UnicapgtkPropertyDialog *ugtk, gboolean ov
 
 	 result = TRUE;
       }
-      
+
       g_free( data );
       g_key_file_free( keyfile );
    }
-   
+
    g_free( ini_path );
 
    return result;
@@ -512,7 +512,7 @@ static void load_device_defaults( UnicapgtkPropertyDialog *ugtk )
    unicap_device_t device;
    GKeyFile *keyfile;
    gchar *tmp;
-   
+
    if( !ugtk->unicap_handle )
    {
       return;
@@ -528,18 +528,18 @@ static void load_device_defaults( UnicapgtkPropertyDialog *ugtk )
    {
       return;
    }
-   
+
    tmp = g_strconcat( device.identifier, ".ini", NULL );
    ini_filename = uri_escape_string( tmp );
    ini_path = g_build_path( G_DIR_SEPARATOR_S, config_path, ini_filename, NULL );
    g_free( tmp );
    g_free( ini_filename );
    g_free( config_path );
-   
+
    keyfile = g_key_file_new( );
-   if( g_key_file_load_from_file( keyfile, 
-				  ini_path, 
-				  G_KEY_FILE_NONE, 
+   if( g_key_file_load_from_file( keyfile,
+				  ini_path,
+				  G_KEY_FILE_NONE,
 				  NULL ) )
    {
       unicapgtk_load_device_state( ugtk->unicap_handle, keyfile, UNICAPGTK_DEVICE_STATE_PROPERTIES );
@@ -570,32 +570,35 @@ static void unicapgtk_property_dialog_init( UnicapgtkPropertyDialog *ugtk )
                      NULL );
 
 
+   ugtk->scroller =gtk_scrolled_window_new(NULL,NULL);
    ugtk->notebook = gtk_notebook_new( );
    gtk_container_set_border_width( GTK_CONTAINER( ugtk->notebook ), 6 );
-   gtk_box_pack_start( GTK_BOX( GTK_DIALOG( ugtk )->vbox ), ugtk->notebook, TRUE, TRUE, 0 );
+   gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW(ugtk->scroller),ugtk->notebook);
+
+   gtk_box_pack_start( GTK_BOX( GTK_DIALOG( ugtk )->vbox ), ugtk->scroller, TRUE, TRUE, 0 );
 
    button = gtk_button_new_with_label( _("Update") );
    gtk_box_pack_start( GTK_BOX( GTK_DIALOG( ugtk )->action_area ), button, FALSE, TRUE, 0 );
    gtk_button_box_set_child_secondary (GTK_BUTTON_BOX ( GTK_DIALOG( ugtk )->action_area ),
                                        button, TRUE);
-   g_signal_connect_swapped( G_OBJECT( button ), 
-			     "clicked", 
-			     G_CALLBACK( unicapgtk_property_dialog_reset ), 
+   g_signal_connect_swapped( G_OBJECT( button ),
+			     "clicked",
+			     G_CALLBACK( unicapgtk_property_dialog_reset ),
 			     ugtk );
 
    button = gtk_button_new_with_label( _("Defaults") );
    gtk_box_pack_start( GTK_BOX( GTK_DIALOG( ugtk )->action_area ), button, FALSE, TRUE, 0 );
    gtk_button_box_set_child_secondary (GTK_BUTTON_BOX ( GTK_DIALOG( ugtk )->action_area ),
                                        button, TRUE);
-   g_signal_connect_swapped( G_OBJECT( button ), 
-			     "clicked", 
-			     G_CALLBACK( load_device_defaults ), 
+   g_signal_connect_swapped( G_OBJECT( button ),
+			     "clicked",
+			     G_CALLBACK( load_device_defaults ),
 			     ugtk );
 
 
    ugtk->unicap_handle = NULL;
 
-   gtk_window_set_default_size ( GTK_WINDOW( ugtk ), 400, 300 );
+   gtk_window_set_default_size ( GTK_WINDOW( ugtk ), 600, 500 );
 
    gtk_widget_show_all( GTK_WIDGET( ugtk ));
 }
@@ -688,7 +691,7 @@ void unicapgtk_property_dialog_set_device( UnicapgtkPropertyDialog *ugtk, unicap
  * @handle: a handle of the device to be controlled by this dialog
  *
  * Sets the handle to the device to be controlled by this dialog. The
- * handle will be cloned by this call. 
+ * handle will be cloned by this call.
  */
 void unicapgtk_property_dialog_set_handle( UnicapgtkPropertyDialog *ugtk, unicap_handle_t handle )
 {
@@ -721,18 +724,18 @@ void unicapgtk_property_dialog_set_handle( UnicapgtkPropertyDialog *ugtk, unicap
       gtk_window_set_title( GTK_WINDOW( ugtk ), "No Device" );
    }
 
-   unicapgtk_property_dialog_reset( ugtk );   
+   unicapgtk_property_dialog_reset( ugtk );
 }
 
 /**
  * unicapgtk_property_dialog_reset:
  * @ugtk: an #UnicapgtkPropertyDialog
  *
- * 
+ *
  */
 void unicapgtk_property_dialog_reset( UnicapgtkPropertyDialog *ugtk )
 {
-   GList *entry;   
+   GList *entry;
    gint cur_page;
 
    for( entry = ugtk->property_list; entry; entry = entry->next )
@@ -741,7 +744,7 @@ void unicapgtk_property_dialog_reset( UnicapgtkPropertyDialog *ugtk )
       guint timeout_id = 0;
 
       rel = (struct ppty_relation *) entry->data;
-      
+
 
       timeout_id = (guint)g_object_get_data( G_OBJECT( rel->widget ), "update lock" );
       if( timeout_id )
@@ -750,7 +753,7 @@ void unicapgtk_property_dialog_reset( UnicapgtkPropertyDialog *ugtk )
       }
       g_free( entry->data );
    }
-   
+
    cur_page = gtk_notebook_get_current_page( GTK_NOTEBOOK( ugtk->notebook ) );
 
    while( gtk_notebook_get_n_pages( GTK_NOTEBOOK( ugtk->notebook ) ) )
@@ -765,10 +768,10 @@ void unicapgtk_property_dialog_reset( UnicapgtkPropertyDialog *ugtk )
 
    if( ugtk->unicap_handle )
    {
-      unicap_reenumerate_properties( ugtk->unicap_handle, NULL );      
-      
+      unicap_reenumerate_properties( ugtk->unicap_handle, NULL );
+
       append_pages( ugtk, ugtk->unicap_handle );
-      
+
       gtk_widget_show_all( ugtk->notebook );
    }
 
@@ -788,12 +791,12 @@ static void apply_property_filter( UnicapgtkPropertyDialog *ugtk )
    {
       return;
    }
-   
+
    for( entry = ugtk->property_list; entry; entry = entry->next )
    {
       struct ppty_relation *rel;
       rel = (struct ppty_relation *) entry->data;
-      
+
       if( ugtk->property_filter_func( &rel->property, ugtk->property_filter_user_data ) )
       {
 	 gtk_widget_hide( rel->widget );
@@ -805,12 +808,12 @@ static void apply_property_filter( UnicapgtkPropertyDialog *ugtk )
    }
 }
 
-void               unicapgtk_property_dialog_set_filter      ( UnicapgtkPropertyDialog *ugtk, 
-							       unicap_property_filter_func_t func, 
+void               unicapgtk_property_dialog_set_filter      ( UnicapgtkPropertyDialog *ugtk,
+							       unicap_property_filter_func_t func,
 							       gpointer user_data )
 {
    ugtk->property_filter_func = func;
    ugtk->property_filter_user_data = user_data;
-   
+
    apply_property_filter( ugtk );
 }

@@ -4,9 +4,19 @@
 #include <arv.h>
 
 
-typedef unicap_status_t(*aravis_property_func_t)(ArvCamera *camera, unicap_property_t *property);
+
+typedef enum
+{
+	ARAVIS_PROPERTY_TYPE_INTEGER = 0,
+	ARAVIS_PROPERTY_TYPE_FLOAT,
+	ARAVIS_PROPERTY_TYPE_ENUM,    //aravis lib report string features as enums
+	ARAVIS_PROPERTY_TYPE_COMMAND,
+
+	ARAVIS_PROPERTY_TYPE_UNKNOWN
+} aravis_property_type_enum_t;
 
 
+typedef unicap_status_t (*aravis_property_func_t) (ArvCamera *camera, unicap_property_t *property);
 
 struct aravis_property
 {

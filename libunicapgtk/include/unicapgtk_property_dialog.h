@@ -58,9 +58,11 @@ struct _UnicapgtkPropertyDialog
       /* private */
       GtkWidget *tree_view;
       GtkWidget *notebook;
+      GtkWidget *scroller;
+
 
       unicap_handle_t unicap_handle;
-      
+
       GList *property_list;
       GList *update_entry;
       GList *size_groups;
@@ -88,7 +90,7 @@ void               unicapgtk_property_dialog_reset           ( UnicapgtkProperty
 void               unicapgtk_property_dialog_set_device      ( UnicapgtkPropertyDialog *ugtk, 
 							       unicap_device_t *device_spec );
 void               unicapgtk_property_dialog_set_handle      ( UnicapgtkPropertyDialog *ugtk, 
-							       unicap_handle_t handle );
+							       unicap_handle_t handle ); 
 void               unicapgtk_property_dialog_set_filter      ( UnicapgtkPropertyDialog *ugtk, 
 							       unicap_property_filter_func_t func, 
 							       gpointer user_data );

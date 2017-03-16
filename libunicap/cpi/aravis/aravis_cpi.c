@@ -57,23 +57,24 @@ static unicap_status_t aravis_dequeue_buffer( aravis_handle_t handle, unicap_dat
 static unicap_status_t aravis_wait_buffer( aravis_handle_t handle, unicap_data_buffer_t **buffer );
 static unicap_status_t aravis_poll_buffer( aravis_handle_t handle, int *count );
 static unicap_status_t aravis_set_event_notify( aravis_handle_t handle, unicap_event_callback_t func, unicap_handle_t unicap_handle );
+//(void *user_data, ArvStreamCallbackType type, ArvBuffer *buffer);
 
-static void aravis_stream_callback( aravis_handle_t handle, ArvStreamCallbackType type, ArvBuffer *buffer);
-
-static struct _unicap_cpi cpi_s = 
+//static void aravis_stream_callback( aravis_handle_t handle, ArvStreamCallbackType type, ArvBuffer *buffer);
+static void aravis_stream_callback( void *handle_v, ArvStreamCallbackType type, ArvBuffer *buffer);
+static struct _unicap_cpi cpi_s =
 {
   cpi_version: 1<<16,
   cpi_capabilities: 0x3ffff,
   cpi_flags: UNICAP_CPI_SERIALIZED,
 
   cpi_enumerate_devices: aravis_enumerate_devices,
-  cpi_open: (cpi_open_t)aravis_open, 
+  cpi_open: (cpi_open_t)aravis_open,
   cpi_close: (cpi_close_t)aravis_close,
 
-  cpi_reenumerate_formats: (cpi_reenumerate_formats_t)aravis_reenumerate_formats, 
-  cpi_enumerate_formats: (cpi_enumerate_formats_t)aravis_enumerate_formats,   
-  cpi_set_format: (cpi_set_format_t)aravis_set_format,	   
-  cpi_get_format: (cpi_get_format_t)aravis_get_format,          
+  cpi_reenumerate_formats: (cpi_reenumerate_formats_t)aravis_reenumerate_formats,
+  cpi_enumerate_formats: (cpi_enumerate_formats_t)aravis_enumerate_formats,
+  cpi_set_format: (cpi_set_format_t)aravis_set_format,
+  cpi_get_format: (cpi_get_format_t)aravis_get_format,
 
   cpi_reenumerate_properties: (cpi_reenumerate_properties_t)aravis_reenumerate_properties,
   cpi_enumerate_properties: (cpi_enumerate_properties_t)aravis_enumerate_properties,
@@ -82,7 +83,7 @@ static struct _unicap_cpi cpi_s =
 
   cpi_capture_start: (cpi_capture_start_t)aravis_capture_start,
   cpi_capture_stop: (cpi_capture_stop_t)aravis_capture_stop,
-   
+
   cpi_queue_buffer: (cpi_queue_buffer_t)aravis_queue_buffer,
   cpi_dequeue_buffer: (cpi_dequeue_buffer_t)aravis_dequeue_buffer,
   cpi_wait_buffer: (cpi_wait_buffer_t)aravis_wait_buffer,
@@ -93,27 +94,27 @@ static struct _unicap_cpi cpi_s =
 
 static int is_initialized = 0;
 
-unicap_status_t cpi_register (struct _unicap_cpi *reg_data) 
+unicap_status_t cpi_register (struct _unicap_cpi *reg_data)
 {
 	memcpy (reg_data, &cpi_s, sizeof( struct _unicap_cpi ));
 
 	if (!is_initialized){
 		is_initialized = 1;
-		
+
 		log_init();
-		
-		g_thread_init (NULL);
-		g_type_init ();
-		arv_debug_enable ("device,misc");
+        //willy
+		//g_thread_init (NULL);
+		//g_type_init ();
+		//arv_debug_enable ("device,misc");
 	}
-	
+
 
 	return STATUS_SUCCESS;
 }
 
 static unicap_status_t aravis_enumerate_devices (unicap_device_t *device, int index)
 {
-	unicap_status_t status = STATUS_NO_MATCH;   
+	unicap_status_t status = STATUS_NO_MATCH;
 
 	if (index == 0)
 		arv_update_device_list ();
@@ -142,7 +143,7 @@ static unicap_status_t aravis_open( void **cpi_data, unicap_device_t *device )
 	unicap_status_t status = STATUS_SUCCESS;
 	aravis_handle_t handle;
 	int i;
-   
+
 	handle = malloc (sizeof (struct aravis_handle));
 	if( !handle )
 		return STATUS_FAILURE;
@@ -154,7 +155,7 @@ static unicap_status_t aravis_open( void **cpi_data, unicap_device_t *device )
 	handle->camera = arv_camera_new (device->identifier);
 	if (!handle->camera)
 		goto err;
-   
+
 	aravis_reenumerate_formats (handle, NULL);
 	aravis_get_format( handle, &handle->current_format );
 
@@ -172,7 +173,7 @@ static unicap_status_t aravis_open( void **cpi_data, unicap_device_t *device )
 
 static unicap_status_t aravis_close( aravis_handle_t handle )
 {
-	free( handle );   
+	free( handle );
 	return STATUS_SUCCESS;
 }
 
@@ -184,21 +185,23 @@ static unicap_status_t aravis_reenumerate_formats( aravis_handle_t handle, int *
 	gint64 *pixel_formats;
 	int min_width, max_width;
 	int min_height, max_height;
-	
-	pixel_formats = arv_camera_get_available_pixel_formats (handle->camera, 
+
+	pixel_formats = arv_camera_get_available_pixel_formats (handle->camera,
 								&n_pixel_formats);
 
 	arv_camera_get_width_bounds (handle->camera, &min_width, &max_width);
 	arv_camera_get_height_bounds (handle->camera, &min_height, &max_height);
-
+    //printf("pixel formats count %d\n",n_pixel_formats);
 	for (i = 0; i < n_pixel_formats; i++){
 		unsigned int fourcc;
-		
+        //printf("pixelfomat %d = %s\n",i,aravis_tools_get_pixel_format_string (pixel_formats[i]));
+
 		fourcc = aravis_tools_get_fourcc (pixel_formats[i]);
 		if (fourcc){
 			unicap_void_format (&handle->formats[idx]);
 			handle->formats[idx].fourcc = fourcc;
 			strcpy (handle->formats[idx].identifier, aravis_tools_get_pixel_format_string (pixel_formats[i]));
+            //printf("fourcc pixel formats %d = %s\n",i,handle->formats[idx].identifier);
 			handle->formats[idx].bpp = aravis_tools_get_bpp (pixel_formats[i]);
 			handle->formats[idx].min_size.width = min_width;
 			handle->formats[idx].min_size.height = min_height;
@@ -209,7 +212,7 @@ static unicap_status_t aravis_reenumerate_formats( aravis_handle_t handle, int *
 			handle->formats[idx].buffer_size = max_width * max_height * handle->formats[idx].bpp / 8;
 			handle->formats[idx].buffer_type = UNICAP_BUFFER_TYPE_SYSTEM;
 			idx++;
-		}	
+		}
 	}
 
 	g_free (pixel_formats);
@@ -218,29 +221,29 @@ static unicap_status_t aravis_reenumerate_formats( aravis_handle_t handle, int *
 
 	if( _pcount )
 		*_pcount = handle->n_formats;
-   
+
 	return STATUS_SUCCESS;
 }
 
 static unicap_status_t aravis_enumerate_formats( aravis_handle_t handle, unicap_format_t *format, int index )
 {
 	unicap_status_t status = STATUS_NO_MATCH;
-	
+
 	if ((index >= 0) && (index < handle->n_formats)){
 		unicap_copy_format (format, &handle->formats[index]);
 		status = STATUS_SUCCESS;
 	}
-   
+
 	return status;
 }
 
 static unicap_status_t aravis_set_format( aravis_handle_t handle, unicap_format_t *format )
 {
 	ArvPixelFormat fmt = aravis_tools_get_pixel_format (format);
-	
+
 	if (fmt == 0)
 		return STATUS_INVALID_PARAMETER;
-	
+
 	arv_camera_set_pixel_format (handle->camera, fmt);
 	arv_camera_set_region (handle->camera, format->size.x, format->size.y, format->size.width, format->size.height);
 	unicap_copy_format (&handle->current_format, format);
@@ -254,23 +257,31 @@ static unicap_status_t aravis_get_format( aravis_handle_t handle, unicap_format_
 
 	if (!pixel_fmt)
 		return STATUS_FAILURE;
-	
+
 	unicap_void_format (format);
 
 	strcpy (format->identifier, aravis_tools_get_pixel_format_string (pixel_fmt));
+	// willy
+	//printf("formato pixel: %s\n",format->identifier);
 	format->fourcc = aravis_tools_get_fourcc (pixel_fmt);
+
 	format->bpp = aravis_tools_get_bpp (pixel_fmt);
-	arv_camera_get_region (handle->camera, 
-			       &format->size.x, 
-			       &format->size.y, 
-			       &format->size.width, 
+
+	//printf("Bpp: %d\n",format->bpp);
+	//printf("width: %d\n",format->size.width);
+	//printf("height: %d\n",format->size.height);
+
+	arv_camera_get_region (handle->camera,
+			       &format->size.x,
+			       &format->size.y,
+			       &format->size.width,
 			       &format->size.height);
-	arv_camera_get_width_bounds (handle->camera, 
-				     &format->min_size.width, 
+	arv_camera_get_width_bounds (handle->camera,
+				     &format->min_size.width,
 				     &format->max_size.width);
-	arv_camera_get_height_bounds (handle->camera, 
+	arv_camera_get_height_bounds (handle->camera,
 				      &format->min_size.height,
-				      &format->max_size.height);	
+				      &format->max_size.height);
 	format->buffer_size = format->bpp * format->size.width * format->size.height / 8;
 	format->buffer_type = UNICAP_BUFFER_TYPE_SYSTEM;
 
@@ -280,7 +291,7 @@ static unicap_status_t aravis_get_format( aravis_handle_t handle, unicap_format_
 static unicap_status_t aravis_reenumerate_properties( aravis_handle_t handle, int *_pcount )
 {
 	int count = 0;
-	
+
 	if( _pcount ){
 		*_pcount = handle->n_properties;
 	}
@@ -292,36 +303,38 @@ static unicap_status_t aravis_enumerate_properties( aravis_handle_t handle,
 						     unicap_property_t *property, int index )
 {
 	unicap_status_t status = STATUS_NO_MATCH;
-	
+
 	if ((index) >= 0 && (index < handle->n_properties)){
+
 		unicap_copy_property (property, &handle->properties[index].property);
+		//printf("[aravis_enumerate_properties] %d -> %s\n",index, property->identifier);
 		status = STATUS_SUCCESS;
 	}
-      
+
 	return status;
 }
 
 static unicap_status_t aravis_set_property( aravis_handle_t handle, unicap_property_t *property )
 {
-	unicap_status_t status = STATUS_NO_MATCH;   
+	unicap_status_t status = STATUS_NO_MATCH;
 
 	int i;
-	
+
 	for (i=0; i < handle->n_properties; i++){
 		if (!strncmp (handle->properties[i].property.identifier, property->identifier, sizeof (property->identifier))){
 			status = handle->properties[i].set (handle->camera, property);
 		}
 	}
-	 
+
 	return status;
 }
 
 static unicap_status_t aravis_get_property( aravis_handle_t handle, unicap_property_t *property )
 {
 	unicap_status_t status = STATUS_NO_MATCH;
-	 
+
 	int i;
-	
+
 	for (i=0; i < handle->n_properties; i++){
 		if (!strncmp (handle->properties[i].property.identifier, property->identifier, sizeof (property->identifier))){
 			unicap_copy_property (property, &handle->properties[i].property);
@@ -336,7 +349,7 @@ static unicap_status_t aravis_capture_start( aravis_handle_t handle )
 {
 	guint payload;
 	int i;
-	
+
 	handle->stream = arv_camera_create_stream( handle->camera, aravis_stream_callback, handle);
 	arv_camera_set_acquisition_mode (handle->camera, ARV_ACQUISITION_MODE_CONTINUOUS);
 	arv_camera_start_acquisition (handle->camera);
@@ -344,7 +357,7 @@ static unicap_status_t aravis_capture_start( aravis_handle_t handle )
 	payload = arv_camera_get_payload (handle->camera);
 	for (i=0; i < 8; i++)
 		arv_stream_push_buffer (handle->stream, arv_buffer_new (payload, NULL));
-	
+
 	return handle->stream ? STATUS_SUCCESS : STATUS_FAILURE;
 }
 
@@ -382,20 +395,38 @@ static unicap_status_t aravis_set_event_notify( aravis_handle_t handle, unicap_e
 {
 	handle->event_callback = func;
 	handle->unicap_handle = unicap_handle;
-   
+
 	return STATUS_SUCCESS;
 }
 
-static void aravis_stream_callback( aravis_handle_t handle, ArvStreamCallbackType type, ArvBuffer *buffer)
+//static void aravis_stream_callback( aravis_handle_t handle, ArvStreamCallbackType type, ArvBuffer *buffer)
+static void aravis_stream_callback( void  *handle_v, ArvStreamCallbackType type, ArvBuffer *buffer)
 {
+	aravis_handle_t handle;
+    handle = (aravis_handle_t )  handle_v;
+
+
 	if (type == ARV_STREAM_CALLBACK_TYPE_BUFFER_DONE){
+
 		unicap_data_buffer_t data_buffer;
 		unicap_copy_format (&data_buffer.format, &handle->current_format);
-		data_buffer.buffer_size = buffer->size;
-		data_buffer.data = buffer->data;
+		// aravis 0.2
+		// data_buffer.buffer_size = buffer->size;
+		// data_buffer.data = buffer->data;
+		// aravis 0.3
+        data_buffer.data = arv_buffer_get_data(buffer,&data_buffer.buffer_size);
+
 		data_buffer.type = UNICAP_BUFFER_TYPE_SYSTEM;
-		data_buffer.fill_time.tv_sec =  buffer->timestamp_ns / 1000000000ULL;
-		data_buffer.fill_time.tv_usec = (buffer->timestamp_ns % 1000000000ULL) / 1000ULL;
+        // aravis 0.2
+		// data_buffer.fill_time.tv_sec =  buffer->timestamp_ns / 1000000000ULL;
+		// data_buffer.fill_time.tv_usec = (buffer->timestamp_ns % 1000000000ULL) / 1000ULL;
+		data_buffer.fill_time.tv_sec =  arv_buffer_get_timestamp( buffer ) / 1000000000ULL;
+		data_buffer.fill_time.tv_usec = (arv_buffer_get_timestamp(buffer) % 1000000000ULL) / 1000ULL;
+
+		//willy
+		//printf ("entra a stream callback curformat %s\n",handle->current_format);
+        //printf ("buff geometry w: %d h:%d bpp: %d\n",data_buffer.format.size.width,data_buffer.format.size.height,data_buffer.format.bpp);
+
 		handle->event_callback (handle->unicap_handle, UNICAP_EVENT_NEW_FRAME, &data_buffer);
 		arv_stream_push_buffer (handle->stream, buffer);
 	}

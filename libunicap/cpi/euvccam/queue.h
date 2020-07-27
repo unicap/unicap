@@ -24,7 +24,7 @@
 #include <sys/time.h>
 #include <semaphore.h>
 
-struct _unicap_queue
+typedef struct _unicap_queue
 {
 		sem_t sema;
 		sem_t *psema;
@@ -34,9 +34,7 @@ struct _unicap_queue
 
 		void * data;
 		struct _unicap_queue *next;
-} unicap_queue;
-
-typedef struct _unicap_queue unicap_queue_t;
+} unicap_queue_t;
 
 void _init_queue( struct _unicap_queue *queue );
 void _destroy_queue( struct _unicap_queue *queue );

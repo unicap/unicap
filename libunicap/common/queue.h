@@ -24,16 +24,14 @@
 #include <sys/time.h>
 #include <semaphore.h>
 
-struct _unicap_queue
+typedef struct _unicap_queue
 {
       sem_t sema;
       sem_t *psema;
 
       void * data;
       struct _unicap_queue *next;
-} unicap_queue;
-
-typedef struct _unicap_queue unicap_queue_t;
+} unicap_queue_t;
 
 __HIDDEN__ void ucutil_insert_back_queue( unicap_queue_t *queue, unicap_queue_t *entry );
 __HIDDEN__ void ucutil_insert_front_queue( unicap_queue_t *queue, unicap_queue_t *entry );

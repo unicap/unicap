@@ -22,6 +22,10 @@
 #endif
 #include "debug.h"
 
+#if USE_LIBV4L
+#include <libv4l2.h>
+#endif
+
 #define N_(x) x
 
 #define FOURCC(a,b,c,d) (unsigned int)((((unsigned int)d)<<24)+(((unsigned int)c)<<16)+(((unsigned int)b)<<8)+a)

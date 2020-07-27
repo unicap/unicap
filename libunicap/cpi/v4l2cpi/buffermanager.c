@@ -15,6 +15,10 @@
 #endif
 #include "debug.h"
 
+#if USE_LIBV4L
+#include <libv4l2.h>
+#endif
+
 #include "buffermanager.h"
 
 #define MAX_BUFFERS 16

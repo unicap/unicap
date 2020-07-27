@@ -28,6 +28,10 @@
 #define DEBUG
 #endif
 
+#if USE_LIBV4L
+#include <libv4l2.h>
+#endif
+
 #define TRUE 1
 
 #include "debug.h"

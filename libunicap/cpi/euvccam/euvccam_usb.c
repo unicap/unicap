@@ -26,6 +26,7 @@
 #include <unicap.h>
 #include <stdint.h>
 #include <string.h>
+#include <stdio.h>
 #include <linux/usbdevice_fs.h>
 
 #include <unicap.h>

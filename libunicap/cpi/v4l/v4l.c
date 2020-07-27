@@ -49,7 +49,7 @@
 #endif
 #include <debug.h>
 
-#include <linux/videodev.h>
+#include <libv4l1-videodev.h>
 #include <linux/videodev2.h> // for v4l2 checks
 
 #include "v4l.h"

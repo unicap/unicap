@@ -35,7 +35,7 @@
 #include "debug.h"
 
 #include "euvccam_usb.h"
-
+#include "logging.h"
 
 struct euvccam_handle
 {

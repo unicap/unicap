@@ -1333,7 +1333,8 @@ unicap_status_t vid21394_rs232_io( vid21394handle_t vid21394handle,
 	
 /*    TRACE( "rs232io fcp: %08llx out_data_length: %d, in_data_length: %d\n", fcp, out_data_length, in_data_length ); */
 
-   return( _vid21394_send_fcp_command_new( vid21394handle, fcp, bit, out_data, out_data_length, in_data, (unsigned int *)&in_data_length ) );
+   size_t in_data_length_sz = in_data_length;
+   return( _vid21394_send_fcp_command_new( vid21394handle, fcp, bit, out_data, out_data_length, in_data, &in_data_length_sz ) );
 }
 
 unicap_status_t vid21394_read_rs232( vid21394handle_t vid21394handle, 

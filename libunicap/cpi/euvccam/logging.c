@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <string.h>
 
 FILE *g_logfp = NULL;
 int g_log_modules_mask = 0xffff;
